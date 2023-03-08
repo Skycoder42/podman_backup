@@ -1,0 +1,22 @@
+name: Continuous integration
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  ci:
+    name: CI
+    uses: Skycoder42/dart_test_tools/.github/workflows/dart.yml@main
+    with:
+      platforms: '["linux"]'
+      buildRunner: true
+      extendedAnalyzerArgs: --linter test-import # Do not run the lib-export linter
+      coverageExclude: >-
+        "**/*.freezed.dart"
+        "**/*.g.dart"
