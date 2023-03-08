@@ -18,6 +18,15 @@ class Options {
   final bool remoteHostWasParsed;
 
   @CliOption(
+    abbr: 'l',
+    defaultsTo: 'de.skycoder42.podman_backup',
+    valueHelp: 'label',
+    help: 'The label that volumes should be filtered by '
+        'to detect which volumes to backup.',
+  )
+  final String backupLabel;
+
+  @CliOption(
     abbr: 'h',
     negatable: false,
     defaultsTo: false,
@@ -28,6 +37,7 @@ class Options {
   const Options({
     required this.remoteHost,
     this.remoteHostWasParsed = false,
+    required this.backupLabel,
     this.help = false,
   });
 
