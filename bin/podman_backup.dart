@@ -13,6 +13,8 @@ Future<void> main(List<String> arguments) async {
 
     // ignore: avoid_print
     print(await podman.volumeList());
+    // ignore: avoid_print
+    print(await podman.ps());
   } finally {
     di.dispose();
   }
