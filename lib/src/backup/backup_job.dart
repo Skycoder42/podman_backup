@@ -1,20 +1,26 @@
 import 'package:riverpod/riverpod.dart';
 
 import '../cli/options.dart';
-import 'volume_configuration_loader.dart';
+import 'backup_controller.dart';
+import 'backup_strategy_builder.dart';
 
 // coverage:ignore-start
 final backupJobProvider = Provider(
   (ref) => BackupJob(
-    ref.watch(volumeConfigurationLoaderProvider),
+    ref.watch(backupStrategyBuilderProvider),
+    ref.watch(backupControllerProvider),
   ),
 );
 // coverage:ignore-end
 
 class BackupJob {
-  final VolumeConfigurationLoader _volumeConfigurationLoader;
+  final BackupStrategyBuilder _backupStrategyBuilder;
+  final BackupController _backupController;
 
-  BackupJob(this._volumeConfigurationLoader);
+  BackupJob(
+    this._backupStrategyBuilder,
+    this._backupController,
+  );
 
   Future<void> run(Options options) async {
     // steps:
@@ -25,11 +31,10 @@ class BackupJob {
     //   - create backup
     //   - start relevant containers
 
-    final configuration = await _volumeConfigurationLoader
-        .loadVolumeConfigurations(options.backupLabel)
-        .toList();
+    final strategy = await _backupStrategyBuilder.buildStrategy(
+      backupLabel: options.backupLabel,
+    );
 
-    // ignore: avoid_print
-    print(configuration);
+    await _backupController.backup(strategy);
   }
 }

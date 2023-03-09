@@ -4,35 +4,30 @@ import 'backup_strategy.dart';
 
 // coverage:ignore-start
 final backupControllerProvider = Provider(
-  (ref) => BackupController(
-    ref.watch(backupStrategyProvider),
-  ),
+  (ref) => BackupController(),
 );
 // coverage:ignore-end
 
 class BackupController {
-  final BackupStrategy _backupStrategy;
+  BackupController();
 
-  BackupController(this._backupStrategy);
-
-  Future<void> backup() async {
-    while (!_backupStrategy.isFinished) {
-      await _backupStep();
-      await _backupStrategy.next();
+  Future<void> backup(BackupStrategy strategy) async {
+    while (await strategy.next()) {
+      await _backupStep(strategy);
     }
   }
 
-  Future<void> _backupStep() async {
+  Future<void> _backupStep(BackupStrategy strategy) async {
     try {
-      for (final service in _backupStrategy.services) {
+      for (final service in strategy.services) {
         // TODO stop service
       }
 
-      for (final volume in _backupStrategy.volumes) {
+      for (final volume in strategy.volumes) {
         // TODO perform backup
       }
     } finally {
-      for (final service in _backupStrategy.services) {
+      for (final service in strategy.services) {
         // TODO start service
       }
     }
