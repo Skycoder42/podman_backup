@@ -16,6 +16,13 @@ class BackupController {
   BackupController(this._backupStrategy);
 
   Future<void> backup() async {
+    while (!_backupStrategy.isFinished) {
+      await _backupStep();
+      await _backupStrategy.next();
+    }
+  }
+
+  Future<void> _backupStep() async {
     try {
       for (final service in _backupStrategy.services) {
         // TODO stop service
