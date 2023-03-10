@@ -25,6 +25,20 @@ class BackupStrategyBuilder {
       },
     );
 
-    return BackupStrategy(_podmanAdapter, volumes);
+    final strategyData = <String, Set<String>>{};
+    for (final volume in volumes) {
+      final containers = await _podmanAdapter.ps(
+        filters: {
+          'volume': volume.name,
+        },
+      );
+
+      strategyData[volume.name] = containers
+          .map((c) => c.labels['PODMAN_SYSTEMD_UNIT'])
+          .whereType<String>()
+          .toSet();
+    }
+
+    return BackupStrategy(_podmanAdapter, strategyData);
   }
 }

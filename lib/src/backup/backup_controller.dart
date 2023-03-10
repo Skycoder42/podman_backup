@@ -12,7 +12,7 @@ class BackupController {
   BackupController();
 
   Future<void> backup(BackupStrategy strategy) async {
-    while (await strategy.next()) {
+    while (strategy.next()) {
       await _backupStep(strategy);
     }
   }
