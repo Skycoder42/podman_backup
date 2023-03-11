@@ -11,6 +11,12 @@ enum BackupMode {
   uploadOnly;
 }
 
+extension BackupModeX on BackupMode {
+  bool get backup => this == BackupMode.full || this == BackupMode.backupOnly;
+
+  bool get upload => this == BackupMode.full || this == BackupMode.uploadOnly;
+}
+
 @CliOptions()
 @immutable
 class Options {
