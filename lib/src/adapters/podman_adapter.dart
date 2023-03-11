@@ -17,6 +17,24 @@ class PodmanAdapter {
 
   PodmanAdapter(this._processAdapter);
 
+  Future<List<Container>> ps({
+    bool all = false,
+    Map<String, String> filters = const {},
+  }) =>
+      _streamPodmanList(
+        [
+          'ps',
+          '--format',
+          'json',
+          if (all) '--all',
+          for (final filter in filters.entries) ...[
+            '--filter',
+            '${filter.key}=${filter.value}'
+          ],
+        ],
+        Container.fromJsonList,
+      );
+
   Future<List<Volume>> volumeList({
     Map<String, String> filters = const {},
   }) =>
@@ -34,22 +52,9 @@ class PodmanAdapter {
         Volume.fromJsonList,
       );
 
-  Future<List<Container>> ps({
-    bool all = false,
-    Map<String, String> filters = const {},
-  }) =>
-      _streamPodmanList(
-        [
-          'ps',
-          '--format',
-          'json',
-          if (all) '--all',
-          for (final filter in filters.entries) ...[
-            '--filter',
-            '${filter.key}=${filter.value}'
-          ],
-        ],
-        Container.fromJsonList,
+  Stream<List<int>> volumeExport(String volume) => _processAdapter.streamRaw(
+        'podman',
+        ['volume', 'export', volume],
       );
 
   Future<List<T>> _streamPodmanList<T extends Object>(

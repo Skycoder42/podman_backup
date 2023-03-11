@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -28,24 +29,52 @@ class ProcessAdapter {
 
   ProcessAdapter(this._stderr);
 
-  Stream<Object?> streamJson(
+  Future<int> run(
     String executable,
     List<String> arguments, {
     int? expectedExitCode = 0,
+  }) async {
+    final proc = await Process.start(
+      executable,
+      arguments,
+      mode: ProcessStartMode.inheritStdio,
+    );
+
+    final exitCode = await proc.exitCode;
+    if (expectedExitCode != null) {
+      if (exitCode != expectedExitCode) {
+        throw ProcessFailed(executable, arguments, exitCode);
+      }
+    }
+
+    return exitCode;
+  }
+
+  Stream<List<int>> streamRaw(
+    String executable,
+    List<String> arguments, {
+    int? expectedExitCode = 0,
+    Stream<List<int>>? stdin,
   }) async* {
     final proc = await Process.start(
       executable,
       arguments,
     );
 
+    Future<void>? stdinPipeDone;
+    if (stdin != null) {
+      stdinPipeDone = stdin.pipe(proc.stdin);
+    }
+
     final stderrSub = proc.stderr
         .transform(systemEncoding.decoder)
         .transform(const LineSplitter())
         .listen(_stderr.writeln);
+
     try {
-      yield* proc.stdout
-          .transform(systemEncoding.decoder)
-          .transform(json.decoder);
+      yield* proc.stdout;
+
+      await stdinPipeDone;
 
       if (expectedExitCode != null) {
         final exitCode = await proc.exitCode;
@@ -57,4 +86,13 @@ class ProcessAdapter {
       await stderrSub.cancel();
     }
   }
+
+  Stream<Object?> streamJson(
+    String executable,
+    List<String> arguments, {
+    int? expectedExitCode = 0,
+  }) =>
+      streamRaw(executable, arguments, expectedExitCode: expectedExitCode)
+          .transform(systemEncoding.decoder)
+          .transform(json.decoder);
 }
