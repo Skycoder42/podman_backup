@@ -1,10 +1,6 @@
 #!/bin/bash
 set -eo pipefail
 
-echo ::group::Uninstall docker
-sudo apt-get purge docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras
-echo ::endgroup::
-
 echo ::group::Install podman
 sudo apt-get update
 sudo apt-get install -y podman fuse-overlayfs
