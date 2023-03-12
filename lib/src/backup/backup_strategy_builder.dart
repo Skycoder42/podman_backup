@@ -39,6 +39,6 @@ class BackupStrategyBuilder {
           .toSet();
     }
 
-    return BackupStrategy(_podmanAdapter, strategyData);
+    return BackupStrategy(strategyData);
   }
 }

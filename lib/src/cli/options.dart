@@ -24,10 +24,11 @@ class Options {
     name: 'remote',
     abbr: 'r',
     valueHelp: 'host',
-    help: 'The remote <host> to send the backups to. (required)',
+    help: 'The remote <host> to send the backups to, '
+        'in the format: [USER@]HOST:DEST. (required)',
   )
-  final String? remoteHost;
-  final bool remoteHostWasParsed;
+  final String? remoteHostRaw;
+  final bool remoteHostRawWasParsed;
 
   @CliOption(
     abbr: 'b',
@@ -68,13 +69,15 @@ class Options {
   final bool help;
 
   const Options({
-    required this.remoteHost,
-    this.remoteHostWasParsed = false,
+    required this.remoteHostRaw,
+    this.remoteHostRawWasParsed = false,
     required this.backupMode,
     required this.backupLabel,
     this.backupCache,
     this.help = false,
   });
+
+  String get remoteHost => remoteHostRaw!;
 
   static ArgParser buildArgParser() => _$populateOptionsParser(
         ArgParser(

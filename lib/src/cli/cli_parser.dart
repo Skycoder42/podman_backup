@@ -26,7 +26,7 @@ class CliParser {
         exit(0);
       }
 
-      if (!options.remoteHostWasParsed) {
+      if (!options.remoteHostRawWasParsed) {
         throw ArgParserException('Required option "remote" was not specified.');
       }
 

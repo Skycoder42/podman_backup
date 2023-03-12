@@ -1,14 +1,10 @@
-import '../adapters/podman_adapter.dart';
-
 class BackupStrategy {
-  final PodmanAdapter _podmanAdapter;
-
   final Map<String, Set<String>> _pendingVolumes;
 
   final _activeVolumes = <String>[];
   final _activeServices = <String>{};
 
-  BackupStrategy(this._podmanAdapter, this._pendingVolumes);
+  BackupStrategy(this._pendingVolumes);
 
   bool next() {
     _activeVolumes.clear();

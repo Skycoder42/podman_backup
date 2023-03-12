@@ -23,8 +23,11 @@ class UploadController {
   }) async {
     await _processAdapter.run('rsync', [
       '--times',
-      // '--compress',
-      // '--compress-level=9',
+      '--remove-source-files',
+      '--human-readable',
+      '--fsync',
+      cacheDir.path,
+      remoteHost,
     ]);
   }
 }
