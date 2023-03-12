@@ -77,7 +77,7 @@ class Options {
     this.help = false,
   });
 
-  String get remoteHost => remoteHostRaw!;
+  String getRemoteHost() => remoteHostRaw!;
 
   static ArgParser buildArgParser() => _$populateOptionsParser(
         ArgParser(

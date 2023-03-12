@@ -37,7 +37,7 @@ class PodmanBackup {
 
     if (options.backupMode.upload) {
       await _uploadController.upload(
-        remoteHost: options.remoteHost,
+        remoteHost: options.getRemoteHost(),
         cacheDir: backupCacheDir,
       );
     }

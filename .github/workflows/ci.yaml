@@ -20,3 +20,8 @@ jobs:
       coverageExclude: >-
         "**/*.freezed.dart"
         "**/*.g.dart"
+      integrationTestPaths: -P integration
+      integrationTestSetup: >-
+        {
+          "linux": "./tool/integration-test-setup.sh"
+        }

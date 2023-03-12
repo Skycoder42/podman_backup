@@ -1,0 +1,10 @@
+presets:
+  unit:
+    paths:
+      - test/unit
+
+  integration:
+    timeout: 2x
+    test_on: linux
+    paths:
+      - test/integration

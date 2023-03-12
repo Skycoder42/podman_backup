@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 
-import '../bin/podman_backup.dart' as app;
+import '../../bin/podman_backup.dart' as app;
 
 void main() {
   test('coverage', () {
