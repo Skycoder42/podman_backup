@@ -1,5 +1,5 @@
 [Unit]
-Description=Podman test-service-4.service
+Description=Podman test-service-2.service
 Wants=network-online.target
 After=network-online.target
 RequiresMountsFor=%t/containers
@@ -14,11 +14,11 @@ ExecStart=/usr/bin/podman run \
 	--sdnotify=conmon \
 	-d \
 	--replace \
-	--name test-service-4 \
+	--name test-service-2 \
 	-v test-volume-s2-1:/mnt/test-volume-s2-1 \
 	-v test-volume-s2-2:/mnt/test-volume-s2-2 \
 	-v /tmp/container-log:/var/log \
-	localhost/podman_backup_test/test-service:latest test-service-4
+	localhost/podman_backup_test/test-service:latest test-service-2
 ExecStop=/usr/bin/podman stop \
 	--ignore \
 	--cidfile=%t/%n.ctr-id
