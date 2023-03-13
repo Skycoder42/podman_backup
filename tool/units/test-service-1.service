@@ -15,6 +15,8 @@ ExecStart=/usr/bin/podman run \
 	-d \
 	--replace \
 	--name test-service-1 \
+	-v test-volume-s1-1:/usr/local/apache2/conf \
+	-v /tmp/container-log:/var/log \
 	docker.io/library/httpd
 ExecStop=/usr/bin/podman stop \
 	--ignore \

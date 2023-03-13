@@ -6,11 +6,18 @@ sudo apt-get update
 sudo apt-get install -y podman fuse-overlayfs
 echo ::endgroup::
 
-echo ::group::Install and start systemd test units
+echo ::group::Install systemd test units
 pushd tool/units
 install -Dt "$HOME/.config/systemd/user/" -m 644 -- *.service
 systemctl --user daemon-reload
-systemctl --user start -- *.service
+popd
+echo ::endgroup::
+
+echo ::group::Build relevant images
+pushd tool/images
+for context in *; do
+  podman build -t "podman_backup_test/$context" "$context"
+done
 popd
 echo ::endgroup::
 

@@ -1,0 +1,5 @@
+FROM docker.io/library/alpine:latest
+
+COPY service.sh /usr/local/bin/service.sh
+
+ENTRYPOINT [ "/usr/local/bin/service.sh" ]

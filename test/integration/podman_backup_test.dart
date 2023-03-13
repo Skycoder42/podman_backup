@@ -6,10 +6,15 @@ import '../../bin/podman_backup.dart' as podman_backup;
 void main() {
   final debugOverwriteLabel = Platform.environment['PODMAN_BACKUP_LABEL'];
 
+  late Directory logDir;
   late Directory cacheDir;
   late Directory backupDir;
 
   late String timestampPrefix;
+
+  setUpAll(() async {
+    logDir = await Directory('/tmp/container-log').create(recursive: true);
+  });
 
   setUp(() async {
     cacheDir = await Directory.systemTemp.createTemp();
@@ -70,6 +75,35 @@ void main() {
         ]),
       );
     });
+
+    test('can backup a single, attached volume', () async {
+      // arrange
+      const volume = 'test_volume_s1-1';
+
+      await _createVolume(volume);
+      await _startService('test-service-1.service');
+
+      // act
+      await runSut('backup-only');
+
+      // assert
+      expect(
+        cacheDir.list(),
+        emitsInAnyOrder(<dynamic>[
+          isA<File>().having(
+            (m) => m.path,
+            'path',
+            matches(volumePattern(volume)),
+          ),
+          emitsDone,
+        ]),
+      );
+
+      expect(
+        File.fromUri(logDir.uri.resolve('test-service.log')).readAsLines(),
+        completion(const ['STARTED', 'STOPPED', 'STARTED']),
+      );
+    });
   });
 }
 
@@ -87,7 +121,15 @@ Future<void> _createVolume(String name, {bool backedUp = true}) async {
   addTearDown(() => _podman(['volume', 'rm', '--force', name]));
 }
 
+Future<void> _startService(String service) async {
+  await _systemd(['start', service]);
+  addTearDown(() => _systemd(['stop', service]));
+}
+
 Future<void> _podman(List<String> arguments) => _run('podman', arguments);
+
+Future<void> _systemd(List<String> arguments) =>
+    _run('systemd', ['--user', ...arguments]);
 
 Future<void> _run(String executable, List<String> arguments) async {
   final proc = await Process.start(
