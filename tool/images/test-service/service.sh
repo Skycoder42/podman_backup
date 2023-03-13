@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 # $1: name
-set -exo pipefail
+set -ex
 
 trap 'echo "STOPPED $1" >> /var/log/test-service.log' EXIT
 echo "STARTED $1" >> /var/log/test-service.log
