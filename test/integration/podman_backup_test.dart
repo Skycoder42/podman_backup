@@ -132,6 +132,7 @@ Future<void> _systemd(List<String> arguments) =>
     _run('systemd', ['--user', ...arguments]);
 
 Future<void> _run(String executable, List<String> arguments) async {
+  printOnFailure('> Invoking: $executable $arguments');
   final proc = await Process.start(
     executable,
     arguments,
