@@ -2,8 +2,8 @@
 # $1: name
 set -exo pipefail
 
-trap 'echo STOPPED >> /var/log/$1.log' EXIT
-echo STARTED >> /var/log/"$1".log
+trap 'echo "STOPPED $1" >> /var/log/test-service.log' EXIT
+echo "STARTED $1" >> /var/log/test-service.log
 
 for dir in /mnt/*; do
   out_file=$(mktemp -p "$dir")
