@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:test/test.dart';
@@ -192,7 +193,17 @@ Future<void> _run(String executable, List<String> arguments) async {
   final proc = await Process.start(
     executable,
     arguments,
-    mode: ProcessStartMode.inheritStdio,
   );
-  await expectLater(proc.exitCode, completion(0));
+  _streamLogs('>> ', proc.stdout);
+  _streamLogs('>! ', proc.stderr);
+
+  final exitCode = await proc.exitCode;
+  printOnFailure('>= Exit code: $exitCode');
+  expect(exitCode, 0);
 }
+
+void _streamLogs(String prefix, Stream<List<int>> stream) => stream
+    .transform(systemEncoding.decoder)
+    .transform(const LineSplitter())
+    .map((line) => '$prefix$line')
+    .listen(printOnFailure);
