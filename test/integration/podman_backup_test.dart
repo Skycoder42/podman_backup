@@ -20,6 +20,8 @@ void main() {
   late String timestampPrefix;
 
   setUpAll(() async {
+    Logger.root.level = Level.ALL;
+
     logDir = await Directory('/tmp/container-log').create(recursive: true);
   });
 
@@ -62,7 +64,6 @@ void main() {
             backupMode: mode,
             backupLabel: debugOverwriteLabel ?? 'de.skycoder42.podman_backup',
             backupCache: cacheDir.path,
-            logLevel: Level.ALL,
           ),
         );
   }
