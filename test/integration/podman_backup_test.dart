@@ -191,6 +191,8 @@ Future<void> _createVolume(String name, {bool backedUp = true}) async {
 
 Future<void> _startService(String service) async {
   await _systemd(['start', service]);
+  await _systemd(['status', service]);
+  addTearDown(() => _systemd(['status', service]));
   addTearDown(() => _run('journalctl', ['--user', '-u', service]));
   addTearDown(() => _systemd(['stop', service]));
 }
