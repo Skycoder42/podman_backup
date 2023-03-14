@@ -20,14 +20,14 @@ void main() {
   late String timestampPrefix;
 
   setUpAll(() async {
-    Logger.root.level = Level.ALL;
+    Logger.root
+      ..level = Level.ALL
+      ..onRecord.listen(print);
 
     logDir = await Directory('/tmp/container-log').create(recursive: true);
   });
 
   setUp(() async {
-    Logger.root.onRecord.listen(print);
-
     cacheDir = await Directory.systemTemp.createTemp();
     backupDir = await Directory.systemTemp.createTemp();
 
@@ -41,8 +41,6 @@ void main() {
   tearDown(() async {
     await backupDir.delete(recursive: true);
     await cacheDir.delete(recursive: true);
-
-    Logger.root.clearListeners();
   });
 
   RegExp volumePattern(String volume) =>

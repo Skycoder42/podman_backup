@@ -27,6 +27,7 @@ class BackupStrategyBuilder {
         'label': backupLabel,
       },
     );
+    _logger.finest('Found volumes: $volumes');
 
     final strategyData = <String, Set<String>>{};
     for (final volume in volumes) {
@@ -36,6 +37,7 @@ class BackupStrategyBuilder {
           'volume': volume.name,
         },
       );
+      _logger.finest('Found containers: $containers');
 
       strategyData[volume.name] = containers
           .map((c) => c.labels['PODMAN_SYSTEMD_UNIT'])
