@@ -16,12 +16,14 @@ class CliParser {
   final _logger = Logger('$CliParser');
 
   Options parse(List<String> arguments) {
-    _logger.finest('Parsing arguments: $arguments');
     final argParser = Options.buildArgParser();
 
     try {
       final argResults = argParser.parse(arguments);
       final options = Options.parseOptions(argResults);
+
+      Logger.root.level = options.logLevel;
+      _logger.finest('Parsed arguments: $arguments');
 
       if (options.help) {
         stdout

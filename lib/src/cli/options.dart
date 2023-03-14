@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:build_cli_annotations/build_cli_annotations.dart';
+import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 
 part 'options.g.dart';
@@ -61,6 +62,26 @@ class Options {
   final String? backupCache;
 
   @CliOption(
+    convert: _logLevelFromString,
+    defaultsTo: 'info',
+    allowed: [
+      'all',
+      'finest',
+      'finer',
+      'fine',
+      'config',
+      'info',
+      'warning',
+      'severe',
+      'shout',
+      'off',
+    ],
+    valueHelp: 'level',
+    help: 'Customize the logging level.',
+  )
+  final Level logLevel;
+
+  @CliOption(
     abbr: 'h',
     negatable: false,
     defaultsTo: false,
@@ -74,6 +95,7 @@ class Options {
     required this.backupMode,
     required this.backupLabel,
     this.backupCache,
+    this.logLevel = Level.INFO,
     this.help = false,
   });
 
@@ -89,3 +111,6 @@ class Options {
   static Options parseOptions(ArgResults argResults) =>
       _$parseOptionsResult(argResults);
 }
+
+Level _logLevelFromString(String level) =>
+    Level.LEVELS.singleWhere((element) => element.name == level.toUpperCase());

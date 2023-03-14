@@ -20,9 +20,7 @@ void main() {
   late String timestampPrefix;
 
   setUpAll(() async {
-    Logger.root
-      ..level = Level.ALL
-      ..onRecord.listen(print);
+    Logger.root.onRecord.listen(print);
 
     logDir = await Directory('/tmp/container-log').create(recursive: true);
   });
@@ -58,9 +56,11 @@ void main() {
     await di.read(podmanBackupProvider).run(
           Options(
             remoteHostRaw: 'integration_test_local:${backupDir.path}',
+            remoteHostRawWasParsed: true,
             backupMode: mode,
             backupLabel: debugOverwriteLabel ?? 'de.skycoder42.podman_backup',
             backupCache: cacheDir.path,
+            logLevel: Level.ALL,
           ),
         );
   }
