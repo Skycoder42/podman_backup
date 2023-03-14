@@ -71,8 +71,8 @@ void main() {
   group('backup', () {
     test('Can backup a single, unattached volume', () async {
       // arrange
-      const volume1 = 'test_volume_1';
-      const volume2 = 'test_volume_2';
+      const volume1 = 'test-volume-1';
+      const volume2 = 'test-volume-2';
 
       await _createVolume(volume1);
       await _createVolume(volume2, backedUp: false);
@@ -96,13 +96,12 @@ void main() {
 
     test('can backup a single, attached volume', () async {
       // arrange
-      const volume = 'test_volume_s1-1';
+      const volume = 'test-volume-s1-1';
 
       await _createVolume(volume);
       await _startService('test-service-1.service');
 
       // act
-      await _podman(['ps', '-a']);
       await runSut(BackupMode.backupOnly);
 
       // assert
@@ -127,11 +126,11 @@ void main() {
 
     test('can backup a multiple, cross-attached volumes', () async {
       // arrange
-      const volume1 = 'test_volume_s2-1';
-      const volume2 = 'test_volume_s2-2';
-      const volume3 = 'test_volume_s2-3';
-      const volume4 = 'test_volume_s2-4';
-      const volume5 = 'test_volume_s2-5';
+      const volume1 = 'test-volume-s2-1';
+      const volume2 = 'test-volume-s2-2';
+      const volume3 = 'test-volume-s2-3';
+      const volume4 = 'test-volume-s2-4';
+      const volume5 = 'test-volume-s2-5';
       const backedUpVolumes = [volume1, volume2, volume3, volume4];
 
       for (final volume in backedUpVolumes) {
