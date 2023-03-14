@@ -5,8 +5,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:logging/logging.dart';
+import 'package:podman_backup/src/cli/options.dart';
+import 'package:podman_backup/src/podman_backup.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:test/test.dart';
-import '../../bin/podman_backup.dart' as podman_backup;
 
 void main() {
   final debugOverwriteLabel = Platform.environment['PODMAN_BACKUP_LABEL'];
@@ -17,8 +19,6 @@ void main() {
 
   late String timestampPrefix;
 
-  late StreamSubscription loggerSub;
-
   setUpAll(() async {
     Logger.root.level = Level.ALL;
 
@@ -26,7 +26,7 @@ void main() {
   });
 
   setUp(() async {
-    loggerSub = Logger.root.onRecord.listen(print);
+    Logger.root.onRecord.listen(print);
 
     cacheDir = await Directory.systemTemp.createTemp();
     backupDir = await Directory.systemTemp.createTemp();
@@ -42,7 +42,7 @@ void main() {
     await backupDir.delete(recursive: true);
     await cacheDir.delete(recursive: true);
 
-    await loggerSub.cancel();
+    Logger.root.clearListeners();
   });
 
   RegExp volumePattern(String volume) =>
@@ -54,20 +54,17 @@ void main() {
         completion(log),
       );
 
-  Future<void> runSut(String mode, [List<String>? args]) async =>
-      podman_backup.main([
-        '--remote',
-        'integration_test_local:${backupDir.path}',
-        '--backup-mode',
-        mode,
-        '--backup-cache',
-        cacheDir.path,
-        if (debugOverwriteLabel != null) ...[
-          '--backup-label',
-          debugOverwriteLabel
-        ],
-        ...?args,
-      ]);
+  Future<void> runSut(BackupMode mode, [List<String>? args]) async {
+    final di = ProviderContainer();
+    addTearDown(di.dispose);
+    await di.read(podmanBackupProvider).run(
+          Options(
+            remoteHostRaw: 'integration_test_local:${backupDir.path}',
+            backupMode: mode,
+            backupLabel: debugOverwriteLabel ?? 'de.skycoder42.podman_backup',
+          ),
+        );
+  }
 
   group('backup', () {
     test('Can backup a single, unattached volume', () async {
@@ -79,7 +76,7 @@ void main() {
       await _createVolume(volume2, backedUp: false);
 
       // act
-      await runSut('backup-only');
+      await runSut(BackupMode.backupOnly);
 
       // assert
       expect(
@@ -103,7 +100,7 @@ void main() {
       await _startService('test-service-1.service');
 
       // act
-      await runSut('backup-only');
+      await runSut(BackupMode.backupOnly);
 
       // assert
       expect(
@@ -144,7 +141,7 @@ void main() {
       await _startService('test-service-5.service');
 
       // act
-      await runSut('backup-only');
+      await runSut(BackupMode.backupOnly);
 
       // assert
       expect(
