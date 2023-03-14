@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'backup/backup_controller.dart';
@@ -18,6 +19,7 @@ final podmanBackupProvider = Provider(
 class PodmanBackup {
   final BackupController _backupController;
   final UploadController _uploadController;
+  final _logger = Logger('$PodmanBackup');
 
   PodmanBackup(
     this._backupController,
@@ -27,8 +29,10 @@ class PodmanBackup {
   Future<void> run(Options options) async {
     final backupCacheDir =
         await _backupDir(options.backupCache).create(recursive: true);
+    _logger.fine('Detected backup cache dir as: ${backupCacheDir.path}');
 
     if (options.backupMode.backup) {
+      _logger.info('>> Running backup');
       await _backupController.backup(
         backupLabel: options.backupLabel,
         cacheDir: backupCacheDir,
@@ -36,6 +40,7 @@ class PodmanBackup {
     }
 
     if (options.backupMode.upload) {
+      _logger.info('>> Running upload');
       await _uploadController.upload(
         remoteHost: options.getRemoteHost(),
         cacheDir: backupCacheDir,

@@ -1,3 +1,4 @@
+import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../adapters/podman_adapter.dart';
@@ -13,12 +14,14 @@ final backupStrategyBuilderProvider = Provider(
 
 class BackupStrategyBuilder {
   final PodmanAdapter _podmanAdapter;
+  final _logger = Logger('$BackupStrategyBuilder');
 
   BackupStrategyBuilder(this._podmanAdapter);
 
   Future<BackupStrategy> buildStrategy({
     required String backupLabel,
   }) async {
+    _logger.fine('Loading volumes with label $backupLabel');
     final volumes = await _podmanAdapter.volumeList(
       filters: {
         'label': backupLabel,
@@ -27,6 +30,7 @@ class BackupStrategyBuilder {
 
     final strategyData = <String, Set<String>>{};
     for (final volume in volumes) {
+      _logger.fine('Loading attached services for volume $volume');
       final containers = await _podmanAdapter.ps(
         filters: {
           'volume': volume.name,
@@ -39,6 +43,7 @@ class BackupStrategyBuilder {
           .toSet();
     }
 
+    _logger.fine('Building backup strategy');
     return BackupStrategy(strategyData);
   }
 }

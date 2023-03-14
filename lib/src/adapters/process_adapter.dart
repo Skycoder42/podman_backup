@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 // coverage:ignore-start
@@ -26,6 +27,7 @@ class ProcessFailed implements Exception {
 
 class ProcessAdapter {
   final IOSink _stderr;
+  final _logger = Logger('$ProcessAdapter');
 
   ProcessAdapter(this._stderr);
 
@@ -34,6 +36,8 @@ class ProcessAdapter {
     List<String> arguments, {
     int? expectedExitCode = 0,
   }) async {
+    final logLine = _logLine(executable, arguments);
+    _logger.finer('Running $logLine...');
     final proc = await Process.start(
       executable,
       arguments,
@@ -41,6 +45,9 @@ class ProcessAdapter {
     );
 
     final exitCode = await proc.exitCode;
+    _logger.finer(
+      '$logLine completed with exit code: $exitCode',
+    );
     if (expectedExitCode != null) {
       if (exitCode != expectedExitCode) {
         throw ProcessFailed(executable, arguments, exitCode);
@@ -56,6 +63,8 @@ class ProcessAdapter {
     int? expectedExitCode = 0,
     Stream<List<int>>? stdin,
   }) async* {
+    final logLine = _logLine(executable, arguments);
+    _logger.finer('Streaming $logLine...');
     final proc = await Process.start(
       executable,
       arguments,
@@ -76,8 +85,11 @@ class ProcessAdapter {
 
       await stdinPipeDone;
 
+      final exitCode = await proc.exitCode;
+      _logger.finer(
+        '$logLine completed with exit code: $exitCode',
+      );
       if (expectedExitCode != null) {
-        final exitCode = await proc.exitCode;
         if (exitCode != expectedExitCode) {
           throw ProcessFailed(executable, arguments, exitCode);
         }
@@ -95,4 +107,7 @@ class ProcessAdapter {
       streamRaw(executable, arguments, expectedExitCode: expectedExitCode)
           .transform(systemEncoding.decoder)
           .transform(json.decoder);
+
+  String _logLine(String executable, List<String> arguments) =>
+      '<<$executable ${arguments.join(' ')}>>';
 }

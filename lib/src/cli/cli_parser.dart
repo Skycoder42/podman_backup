@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'options.dart';
@@ -12,7 +13,10 @@ final cliParserProvider = Provider(
 // coverage:ignore-end
 
 class CliParser {
+  final _logger = Logger('$CliParser');
+
   Options parse(List<String> arguments) {
+    _logger.finest('Parsing arguments: $arguments');
     final argParser = Options.buildArgParser();
 
     try {
@@ -29,6 +33,12 @@ class CliParser {
       if (!options.remoteHostRawWasParsed) {
         throw ArgParserException('Required option "remote" was not specified.');
       }
+
+      _logger
+        ..config('remoteHost: ${options.getRemoteHost()}')
+        ..config('backupMode: ${options.backupMode}')
+        ..config('backupLabel: ${options.backupLabel}')
+        ..config('backupCache: ${options.backupCache}');
 
       return options;
     } on ArgParserException catch (e) {

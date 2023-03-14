@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../adapters/compress_adapter.dart';
@@ -27,6 +28,7 @@ class BackupController {
   final PodmanAdapter _podmanAdapter;
   final CompressAdapter _compressAdapter;
   final DateTimeAdapter _dateTimeAdapter;
+  final _logger = Logger('$BackupController');
 
   BackupController(
     this._backupStrategyBuilder,
@@ -40,17 +42,21 @@ class BackupController {
     required String backupLabel,
     required Directory cacheDir,
   }) async {
+    _logger.info('Building strategy');
     final strategy = await _backupStrategyBuilder.buildStrategy(
       backupLabel: backupLabel,
     );
 
+    _logger.info('Executing strategy');
     while (strategy.next()) {
       await _backupStep(strategy, cacheDir);
     }
   }
 
   Future<void> _backupStep(BackupStrategy strategy, Directory cacheDir) async {
+    _logger.info('Backing up volumes: ${strategy.volumes}');
     try {
+      _logger.fine('Stopping services: ${strategy.services}');
       for (final service in strategy.services) {
         await _systemdAdapter.stop(service);
       }
@@ -59,12 +65,12 @@ class BackupController {
         await _createVolumeBackup(volume, cacheDir);
       }
     } finally {
+      _logger.fine('Restarting services: ${strategy.services}');
       for (final service in strategy.services) {
         try {
           await _systemdAdapter.start(service);
         } on Exception catch (e) {
-          // ignore: avoid_print
-          print('WARNING: Failed to restart $service with error: $e');
+          _logger.warning('Failed to restart $service with error: $e');
         }
       }
     }
@@ -79,6 +85,7 @@ class BackupController {
       cacheDir.uri.resolve('$volume-$date.tar.xz'),
     );
 
+    _logger.fine('Backing up volume $volume to ${backupFile.path}');
     await _podmanAdapter
         .volumeExport(volume)
         .transform(_compressAdapter)
