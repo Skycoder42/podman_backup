@@ -1,6 +1,9 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 import '../../bin/podman_backup.dart' as podman_backup;
 
@@ -14,6 +17,10 @@ void main() {
   late String timestampPrefix;
 
   setUpAll(() async {
+    Logger.root
+      ..level = Level.ALL
+      ..onRecord.listen(print);
+
     logDir = await Directory('/tmp/container-log').create(recursive: true);
   });
 
