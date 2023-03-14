@@ -102,6 +102,7 @@ void main() {
       await _startService('test-service-1.service');
 
       // act
+      await _podman(['ps', '-a']);
       await runSut(BackupMode.backupOnly);
 
       // assert
@@ -191,8 +192,6 @@ Future<void> _createVolume(String name, {bool backedUp = true}) async {
 
 Future<void> _startService(String service) async {
   await _systemd(['start', service]);
-  await _systemd(['status', service]);
-  addTearDown(() => _systemd(['status', service]));
   addTearDown(() => _run('journalctl', ['--user', '-u', service]));
   addTearDown(() => _systemd(['stop', service]));
 }
