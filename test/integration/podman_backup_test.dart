@@ -62,6 +62,7 @@ void main() {
             remoteHostRaw: 'integration_test_local:${backupDir.path}',
             backupMode: mode,
             backupLabel: debugOverwriteLabel ?? 'de.skycoder42.podman_backup',
+            backupCache: cacheDir.path,
           ),
         );
   }
