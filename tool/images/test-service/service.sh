@@ -2,7 +2,7 @@
 # $1: name
 set -ex
 
-trap 'echo "STOPPED $1" >> /var/log/test-service.log' EXIT
+trap 'echo "STOPPED $1" >> /var/log/test-service.log' TERM
 echo "STARTED $1" >> /var/log/test-service.log
 
 for dir in /mnt/*; do
