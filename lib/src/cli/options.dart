@@ -21,6 +21,8 @@ extension BackupModeX on BackupMode {
 @CliOptions()
 @immutable
 class Options {
+  static const defaultBackupLabel = 'de.skycoder42.podman_backup';
+
   @CliOption(
     name: 'remote',
     abbr: 'r',
@@ -46,7 +48,7 @@ class Options {
 
   @CliOption(
     abbr: 'l',
-    defaultsTo: 'de.skycoder42.podman_backup',
+    defaultsTo: Options.defaultBackupLabel,
     valueHelp: 'label',
     help: 'The label that volumes should be filtered by '
         'to detect which volumes to backup.',
@@ -91,9 +93,9 @@ class Options {
 
   const Options({
     required this.remoteHostRaw,
-    this.remoteHostRawWasParsed = false,
-    required this.backupMode,
-    required this.backupLabel,
+    required this.remoteHostRawWasParsed,
+    this.backupMode = BackupMode.full,
+    this.backupLabel = Options.defaultBackupLabel,
     this.backupCache,
     this.logLevel = Level.INFO,
     this.help = false,
