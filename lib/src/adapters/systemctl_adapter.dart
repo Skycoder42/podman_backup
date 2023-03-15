@@ -3,24 +3,24 @@ import 'package:riverpod/riverpod.dart';
 import 'process_adapter.dart';
 
 // coverage:ignore-start
-final systemdAdapterProvider = Provider(
-  (ref) => SystemdAdapter(
+final systemctlAdapterProvider = Provider(
+  (ref) => SystemctlAdapter(
     ref.watch(processAdapterProvider),
   ),
 );
 // coverage:ignore-end
 
-class SystemdAdapter {
+class SystemctlAdapter {
   final ProcessAdapter _processAdapter;
 
-  SystemdAdapter(this._processAdapter);
+  SystemctlAdapter(this._processAdapter);
 
   Future<void> start(String unit) => _runSystemd(['start', unit]);
 
   Future<void> stop(String unit) => _runSystemd(['stop', unit]);
 
   Future<void> _runSystemd(List<String> args) => _processAdapter.run(
-        'systemd',
+        'systemctl',
         ['--user', ...args],
       );
 }

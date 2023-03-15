@@ -6,7 +6,7 @@ import 'package:riverpod/riverpod.dart';
 import '../adapters/compress_adapter.dart';
 import '../adapters/date_time_adapter.dart';
 import '../adapters/podman_adapter.dart';
-import '../adapters/systemd_adapter.dart';
+import '../adapters/systemctl_adapter.dart';
 import 'backup_strategy.dart';
 import 'backup_strategy_builder.dart';
 
@@ -14,7 +14,7 @@ import 'backup_strategy_builder.dart';
 final backupControllerProvider = Provider(
   (ref) => BackupController(
     ref.watch(backupStrategyBuilderProvider),
-    ref.watch(systemdAdapterProvider),
+    ref.watch(systemctlAdapterProvider),
     ref.watch(podmanAdapterProvider),
     ref.watch(compressAdapterProvider),
     ref.watch(dateTimeAdapterProvider),
@@ -24,7 +24,7 @@ final backupControllerProvider = Provider(
 
 class BackupController {
   final BackupStrategyBuilder _backupStrategyBuilder;
-  final SystemdAdapter _systemdAdapter;
+  final SystemctlAdapter _systemdAdapter;
   final PodmanAdapter _podmanAdapter;
   final CompressAdapter _compressAdapter;
   final DateTimeAdapter _dateTimeAdapter;
