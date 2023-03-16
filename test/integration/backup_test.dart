@@ -21,7 +21,7 @@ class BackupTestCase extends IntegrationTestCase {
       );
 
   @override
-  FutureOr<void> build() {
+  void build() {
     test('Can backup a single, unattached volume', () async {
       // arrange
       const volume1 = 'test-volume-1';

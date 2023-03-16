@@ -20,7 +20,7 @@ abstract class IntegrationTestCase {
 
   String get name;
 
-  FutureOr<void> build();
+  void build();
 
   void run() {
     setUpAll(() async {
@@ -50,9 +50,7 @@ abstract class IntegrationTestCase {
       Logger.root.clearListeners();
     });
 
-    group(name, () async {
-      await build();
-    });
+    group(name, build);
   }
 
   @protected
