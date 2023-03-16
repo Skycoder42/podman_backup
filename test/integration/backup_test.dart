@@ -70,11 +70,14 @@ class BackupTestCase extends IntegrationTestCase {
         ]),
       );
 
-      expectServiceLog(const [
-        'STARTED test-service-1',
-        'STOPPED test-service-1',
-        'STARTED test-service-1',
-      ]);
+      expect(
+        journalctl('test-service-1.service'),
+        emitsInOrder(<dynamic>[
+          endsWith('Started Podman test-service-1.service.'),
+          endsWith('Stopped Podman test-service-1.service.'),
+          endsWith('Started Podman test-service-1.service.'),
+        ]),
+      );
     });
 
     test('can backup a multiple, cross-attached volumes', () async {
@@ -112,18 +115,36 @@ class BackupTestCase extends IntegrationTestCase {
         ]),
       );
 
-      expectServiceLog(const [
-        'STARTED test-service-2',
-        'STARTED test-service-3',
-        'STARTED test-service-4',
-        'STARTED test-service-5',
-        'STOPPED test-service-2',
-        'STOPPED test-service-4',
-        'STOPPED test-service-3',
-        'STARTED test-service-2',
-        'STARTED test-service-4',
-        'STARTED test-service-3',
-      ]);
+      expect(
+        journalctl('test-service-2.service'),
+        emitsInOrder(<dynamic>[
+          endsWith('Started Podman test-service-2.service.'),
+          endsWith('Stopped Podman test-service-2.service.'),
+          endsWith('Started Podman test-service-2.service.'),
+        ]),
+      );
+      expect(
+        journalctl('test-service-3.service'),
+        emitsInOrder(<dynamic>[
+          endsWith('Started Podman test-service-3.service.'),
+          endsWith('Stopped Podman test-service-3.service.'),
+          endsWith('Started Podman test-service-3.service.'),
+        ]),
+      );
+      expect(
+        journalctl('test-service-4.service'),
+        emitsInOrder(<dynamic>[
+          endsWith('Started Podman test-service-4.service.'),
+          endsWith('Stopped Podman test-service-4.service.'),
+          endsWith('Started Podman test-service-4.service.'),
+        ]),
+      );
+      expect(
+        journalctl('test-service-5.service'),
+        emitsInOrder(<dynamic>[
+          endsWith('Started Podman test-service-5.service.'),
+        ]),
+      );
     });
   }
 }

@@ -2,9 +2,6 @@
 # $1: name
 set -ex
 
-trap 'echo "STOPPED $1" >> /var/log/test-service.log' INT QUIT TERM EXIT HUP
-echo "STARTED $1" >> /var/log/test-service.log
-
 for dir in /mnt/*; do
   out_file=$(mktemp -p "$dir")
   date > "$out_file"

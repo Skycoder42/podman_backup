@@ -17,7 +17,6 @@ ExecStart=/usr/bin/podman run \
 	--name test-service-2 \
 	-v test-volume-s2-1:/mnt/test-volume-s2-1 \
 	-v test-volume-s2-2:/mnt/test-volume-s2-2 \
-	-v /tmp/container-log:/var/log \
 	localhost/podman_backup_test/test-service:latest test-service-2
 ExecStop=/usr/bin/podman stop \
 	--ignore \

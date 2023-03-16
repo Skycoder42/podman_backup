@@ -10,7 +10,6 @@ import 'package:riverpod/riverpod.dart';
 import 'package:test/test.dart';
 
 abstract class IntegrationTestCase {
-  late Directory _logDir;
   late String _timestampPrefix;
 
   @protected
@@ -25,8 +24,6 @@ abstract class IntegrationTestCase {
   void run() {
     setUpAll(() async {
       Logger.root.level = Level.ALL;
-
-      _logDir = await Directory('/tmp/container-log').create(recursive: true);
     });
 
     setUp(() async {
@@ -56,13 +53,6 @@ abstract class IntegrationTestCase {
   @protected
   RegExp volumePattern(String volume) =>
       RegExp('.*\\/$volume-$_timestampPrefix(_\\d{2}){3}.tar.xz');
-
-  @protected
-  void expectServiceLog(List<String> log) => expect(
-        // ignore: discarded_futures
-        File.fromUri(_logDir.uri.resolve('test-service.log')).readAsLines(),
-        completion(log),
-      );
 
   @protected
   Future<void> runPodmanBackup({
@@ -104,6 +94,10 @@ abstract class IntegrationTestCase {
     addTearDown(() => _systemctl(['stop', service]));
   }
 
+  @protected
+  Stream<String> journalctl(String service) =>
+      _stream('journalctl', ['--user', '-u', service]);
+
   Future<void> _podman(List<String> arguments) => _run('podman', arguments);
 
   Future<void> _systemctl(List<String> arguments) =>
@@ -117,6 +111,23 @@ abstract class IntegrationTestCase {
     );
     _streamLogs('>> ', proc.stdout);
     _streamLogs('>! ', proc.stderr);
+
+    final exitCode = await proc.exitCode;
+    printOnFailure('>= Exit code: $exitCode');
+    expect(exitCode, 0);
+  }
+
+  Stream<String> _stream(String executable, List<String> arguments) async* {
+    printOnFailure('> Streaming: $executable $arguments');
+    final proc = await Process.start(
+      executable,
+      arguments,
+    );
+    _streamLogs('>! ', proc.stderr);
+
+    yield* proc.stdout
+        .transform(systemEncoding.decoder)
+        .transform(const LineSplitter());
 
     final exitCode = await proc.exitCode;
     printOnFailure('>= Exit code: $exitCode');
