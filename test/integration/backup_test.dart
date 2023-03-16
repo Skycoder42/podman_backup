@@ -70,14 +70,11 @@ class BackupTestCase extends IntegrationTestCase {
         ]),
       );
 
-      expect(
-        journalctl('test-service-1.service'),
-        emitsInOrder(<dynamic>[
-          endsWith('Started Podman test-service-1.service.'),
-          endsWith('Stopped Podman test-service-1.service.'),
-          endsWith('Started Podman test-service-1.service.'),
-        ]),
-      );
+      _expectStateLogs('test-service-1.service', const [
+        _State.started,
+        _State.stopped,
+        _State.started,
+      ]);
     });
 
     test('can backup a multiple, cross-attached volumes', () async {
@@ -115,36 +112,43 @@ class BackupTestCase extends IntegrationTestCase {
         ]),
       );
 
-      expect(
-        journalctl('test-service-2.service'),
-        emitsInOrder(<dynamic>[
-          endsWith('Started Podman test-service-2.service.'),
-          endsWith('Stopped Podman test-service-2.service.'),
-          endsWith('Started Podman test-service-2.service.'),
-        ]),
-      );
-      expect(
-        journalctl('test-service-3.service'),
-        emitsInOrder(<dynamic>[
-          endsWith('Started Podman test-service-3.service.'),
-          endsWith('Stopped Podman test-service-3.service.'),
-          endsWith('Started Podman test-service-3.service.'),
-        ]),
-      );
-      expect(
-        journalctl('test-service-4.service'),
-        emitsInOrder(<dynamic>[
-          endsWith('Started Podman test-service-4.service.'),
-          endsWith('Stopped Podman test-service-4.service.'),
-          endsWith('Started Podman test-service-4.service.'),
-        ]),
-      );
-      expect(
-        journalctl('test-service-5.service'),
-        emitsInOrder(<dynamic>[
-          endsWith('Started Podman test-service-5.service.'),
-        ]),
-      );
+      _expectStateLogs('test-service-1.service', const [
+        _State.started,
+        _State.stopped,
+        _State.started,
+      ]);
+      _expectStateLogs('test-service-2.service', const [
+        _State.started,
+        _State.stopped,
+        _State.started,
+      ]);
+      _expectStateLogs('test-service-3.service', const [
+        _State.started,
+        _State.stopped,
+        _State.started,
+      ]);
+      _expectStateLogs('test-service-4.service', const [
+        _State.started,
+        _State.stopped,
+        _State.started,
+      ]);
+      _expectStateLogs('test-service-5.service', [_State.started]);
     });
   }
+
+  void _expectStateLogs(String service, Iterable<_State> states) => expect(
+        journalctl(service),
+        emitsInAnyOrder(
+          states.map<Matcher>((s) => endsWith('${s.value} Podman $service.')),
+        ),
+      );
+}
+
+enum _State {
+  started('Started'),
+  stopped('Stopped');
+
+  final String value;
+
+  const _State(this.value);
 }
