@@ -148,9 +148,16 @@ class BackupTestCase extends IntegrationTestCase {
         // ignore: discarded_futures
         journalctl(service).toList(),
         completion(
-          containsAllInOrder(
-            states.map<Matcher>((s) => endsWith('${s.value} Podman $service.')),
-          ),
+          containsAllInOrder(<Matcher>[
+            ...states.map(
+              (s) => endsWith('${s.value} Podman $service.'),
+            ),
+            ..._State.values.map(
+              (s) => isNot(
+                endsWith('${s.value} Podman $service.'),
+              ),
+            ),
+          ]),
         ),
       );
 }
