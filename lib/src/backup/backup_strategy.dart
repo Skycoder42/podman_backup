@@ -31,6 +31,7 @@ class BackupStrategy {
         _pendingVolumes.entries
             .where((entry) => entry.value.contains(service))
             .map((entry) => entry.key)
+            .toList() // to prevent concurrent modification
             .forEach(_processVolume);
       }
     }

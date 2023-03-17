@@ -22,7 +22,7 @@ class BackupTestCase extends IntegrationTestCase {
 
   @override
   void build() {
-    test('Can backup a single, unattached volume', () async {
+    test('can backup a single, unattached volume', () async {
       // arrange
       const volume1 = 'test-volume-1';
       const volume2 = 'test-volume-2';
@@ -79,17 +79,25 @@ class BackupTestCase extends IntegrationTestCase {
 
     test('can backup a multiple, cross-attached volumes', () async {
       // arrange
-      const volume1 = 'test-volume-s2-1';
-      const volume2 = 'test-volume-s2-2';
-      const volume3 = 'test-volume-s2-3';
-      const volume4 = 'test-volume-s2-4';
-      const volume5 = 'test-volume-s2-5';
-      const backedUpVolumes = [volume1, volume2, volume3, volume4];
+      const volume11 = 'test-volume-s1-1';
+      const volume21 = 'test-volume-s2-1';
+      const volume22 = 'test-volume-s2-2';
+      const volume23 = 'test-volume-s2-3';
+      const volume24 = 'test-volume-s2-4';
+      const volume25 = 'test-volume-s2-5';
+      const backedUpVolumes = [
+        volume11,
+        volume21,
+        volume22,
+        volume23,
+        volume24
+      ];
 
       for (final volume in backedUpVolumes) {
         await createVolume(volume);
       }
-      await createVolume(volume5, backedUp: false);
+      await createVolume(volume25, backedUp: false);
+      await startService('test-service-1.service');
       await startService('test-service-2.service');
       await startService('test-service-3.service');
       await startService('test-service-4.service');
