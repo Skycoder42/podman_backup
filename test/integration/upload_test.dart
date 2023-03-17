@@ -28,10 +28,11 @@ class UploadTestCase extends IntegrationTestCase {
       await runSut();
 
       // assert
-      expect(backupFile.existsSync(), isFalse);
       final backedUpFile = _getBackedUpFile(backupFileName);
       expect(backedUpFile.existsSync(), isTrue);
       expect(backedUpFile.readAsStringSync(), backupFileName);
+
+      expect(backupFile.existsSync(), isFalse);
       expect(cacheDir.list(), emitsDone);
     });
   }

@@ -57,22 +57,24 @@ class BackupController {
     _logger.info('Backing up volumes: ${strategy.volumes}');
     try {
       _logger.fine('Stopping services: ${strategy.services}');
-      for (final service in strategy.services) {
-        await _systemdAdapter.stop(service);
-      }
+      await Future.wait(strategy.services.map(_systemdAdapter.stop));
 
       for (final volume in strategy.volumes) {
         await _createVolumeBackup(volume, cacheDir);
       }
     } finally {
       _logger.fine('Restarting services: ${strategy.services}');
-      for (final service in strategy.services) {
-        try {
-          await _systemdAdapter.start(service);
-        } on Exception catch (e) {
-          _logger.warning('Failed to restart $service with error: $e');
-        }
-      }
+      await Future.wait(
+        strategy.services.map(
+          (service) => _systemdAdapter.start(service).catchError(
+                test: (error) => error is Exception,
+                // ignore: avoid_types_on_closure_parameters
+                (Object e) => _logger.warning(
+                  'Failed to restart $service with error: $e',
+                ),
+              ),
+        ),
+      );
     }
   }
 

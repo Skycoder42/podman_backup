@@ -28,6 +28,7 @@ class UploadController {
       'Uploading $fileCount backups from ${cacheDir.path} to $remoteHost',
     );
     await _processAdapter.run('rsync', [
+      '-v',
       '--times',
       '--remove-source-files',
       '--human-readable',
