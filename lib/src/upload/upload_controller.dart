@@ -33,8 +33,8 @@ class UploadController {
       '--remove-source-files',
       '--human-readable',
       '--fsync',
-      cacheDir.path,
-      remoteHost,
+      '${cacheDir.path}/',
+      '$remoteHost/',
     ]);
   }
 }
