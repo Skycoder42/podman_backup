@@ -137,9 +137,12 @@ class BackupTestCase extends IntegrationTestCase {
   }
 
   void _expectStateLogs(String service, Iterable<_State> states) => expect(
-        journalctl(service),
-        emitsInAnyOrder(
-          states.map<Matcher>((s) => endsWith('${s.value} Podman $service.')),
+        // ignore: discarded_futures
+        journalctl(service).toList(),
+        completion(
+          containsAllInOrder(
+            states.map<Matcher>((s) => endsWith('${s.value} Podman $service.')),
+          ),
         ),
       );
 }
