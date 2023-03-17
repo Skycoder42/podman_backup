@@ -21,22 +21,24 @@ class UploadTestCase extends IntegrationTestCase {
   void build() {
     test('Can upload a single backup', () async {
       // arrange
-      final backupFile = await _createBackupFile('backup.tar.xz');
+      const backupFileName = 'backup.tar.xz';
+      final backupFile = await _createBackupFile(backupFileName);
 
       // act
       await runSut();
 
       // assert
       expect(backupFile.existsSync(), isFalse);
-      final backedUpFile = _getBackedUpFile(backupFile);
+      final backedUpFile = _getBackedUpFile(backupFileName);
       expect(backedUpFile.existsSync(), isTrue);
-      expect(backedUpFile.readAsStringSync(), 'backup.tar.xz');
+      expect(backedUpFile.readAsStringSync(), backupFileName);
+      expect(cacheDir.list(), emitsDone);
     });
   }
 
   Future<File> _createBackupFile(String backupFile) =>
       File.fromUri(cacheDir.uri.resolve(backupFile)).writeAsString(backupFile);
 
-  File _getBackedUpFile(File backupFile) =>
-      File.fromUri(cacheDir.uri.resolve(backupFile.uri.pathSegments.last));
+  File _getBackedUpFile(String backupFile) =>
+      File.fromUri(backupDir.uri.resolve(backupFile));
 }

@@ -27,8 +27,7 @@ abstract class IntegrationTestCase {
     });
 
     setUp(() async {
-      // ignore: avoid_print
-      Logger.root.onRecord.listen(print);
+      Logger.root.onRecord.listen(_printLogRecord);
 
       cacheDir = await Directory.systemTemp.createTemp();
       backupDir = await Directory.systemTemp.createTemp();
@@ -139,4 +138,8 @@ abstract class IntegrationTestCase {
       .transform(const LineSplitter())
       .map((line) => '$prefix$line')
       .listen(printOnFailure);
+
+  void _printLogRecord(LogRecord logRecord) =>
+      // ignore: avoid_print
+      print('${logRecord.time.toIso8601String()} $logRecord');
 }
