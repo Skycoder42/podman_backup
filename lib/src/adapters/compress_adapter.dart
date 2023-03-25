@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:riverpod/riverpod.dart';
 
@@ -27,7 +28,7 @@ class CompressAdapter extends StreamTransformerBase<List<int>, List<int>> {
           '--compress',
           '-9',
           '--threads',
-          (Platform.numberOfProcessors ~/ 2).toString(),
+          max(Platform.numberOfProcessors ~/ 2, 1).toString(),
         ],
         stdin: stream,
       );
