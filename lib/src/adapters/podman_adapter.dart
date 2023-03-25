@@ -63,7 +63,5 @@ class PodmanAdapter {
   ) =>
       _processAdapter
           .streamJson('podman', arguments)
-          .cast<List<dynamic>>()
-          .map(construct)
-          .single;
+          .then((object) => construct(object! as List<dynamic>));
 }

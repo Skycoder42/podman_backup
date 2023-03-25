@@ -99,14 +99,15 @@ class ProcessAdapter {
     }
   }
 
-  Stream<Object?> streamJson(
+  Future<Object?> streamJson(
     String executable,
     List<String> arguments, {
     int? expectedExitCode = 0,
   }) =>
       streamRaw(executable, arguments, expectedExitCode: expectedExitCode)
           .transform(systemEncoding.decoder)
-          .transform(json.decoder);
+          .transform(json.decoder)
+          .single;
 
   String _logLine(String executable, List<String> arguments) =>
       '<<$executable ${arguments.join(' ')}>>';
