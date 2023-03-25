@@ -1,3 +1,5 @@
+import 'package:meta/meta.dart';
+
 class BackupStrategy {
   final Map<String, Set<String>> _pendingVolumes;
 
@@ -37,4 +39,7 @@ class BackupStrategy {
     }
     _activeVolumes.add(nextVolume);
   }
+
+  @visibleForTesting
+  Map<String, Set<String>> get debugTestInternalVolumes => _pendingVolumes;
 }
