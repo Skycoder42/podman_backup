@@ -51,6 +51,7 @@ class BackupController {
     while (strategy.next()) {
       await _backupStep(strategy, cacheDir);
     }
+    _logger.info('Strategy finished');
   }
 
   Future<void> _backupStep(BackupStrategy strategy, Directory cacheDir) async {
