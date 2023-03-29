@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -27,8 +25,7 @@ class PodmanBackup {
   );
 
   Future<void> run(Options options) async {
-    final backupCacheDir =
-        await _backupDir(options.backupCache).create(recursive: true);
+    final backupCacheDir = await options.backupCache.create(recursive: true);
     _logger.fine('Detected backup cache dir as: ${backupCacheDir.path}');
 
     if (options.backupMode.backup) {
@@ -46,20 +43,5 @@ class PodmanBackup {
         cacheDir: backupCacheDir,
       );
     }
-  }
-
-  Directory _backupDir(String? cacheDir) {
-    if (cacheDir != null) {
-      return Directory(cacheDir);
-    }
-
-    final home = Platform.environment['HOME'];
-    if (home != null) {
-      return Directory('$home/.cache/podman_backup');
-    }
-
-    return Directory.fromUri(
-      Directory.systemTemp.uri.resolve('podman_backup'),
-    );
   }
 }

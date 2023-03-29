@@ -28,7 +28,10 @@ class UploadController {
       'Uploading $fileCount backups from ${cacheDir.path} to $remoteHost',
     );
     await _processAdapter.run('rsync', [
-      if (_logger.level <= Level.FINEST) '--verbose',
+      if (_logger.level <= Level.FINEST)
+        '--verbose'
+      else if (_logger.level <= Level.FINER)
+        '--progress',
       '--recursive',
       '--copy-links',
       '--times',

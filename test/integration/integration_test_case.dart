@@ -66,7 +66,7 @@ abstract class IntegrationTestCase {
             remoteHostRaw: 'integration_test_local:${backupDir.path}',
             remoteHostRawWasParsed: true,
             backupMode: backupMode,
-            backupCache: cacheDir.path,
+            backupCache: cacheDir,
           ),
         );
   }

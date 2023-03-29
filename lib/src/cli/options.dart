@@ -1,8 +1,12 @@
+// coverage:ignore-file
+
 import 'dart:io';
 
 import 'package:build_cli_annotations/build_cli_annotations.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
+
+import '../adapters/environment_adapter.dart';
 
 part 'options.g.dart';
 
@@ -56,16 +60,18 @@ class Options {
   final String backupLabel;
 
   @CliOption(
+    convert: _directoryFromString,
     abbr: 'c',
     valueHelp: 'directory',
+    provideDefaultToOverride: true,
     help: 'The directory to cache backups in before uploading them to '
-        'the backup host.\n(defaults to "~/.cache/podman_backup")',
+        'the backup host.',
   )
-  final String? backupCache;
+  final Directory backupCache;
 
   @CliOption(
     convert: _logLevelFromString,
-    defaultsTo: 'info',
+    abbr: 'L',
     allowed: [
       'all',
       'finest',
@@ -78,8 +84,10 @@ class Options {
       'shout',
       'off',
     ],
+    defaultsTo: 'info',
     valueHelp: 'level',
-    help: 'Customize the logging level.',
+    help: 'Customize the logging level. '
+        'Listed from most verbose (all) to least verbose (off)',
   )
   final Level logLevel;
 
@@ -96,23 +104,38 @@ class Options {
     required this.remoteHostRawWasParsed,
     this.backupMode = BackupMode.full,
     this.backupLabel = Options.defaultBackupLabel,
-    this.backupCache,
+    required this.backupCache,
     this.logLevel = Level.INFO,
     this.help = false,
   });
 
   String getRemoteHost() => remoteHostRaw!;
 
-  static ArgParser buildArgParser() => _$populateOptionsParser(
+  static ArgParser buildArgParser(EnvironmentAdapter environmentAdapter) =>
+      _$populateOptionsParser(
         ArgParser(
           allowTrailingOptions: false,
           usageLineLength: stdout.hasTerminal ? stdout.terminalColumns : null,
         ),
+        backupCacheDefaultOverride: _backupDir(environmentAdapter).path,
       );
 
   static Options parseOptions(ArgResults argResults) =>
       _$parseOptionsResult(argResults);
+
+  static Directory _backupDir(EnvironmentAdapter environmentAdapter) {
+    final home = environmentAdapter['HOME'];
+    if (home != null) {
+      return Directory('$home/.cache/podman_backup');
+    }
+
+    return Directory.fromUri(
+      Directory.systemTemp.uri.resolve('podman_backup'),
+    );
+  }
 }
 
 Level _logLevelFromString(String level) =>
     Level.LEVELS.singleWhere((element) => element.name == level.toUpperCase());
+
+Directory _directoryFromString(String directory) => Directory(directory);

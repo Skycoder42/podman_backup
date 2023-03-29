@@ -6,7 +6,7 @@ void main() {
     late DateTimeAdapter sut;
 
     setUp(() {
-      sut = DateTimeAdapter();
+      sut = const DateTimeAdapter();
     });
 
     test('now returns DateTime.now', () {
