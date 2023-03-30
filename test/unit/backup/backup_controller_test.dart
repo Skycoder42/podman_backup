@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dart_test_tools/test.dart';
+import 'package:logging/logging.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:podman_backup/src/adapters/compress_adapter.dart';
 import 'package:podman_backup/src/adapters/date_time_adapter.dart';
@@ -433,6 +434,99 @@ void main() {
         expect(
           volumeBackup3.readAsBytes(),
           completion(Uint8List.fromList(testExportBytes3)),
+        );
+      });
+
+      test('restarts stopped services if stopping fails', () async {
+        const testVolume = 'test-volume';
+        const testService = 'test-service';
+        when(() => mockSystemctlAdapter.stop(any()))
+            .thenThrow(Exception('test error'));
+        setupStrategy(const [
+          Tuple2([testVolume], [testService]),
+        ]);
+
+        await expectLater(
+          () => sut.backup(
+            backupLabel: testBackupLabel,
+            cacheDir: testCacheDir,
+          ),
+          throwsException,
+        );
+
+        verifyInOrder([
+          () => mockBackupStrategyBuilder.buildStrategy(
+                backupLabel: testBackupLabel,
+              ),
+          () => mockBackupStrategy.next(),
+          () => mockBackupStrategy.volumes,
+          () => mockBackupStrategy.services,
+          () => mockBackupStrategy.services,
+          () => mockSystemctlAdapter.stop(testService),
+          () => mockBackupStrategy.services,
+          () => mockBackupStrategy.services,
+          () => mockSystemctlAdapter.start(testService),
+        ]);
+
+        expect(testCacheDir.list().length, completion(0));
+      });
+
+      test('logs warning but continues if service restart fails', () async {
+        const testVolume = 'test-volume';
+        const testService = 'test-service';
+        final testExportBytes = List.filled(10, 10);
+        final testExportStream = Stream.value(testExportBytes);
+        final testException = Exception('test error');
+        when(() => mockPodmanAdapter.volumeExport(any()))
+            .thenStream(testExportStream);
+        when(() => mockSystemctlAdapter.start(any()))
+            .thenAnswer((i) async => throw testException);
+        setupStrategy(const [
+          Tuple2([testVolume], [testService]),
+        ]);
+
+        // verify log message
+        Logger.root.level = Level.ALL;
+        expect(
+          Logger.root.onRecord,
+          emitsThrough(
+            isA<LogRecord>()
+                .having((m) => m.level, 'level', Level.WARNING)
+                .having((m) => m.message, 'message', contains(testService))
+                .having((m) => m.error, 'error', same(testException)),
+          ),
+        );
+
+        await sut.backup(
+          backupLabel: testBackupLabel,
+          cacheDir: testCacheDir,
+        );
+
+        verifyInOrder([
+          () => mockBackupStrategyBuilder.buildStrategy(
+                backupLabel: testBackupLabel,
+              ),
+          () => mockBackupStrategy.next(),
+          () => mockBackupStrategy.volumes,
+          () => mockBackupStrategy.services,
+          () => mockBackupStrategy.services,
+          () => mockSystemctlAdapter.stop(testService),
+          () => mockBackupStrategy.volumes,
+          () => mockDateTimeAdapter.utcNow,
+          () => mockPodmanAdapter.volumeExport(testVolume),
+          () => mockCompressAdapter.bind(testExportStream),
+          () => mockBackupStrategy.services,
+          () => mockBackupStrategy.services,
+          () => mockSystemctlAdapter.start(testService),
+          () => mockBackupStrategy.next(),
+        ]);
+
+        expect(testCacheDir.list().length, completion(1));
+        final volumeBackup = backupFile(testVolume);
+        expect(volumeBackup, _fseExists);
+        expect(
+          volumeBackup.readAsBytes(),
+          completion(Uint8List.fromList(testExportBytes)),
         );
       });
     });

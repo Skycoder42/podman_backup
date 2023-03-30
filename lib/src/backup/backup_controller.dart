@@ -71,7 +71,8 @@ class BackupController {
                 test: (error) => error is Exception,
                 // ignore: avoid_types_on_closure_parameters
                 (Object e) => _logger.warning(
-                  'Failed to restart $service with error: $e',
+                  'Failed to restart $service with error:',
+                  e,
                 ),
               ),
         ),

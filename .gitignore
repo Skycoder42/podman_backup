@@ -20,6 +20,9 @@ doc/api/
 *.js.deps
 *.js.map
 
+# Coverage
+coverage/
+
 # Generated files
 *.g.dart
 *.freezed.dart
