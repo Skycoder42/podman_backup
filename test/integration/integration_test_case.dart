@@ -75,7 +75,6 @@ abstract class IntegrationTestCase {
   Future<void> createVolume(
     String name, {
     bool backedUp = true,
-    String? content,
   }) async {
     await _podman([
       'volume',
@@ -89,26 +88,22 @@ abstract class IntegrationTestCase {
     ]);
     addTearDown(() => _podman(['volume', 'rm', '--force', name]));
 
-    if (content != null) {
-      final tmpDir = await Directory.systemTemp.createTemp();
-      try {
-        final tarFile = File.fromUri(tmpDir.uri.resolve('data.tar'));
-        await File.fromUri(tmpDir.uri.resolve('data.txt'))
-            .writeAsString(content);
-        await _run('tar', ['-cf', tarFile.path, '.'], tmpDir);
-        await _podman(['volume', 'import', name, tarFile.path]);
-      } finally {
-        await tmpDir.delete(recursive: true);
-      }
+    final tmpDir = await Directory.systemTemp.createTemp();
+    try {
+      final tarFile = File.fromUri(tmpDir.uri.resolve('data.tar'));
+      await File.fromUri(tmpDir.uri.resolve('data.txt')).writeAsString(name);
+      await _run('tar', ['-cf', tarFile.path, '.'], tmpDir);
+      await _podman(['volume', 'import', name, tarFile.path]);
+    } finally {
+      await tmpDir.delete(recursive: true);
     }
   }
 
   @protected
   Future<void> verifyVolume(
     Directory backupDir,
-    String name, {
-    String? content,
-  }) async {
+    String name,
+  ) async {
     final pattern = volumePattern(name);
     final volumeFile = await backupDir
         .list()
@@ -121,7 +116,7 @@ abstract class IntegrationTestCase {
       await _run('tar', ['-xf', volumeFile.path, '-C', outDir.path]);
       final dataFile = File.fromUri(outDir.uri.resolve('data.txt'));
       expect(dataFile.existsSync(), isTrue);
-      await expectLater(dataFile.readAsString(), completion(content));
+      await expectLater(dataFile.readAsString(), completion(name));
     } finally {
       await outDir.delete(recursive: true);
     }

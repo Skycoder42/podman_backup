@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:podman_backup/src/cli/options.dart';
 import 'package:test/test.dart';
@@ -34,33 +33,8 @@ class BackupTestCase extends IntegrationTestCase {
       await runSut();
 
       // assert
-      expect(
-        cacheDir.list(),
-        emitsInAnyOrder(<dynamic>[
-          isA<File>().having(
-            (m) => m.path,
-            'path',
-            matches(volumePattern(volume1)),
-          ),
-          emitsDone,
-        ]),
-      );
-    });
-
-    test('can backup a single, unattached volume with content', () async {
-      // arrange
-      const volume1 = 'test-volume-1';
-      const volumeContent1 = 'this is the content of volume 1';
-      const volume2 = 'test-volume-2';
-
-      await createVolume(volume1, content: volumeContent1);
-      await createVolume(volume2, backedUp: false);
-
-      // act
-      await runSut();
-
-      // assert
-      await verifyVolume(cacheDir, volume1, content: volumeContent1);
+      expect(cacheDir.list().length, completion(1));
+      await verifyVolume(cacheDir, volume1);
     });
 
     test('can backup a single, attached volume', () async {
@@ -74,17 +48,8 @@ class BackupTestCase extends IntegrationTestCase {
       await runSut();
 
       // assert
-      expect(
-        cacheDir.list(),
-        emitsInAnyOrder(<dynamic>[
-          isA<File>().having(
-            (m) => m.path,
-            'path',
-            matches(volumePattern(volume)),
-          ),
-          emitsDone,
-        ]),
-      );
+      expect(cacheDir.list().length, completion(1));
+      await verifyVolume(cacheDir, volume);
 
       _expectStateLogs('test-service-1.service', const [
         _State.started,
@@ -123,18 +88,10 @@ class BackupTestCase extends IntegrationTestCase {
       await runSut();
 
       // assert
-      expect(
-        cacheDir.list(),
-        emitsInAnyOrder(<dynamic>[
-          for (final volume in backedUpVolumes)
-            isA<File>().having(
-              (m) => m.path,
-              'path',
-              matches(volumePattern(volume)),
-            ),
-          emitsDone,
-        ]),
-      );
+      expect(cacheDir.list().length, completion(backedUpVolumes.length));
+      for (final volume in backedUpVolumes) {
+        await verifyVolume(cacheDir, volume);
+      }
 
       _expectStateLogs('test-service-1.service', const [
         _State.started,

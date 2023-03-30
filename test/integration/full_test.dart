@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:podman_backup/src/cli/options.dart';
 import 'package:test/test.dart';
 
@@ -29,18 +27,7 @@ class FullTest extends IntegrationTestCase {
 
       // assert
       expect(cacheDir.list(), emitsDone);
-
-      expect(
-        backupDir.list(),
-        emitsInAnyOrder(<dynamic>[
-          isA<File>().having(
-            (m) => m.path,
-            'path',
-            matches(volumePattern(volume1)),
-          ),
-          emitsDone,
-        ]),
-      );
+      await verifyVolume(backupDir, volume1);
     });
   }
 }
