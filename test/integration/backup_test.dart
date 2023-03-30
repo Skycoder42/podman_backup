@@ -47,6 +47,22 @@ class BackupTestCase extends IntegrationTestCase {
       );
     });
 
+    test('can backup a single, unattached volume with content', () async {
+      // arrange
+      const volume1 = 'test-volume-1';
+      const volumeContent1 = 'this is the content of volume 1';
+      const volume2 = 'test-volume-2';
+
+      await createVolume(volume1, content: volumeContent1);
+      await createVolume(volume2, backedUp: false);
+
+      // act
+      await runSut();
+
+      // assert
+      await verifyVolume(cacheDir, volume1, content: volumeContent1);
+    });
+
     test('can backup a single, attached volume', () async {
       // arrange
       const volume = 'test-volume-s1-1';

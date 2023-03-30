@@ -72,7 +72,11 @@ abstract class IntegrationTestCase {
   }
 
   @protected
-  Future<void> createVolume(String name, {bool backedUp = true}) async {
+  Future<void> createVolume(
+    String name, {
+    bool backedUp = true,
+    String? content,
+  }) async {
     await _podman([
       'volume',
       'create',
@@ -84,6 +88,43 @@ abstract class IntegrationTestCase {
       name,
     ]);
     addTearDown(() => _podman(['volume', 'rm', '--force', name]));
+
+    if (content != null) {
+      final tmpDir = await Directory.systemTemp.createTemp();
+      try {
+        final tarFile = File.fromUri(tmpDir.uri.resolve('data.tar'));
+        await File.fromUri(tmpDir.uri.resolve('data.txt'))
+            .writeAsString(content);
+        await _run('tar', ['-cf', tarFile.path, '.'], tmpDir);
+        await _podman(['volume', 'import', name, tarFile.path]);
+      } finally {
+        await tmpDir.delete(recursive: true);
+      }
+    }
+  }
+
+  @protected
+  Future<void> verifyVolume(
+    Directory backupDir,
+    String name, {
+    String? content,
+  }) async {
+    final pattern = volumePattern(name);
+    final volumeFile = await backupDir
+        .list()
+        .where((e) => e is File)
+        .cast<File>()
+        .singleWhere((f) => pattern.hasMatch(f.path));
+
+    final outDir = await Directory.systemTemp.createTemp();
+    try {
+      await _run('tar', ['-xf', volumeFile.path, '-C', outDir.path]);
+      final dataFile = File.fromUri(outDir.uri.resolve('data.txt'));
+      expect(dataFile.existsSync(), isTrue);
+      await expectLater(dataFile.readAsString(), completion(content));
+    } finally {
+      await outDir.delete(recursive: true);
+    }
   }
 
   @protected
@@ -102,11 +143,16 @@ abstract class IntegrationTestCase {
   Future<void> _systemctl(List<String> arguments) =>
       _run('systemctl', ['--user', ...arguments]);
 
-  Future<void> _run(String executable, List<String> arguments) async {
+  Future<void> _run(
+    String executable,
+    List<String> arguments, [
+    Directory? pwd,
+  ]) async {
     printOnFailure('> Invoking: $executable $arguments');
     final proc = await Process.start(
       executable,
       arguments,
+      workingDirectory: pwd?.path,
     );
     _streamLogs('>> ', proc.stdout);
     _streamLogs('>! ', proc.stderr);
