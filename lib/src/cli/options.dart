@@ -87,9 +87,17 @@ class Options {
     defaultsTo: 'info',
     valueHelp: 'level',
     help: 'Customize the logging level. '
-        'Listed from most verbose (all) to least verbose (off)',
+        'Listed from most verbose (all) to least verbose (off).',
   )
   final Level logLevel;
+
+  @CliOption(
+    abbr: 'v',
+    negatable: false,
+    defaultsTo: false,
+    help: 'Prints the current version of the tool.',
+  )
+  final bool version;
 
   @CliOption(
     abbr: 'h',
@@ -106,6 +114,7 @@ class Options {
     this.backupLabel = Options.defaultBackupLabel,
     required this.backupCache,
     this.logLevel = Level.INFO,
+    this.version = false,
     this.help = false,
   });
 

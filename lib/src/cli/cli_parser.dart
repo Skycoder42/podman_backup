@@ -7,6 +7,7 @@ import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../adapters/environment_adapter.dart';
+import '../constants/pubspec.yaml.g.dart' as pubspec;
 import 'options.dart';
 
 // coverage:ignore-start
@@ -37,6 +38,14 @@ class CliParser {
         stdout
           ..writeln('Usage:')
           ..writeln(argParser.usage);
+        exit(0);
+      }
+
+      if (options.version) {
+        stdout
+          ..write(Platform.script.pathSegments.last)
+          ..write(' ')
+          ..writeln(pubspec.version);
         exit(0);
       }
 
