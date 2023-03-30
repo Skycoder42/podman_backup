@@ -26,3 +26,12 @@ jobs:
         {
           "linux": "./tool/integration-test-setup.sh"
         }
+
+  cd:
+    name: CD
+    needs:
+      - ci
+    uses: Skycoder42/dart_test_tools/.github/workflows/compile.yml@main
+    with:
+      platforms: '["linux"]'
+      buildRunner: true
