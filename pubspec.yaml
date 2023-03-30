@@ -1,6 +1,6 @@
 name: podman_backup
 description: A sample command-line application.
-version: 0.1.0
+version: 1.0.0
 publish_to: none
 
 environment:
@@ -33,3 +33,8 @@ dev_dependencies:
 
 dart_pre_commit:
   flutter-compat: false
+
+cider:
+  link_template:
+    tag: https://github.com/Skycoder42/podman_backup/releases/tag/v%tag%
+    diff: https://github.com/Skycoder42/podman_backup/compare/v%from%...v%to%
