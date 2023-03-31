@@ -138,13 +138,13 @@ packages:
     source: hosted
     version: "2.0.2"
   cider:
-    dependency: "direct dev"
+    dependency: transitive
     description:
       name: cider
-      sha256: a2706ce674c156bbb6e7cac8b4fdadd6cffcbbe9304a7b89949886ade9925a00
+      sha256: "714a853bf92701b982496df0bd601c0cf2d882cfc1f2d41ae9aff2b20cee016a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.4"
+    version: "0.1.5"
   clock:
     dependency: transitive
     description:
@@ -373,10 +373,10 @@ packages:
     dependency: transitive
     description:
       name: markdown
-      sha256: b3c60dee8c2af50ad0e6e90cceba98e47718a6ee0a7a6772c77846a0cc21f78b
+      sha256: d95a9d12954aafc97f984ca29baaa7690ed4d9ec4140a23ad40580bcdb6c87f5
       url: "https://pub.dev"
     source: hosted
-    version: "7.0.1"
+    version: "7.0.2"
   marker:
     dependency: transitive
     description:
