@@ -1,5 +1,5 @@
 name: podman_backup
-description: A sample command-line application.
+description: A small dart tool to push regular backups of podman volumes to a remote.
 homepage: https://github.com/Skycoder42/podman_backup
 version: 1.0.1
 publish_to: none
