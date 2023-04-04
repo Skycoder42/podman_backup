@@ -1,5 +1,6 @@
 name: podman_backup
 description: A sample command-line application.
+homepage: https://github.com/Skycoder42/podman_backup
 version: 1.0.1
 publish_to: none
 
