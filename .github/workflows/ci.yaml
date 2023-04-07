@@ -43,3 +43,11 @@ jobs:
       createAurUpdate: ${{ needs.cd.outputs.releaseCreated == 'true' }}
     secrets:
       AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+
+  deb:
+    name: Deb
+    needs:
+      - ci
+    uses: Skycoder42/dart_test_tools/.github/workflows/deb.yml@main
+    with:
+      version: 1.0.1
