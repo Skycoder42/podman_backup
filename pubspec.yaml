@@ -14,7 +14,7 @@ executables:
   podman-backup: podman_backup
 
 dependencies:
-  args: ^2.4.0
+  args: ^2.4.1
   build_cli_annotations: ^2.1.0
   freezed_annotation: ^2.2.0
   json_annotation: ^4.8.0
