@@ -1,4 +1,4 @@
-include: package:dart_test_tools/analysis_options.yaml
+include: package:dart_test_tools/strict.yaml
 
 analyzer:
   exclude:

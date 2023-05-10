@@ -15,7 +15,6 @@ jobs:
     uses: Skycoder42/dart_test_tools/.github/workflows/dart.yml@main
     with:
       buildRunner: true
-      extendedAnalyzerArgs: --linter test-import # Do not run the lib-export linter
       unitTestPaths: -P unit
       coverageExclude: >-
         "**/*.freezed.dart"
