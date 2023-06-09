@@ -49,4 +49,4 @@ jobs:
     if: needs.cd.outputs.releaseCreated == 'true'
     uses: Skycoder42/dart_test_tools/.github/workflows/deb.yml@main
     with:
-      version: ${{ needs.cd.outputs.version }}
+      version: ${{ needs.cd.outputs.releaseVersion }}
