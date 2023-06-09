@@ -28,5 +28,5 @@
 		},
 		"ghcr.io/stuartleeks/dev-container-features/shell-history:0": {}
 	},
-	"postCreateCommand": "dart --disable-analytics && ./tool/setup-git-hooks.sh",
+	"postCreateCommand": "./tool/setup-git-hooks.sh",
 }
