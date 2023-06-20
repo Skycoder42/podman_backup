@@ -253,10 +253,10 @@ packages:
     dependency: "direct dev"
     description:
       name: dart_pre_commit
-      sha256: "64fd3c9738f6397f2819b2c5ab760e8f0a9d39b3c491e1998203129d1ebbb36e"
+      sha256: b55b748b2ce25e45de8d3667458aa0e95545b0b216da13b2cb0b6f873b6ffc39
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.0+1"
+    version: "5.2.0"
   dart_style:
     dependency: transitive
     description:
