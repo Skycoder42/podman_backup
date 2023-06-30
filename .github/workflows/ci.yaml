@@ -30,6 +30,8 @@ jobs:
     needs:
       - ci
     uses: Skycoder42/dart_test_tools/.github/workflows/compile.yml@main
+    permissions:
+      contents: write
     with:
       buildRunner: true
 
