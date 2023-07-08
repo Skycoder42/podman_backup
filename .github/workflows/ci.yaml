@@ -50,6 +50,8 @@ jobs:
       - cd
     if: needs.cd.outputs.releaseCreated == 'true'
     uses: Skycoder42/dart_test_tools/.github/workflows/deb.yml@main
+    permissions:
+      contents: write
     with:
       version: ${{ needs.cd.outputs.releaseVersion }}
 
