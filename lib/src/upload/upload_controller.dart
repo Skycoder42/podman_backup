@@ -37,7 +37,6 @@ class UploadController {
       '--times',
       '--remove-source-files',
       '--human-readable',
-      '--fsync',
       '${cacheDir.path}/',
       '$remoteHost/',
     ]);

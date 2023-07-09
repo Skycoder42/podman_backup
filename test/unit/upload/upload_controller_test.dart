@@ -65,7 +65,6 @@ void main() {
                 '--times',
                 '--remove-source-files',
                 '--human-readable',
-                '--fsync',
                 '${testDir.path}/',
                 '$testRemoteHost/',
               ],
