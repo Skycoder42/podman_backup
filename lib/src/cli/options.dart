@@ -34,6 +34,7 @@ class Options {
     help: 'The remote <host> to send the backups to, '
         'in the format: [USER@]HOST:DEST. (required)',
   )
+  @internal
   final String? remoteHostRaw;
   final bool remoteHostRawWasParsed;
 
@@ -68,6 +69,23 @@ class Options {
         'the backup host.',
   )
   final Directory backupCache;
+
+  @CliOption(
+    name: 'volume-hook',
+    abbr: 'V',
+    valueHelp: 'volume>=[!]<hook.service',
+    help: 'A mapping of volumes to custom backup services. '
+        'Each volume listed here will not be backed up normally, '
+        'but instead by invoking the given service. The following rules apply:\n'
+        'If the service ends with "@.service", '
+        'the name of the volume will be passed to the service.\n'
+        'If the service is prefixed with a "!", it will run before the '
+        'actual backup to prepare it. If not specified, the hook will '
+        'replace the normal backup instead.\n'
+        'Can be specified multiple times.',
+  )
+  @internal
+  final List<String> volumeHooksRaw;
 
   @CliOption(
     convert: _logLevelFromString,
@@ -113,12 +131,19 @@ class Options {
     this.backupMode = BackupMode.full,
     this.backupLabel = Options.defaultBackupLabel,
     required this.backupCache,
+    required this.volumeHooksRaw,
     this.logLevel = Level.INFO,
     this.version = false,
     this.help = false,
   });
 
   String getRemoteHost() => remoteHostRaw!;
+
+  Map<String, String> getVolumeHooks() => Map.fromEntries(
+        volumeHooksRaw
+            .map((e) => e.split('='))
+            .map((e) => MapEntry(e.first, e.skip(1).join('='))),
+      );
 
   static ArgParser buildArgParser(EnvironmentAdapter environmentAdapter) =>
       _$populateOptionsParser(
@@ -148,3 +173,5 @@ Level _logLevelFromString(String level) =>
     Level.LEVELS.singleWhere((element) => element.name == level.toUpperCase());
 
 Directory _directoryFromString(String directory) => Directory(directory);
+
+Map<String, String> _mapFromString(String elements) => {};

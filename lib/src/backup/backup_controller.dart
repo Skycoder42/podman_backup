@@ -41,6 +41,7 @@ class BackupController {
   Future<void> backup({
     required String backupLabel,
     required Directory cacheDir,
+    required Map<String, String> volumeHooks,
   }) async {
     _logger.info('Building strategy');
     final strategy = await _backupStrategyBuilder.buildStrategy(
@@ -49,19 +50,27 @@ class BackupController {
 
     _logger.info('Executing strategy');
     while (strategy.next()) {
-      await _backupStep(strategy, cacheDir);
+      await _backupStep(strategy, cacheDir, volumeHooks);
     }
     _logger.info('Strategy finished');
   }
 
-  Future<void> _backupStep(BackupStrategy strategy, Directory cacheDir) async {
+  Future<void> _backupStep(
+    BackupStrategy strategy,
+    Directory cacheDir,
+    Map<String, String> volumeHooks,
+  ) async {
     _logger.info('Backing up volumes: ${strategy.volumes}');
     try {
       _logger.fine('Stopping services: ${strategy.services}');
       await Future.wait(strategy.services.map(_systemdAdapter.stop));
 
       for (final volume in strategy.volumes) {
-        await _createVolumeBackup(volume, cacheDir);
+        final volumeHook = volumeHooks[volume];
+        if (volumeHook != null) {
+        } else {
+          await _createVolumeBackup(volume, cacheDir);
+        }
       }
     } finally {
       _logger.fine('Restarting services: ${strategy.services}');

@@ -33,6 +33,7 @@ class PodmanBackup {
       await _backupController.backup(
         backupLabel: options.backupLabel,
         cacheDir: backupCacheDir,
+        volumeHooks: options.getVolumeHooks(),
       );
     }
 
