@@ -41,9 +41,9 @@ abstract class IntegrationTestCase {
 
     tearDown(() async {
       // clear journald logs
-      await _run('journalctl', ['--user', '--rotate']);
+      await _run('sudo', ['journalctl', '--user', '--rotate']);
       await Future.delayed(const Duration(seconds: 1));
-      await _run('journalctl', ['--user', '--vacuum-time=1s']);
+      await _run('sudo', ['journalctl', '--user', '--vacuum-time=1s']);
 
       await backupDir.delete(recursive: true);
       await cacheDir.delete(recursive: true);
