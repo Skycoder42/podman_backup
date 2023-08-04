@@ -153,22 +153,62 @@ class BackupTestCase extends IntegrationTestCase {
     });
   }
 
-  void _expectStateLogs(String service, Iterable<_State> states) => expect(
-        // ignore: discarded_futures
-        journalctl(service).toList(),
-        completion(
-          containsAllInOrder(<Matcher>[
-            ...states.map(
-              (s) => endsWith('${s.value} Podman $service.'),
-            ),
-            ..._State.values.map(
-              (s) => isNot(
-                endsWith('${s.value} Podman $service.'),
-              ),
-            ),
-          ]),
+  void _expectStateLogs(String service, List<_State> states) {
+    final stateCounts = <_State, int>{
+      _State.started: 0,
+      _State.stopped: 0,
+    };
+    for (final state in states) {
+      stateCounts[state] = stateCounts[state]! + 1;
+    }
+
+    expect(
+      // ignore: discarded_futures
+      journalctl(service).toList(),
+      completion(
+        allOf(
+          _containsStatesInOrder(service, states),
+          _containsNStates(
+            stateCounts[_State.started]!,
+            service,
+            _State.started,
+          ),
+          _containsNStates(
+            stateCounts[_State.stopped]!,
+            service,
+            _State.stopped,
+          ),
         ),
+      ),
+    );
+  }
+
+  Matcher _containsStatesInOrder(String service, List<_State> states) =>
+      containsAllInOrder(<Matcher>[
+        for (final state in states) endsWith(_logStatement(service, state)),
+      ]);
+
+  Matcher _containsNStates(int n, String service, _State state) =>
+      _containsNWhere<String>(
+        n,
+        (e) => e.endsWith(_logStatement(service, state)),
+        'Has exactly $n elements that end with: '
+        '${_logStatement(service, state)}',
       );
+
+  Matcher _containsNWhere<T>(
+    int n,
+    bool Function(T) filter, [
+    String? description,
+  ]) =>
+      predicate<List<T>>(
+        (l) => l.where(filter).length == n,
+        description ??
+            'Has exactly $n elements that match the filter predicate',
+      );
+
+  String _logStatement(String service, _State state) =>
+      '${state.value} Podman $service.';
 }
 
 enum _State {
