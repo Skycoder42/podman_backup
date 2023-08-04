@@ -115,6 +115,40 @@ class BackupTestCase extends IntegrationTestCase {
       ]);
       _expectStateLogs('test-service-5.service', [_State.started]);
     });
+
+    test('can backup a pod container', () async {
+      // arrange
+      const volume1 = 'test-volume-1';
+      const volume2 = 'test-volume-2';
+
+      await createVolume(volume1);
+      await createVolume(volume2);
+      await startService('test-pod.service');
+
+      // act
+      await runSut();
+
+      // assert
+      expect(cacheDir.list().length, completion(2));
+      await verifyVolume(cacheDir, volume1);
+      await verifyVolume(cacheDir, volume2);
+
+      _expectStateLogs('test-pod.service', const [
+        _State.started,
+        _State.stopped,
+        _State.started,
+      ]);
+      _expectStateLogs('test-pod-container-1.service', const [
+        _State.started,
+        _State.stopped,
+        _State.started,
+      ]);
+      _expectStateLogs('test-pod-container-2.service', const [
+        _State.started,
+        _State.stopped,
+        _State.started,
+      ]);
+    });
   }
 
   void _expectStateLogs(String service, Iterable<_State> states) => expect(

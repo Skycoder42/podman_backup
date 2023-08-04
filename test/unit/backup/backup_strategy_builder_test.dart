@@ -33,6 +33,7 @@ void main() {
         verify(
           () => mockPodmanAdapter.volumeList(filters: {'label': testLabel}),
         );
+        verifyNoMoreInteractions(mockPodmanAdapter);
       });
 
       test('checks for attached services for each volume', () async {
@@ -66,24 +67,31 @@ void main() {
           () => mockPodmanAdapter.ps(filters: {'volume': testVolume1}),
           () => mockPodmanAdapter.ps(filters: {'volume': testVolume2}),
         ]);
+        verifyNoMoreInteractions(mockPodmanAdapter);
       });
 
       test('creates backup strategy from volumes and services', () async {
         const testVolume1 = 'test-volume-1';
         const testVolume2 = 'test-volume-2';
         const testVolume3 = 'test-volume-3';
+        const testVolume4 = 'test-volume-4';
         const testContainer1 = 'test-container-1';
         const testContainer2 = 'test-container-2';
         const testContainer3 = 'test-container-3';
         const testContainer4 = 'test-container-4';
         const testContainer5 = 'test-container-5';
+        const testContainer6a = 'test-container-6a';
+        const testContainer6b = 'test-container-6b';
+        const testContainer6i = 'test-container-6i';
+        const testContainer7i = 'test-container-7i';
 
         when(() => mockPodmanAdapter.volumeList(filters: any(named: 'filters')))
             .thenReturnAsync(
           const [
             Volume(name: testVolume1, labels: {}),
             Volume(name: testVolume2, labels: {}),
-            Volume(name: testVolume3, labels: {})
+            Volume(name: testVolume3, labels: {}),
+            Volume(name: testVolume4, labels: {}),
           ],
         );
         when(
@@ -93,7 +101,8 @@ void main() {
         ).thenAnswer((i) async {
           final filters = i.namedArguments[#filters] as Map<String, String>;
           final volumeFilter = filters['volume'];
-          switch (volumeFilter) {
+          final podFilter = filters['pod'];
+          switch (volumeFilter ?? podFilter) {
             case testVolume1:
               return [
                 _createContainer(testContainer1),
@@ -111,6 +120,25 @@ void main() {
                 _createContainer(testContainer3),
                 _createContainer(testContainer5),
               ];
+            case testVolume4:
+              return [
+                _createContainer(testContainer6b, pod: testContainer6i),
+                _createContainer(
+                  testContainer7i,
+                  pod: testContainer7i,
+                  isInfra: true,
+                ),
+              ];
+            case testContainer6i:
+              return [
+                _createContainer(testContainer6a, pod: testContainer6i),
+                _createContainer(testContainer6b, pod: testContainer6i),
+                _createContainer(
+                  testContainer6i,
+                  pod: testContainer6i,
+                  isInfra: true,
+                ),
+              ];
             default:
               throw ArgumentError('Invalid filters: $filters');
           }
@@ -118,7 +146,7 @@ void main() {
 
         final strategy = await sut.buildStrategy(backupLabel: testLabel);
 
-        expect(strategy.debugTestInternalVolumes, hasLength(3));
+        expect(strategy.debugTestInternalVolumes, hasLength(4));
         expect(
           strategy.debugTestInternalVolumes,
           containsPair(testVolume1, _services([testContainer1])),
@@ -137,29 +165,44 @@ void main() {
             _services([testContainer1, testContainer3, testContainer5]),
           ),
         );
+        expect(
+          strategy.debugTestInternalVolumes,
+          containsPair(
+            testVolume4,
+            _services([testContainer6i, testContainer7i]),
+          ),
+        );
 
         verifyInOrder([
           () => mockPodmanAdapter.volumeList(filters: {'label': testLabel}),
           () => mockPodmanAdapter.ps(filters: {'volume': testVolume1}),
           () => mockPodmanAdapter.ps(filters: {'volume': testVolume2}),
           () => mockPodmanAdapter.ps(filters: {'volume': testVolume3}),
+          () => mockPodmanAdapter.ps(filters: {'volume': testVolume4}),
+          () => mockPodmanAdapter.ps(filters: {'pod': testContainer6i}),
         ]);
+        verifyNoMoreInteractions(mockPodmanAdapter);
       });
     });
   });
 }
 
-Container _createContainer(String containerName, {bool withLabel = true}) =>
+Container _createContainer(
+  String containerName, {
+  bool withLabel = true,
+  bool isInfra = false,
+  String pod = '',
+}) =>
     Container(
       id: containerName,
       exited: false,
-      isInfra: false,
+      isInfra: isInfra,
       names: [containerName],
       labels: {
         if (withLabel) 'PODMAN_SYSTEMD_UNIT': '$containerName.service',
       },
-      pod: '',
-      podName: '',
+      pod: pod,
+      podName: pod.isNotEmpty ? '$pod-name' : '',
     );
 
 Set<String> _services(List<String> containers) =>

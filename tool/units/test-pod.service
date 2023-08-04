@@ -1,0 +1,33 @@
+[Unit]
+Description=Podman test-pod.service
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=%t/containers
+Wants=test-pod-container-1.service test-pod-container-2.service
+Before=test-pod-container-1.service test-pod-container-2.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+ExecStartPre=/bin/rm -f %t/test-pod.pid
+ExecStartPre=/bin/rm -f %t/test-pod.pod-id
+ExecStartPre=/usr/bin/podman pod create \
+	--infra-conmon-pidfile %t/test-pod.pid \
+	--pod-id-file %t/test-pod.pod-id \
+	--infra \
+	--name test-pod \
+	--infra-name test-pod-infra \
+	--replace
+ExecStart=/usr/bin/podman pod start \
+	--pod-id-file %t/test-pod.pod-id
+ExecStop=/usr/bin/podman pod stop \
+	--ignore \
+	--pod-id-file %t/test-pod.pod-id
+ExecStopPost=/usr/bin/podman pod rm \
+	--ignore \
+	-f \
+	--pod-id-file %t/test-pod.pod-id
+PIDFile=%t/test-pod.pid
+Type=forking
+
+[Install]
+WantedBy=default.target
