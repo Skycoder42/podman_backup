@@ -192,7 +192,7 @@ class BackupTestCase extends IntegrationTestCase {
       _containsNWhere<String>(
         n,
         (e) => e.endsWith(_logStatement(service, state)),
-        'Has exactly $n elements that end with: '
+        'has exactly $n elements that end with: '
         '${_logStatement(service, state)}',
       );
 
@@ -204,7 +204,7 @@ class BackupTestCase extends IntegrationTestCase {
       predicate<List<T>>(
         (l) => l.where(filter).length == n,
         description ??
-            'Has exactly $n elements that match the filter predicate',
+            'has exactly $n elements that match the filter predicate',
       );
 
   String _logStatement(String service, _State state) =>
