@@ -123,6 +123,7 @@ void main() {
         await sut.backup(
           backupLabel: testBackupLabel,
           cacheDir: testCacheDir,
+          volumeHooks: const {},
         );
 
         verifyInOrder([
@@ -148,6 +149,7 @@ void main() {
         await sut.backup(
           backupLabel: testBackupLabel,
           cacheDir: testCacheDir,
+          volumeHooks: const {},
         );
 
         verifyInOrder([
@@ -190,6 +192,7 @@ void main() {
         await sut.backup(
           backupLabel: testBackupLabel,
           cacheDir: testCacheDir,
+          volumeHooks: const {},
         );
 
         verifyInOrder([
@@ -245,6 +248,7 @@ void main() {
         await sut.backup(
           backupLabel: testBackupLabel,
           cacheDir: testCacheDir,
+          volumeHooks: const {},
         );
 
         verifyInOrder([
@@ -315,6 +319,7 @@ void main() {
         await sut.backup(
           backupLabel: testBackupLabel,
           cacheDir: testCacheDir,
+          volumeHooks: const {},
         );
 
         verifyInOrder([
@@ -378,6 +383,7 @@ void main() {
         await sut.backup(
           backupLabel: testBackupLabel,
           cacheDir: testCacheDir,
+          volumeHooks: const {},
         );
 
         verifyInOrder([
@@ -450,6 +456,7 @@ void main() {
           () => sut.backup(
             backupLabel: testBackupLabel,
             cacheDir: testCacheDir,
+            volumeHooks: const {},
           ),
           throwsException,
         );
@@ -500,6 +507,7 @@ void main() {
         await sut.backup(
           backupLabel: testBackupLabel,
           cacheDir: testCacheDir,
+          volumeHooks: const {},
         );
 
         verifyInOrder([

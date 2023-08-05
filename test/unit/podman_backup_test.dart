@@ -4,6 +4,7 @@ import 'package:dart_test_tools/test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:podman_backup/src/backup/backup_controller.dart';
 import 'package:podman_backup/src/cli/options.dart';
+import 'package:podman_backup/src/models/hook.dart';
 import 'package:podman_backup/src/podman_backup.dart';
 import 'package:podman_backup/src/upload/upload_controller.dart';
 import 'package:test/test.dart';
@@ -32,6 +33,7 @@ void main() {
         () => mockBackupController.backup(
           backupLabel: any(named: 'backupLabel'),
           cacheDir: any(named: 'cacheDir'),
+          volumeHooks: any(named: 'volumeHooks'),
         ),
       ).thenReturnAsync(null);
       when(
@@ -65,6 +67,7 @@ void main() {
             remoteHostRawWasParsed: true,
             backupCache: cacheDir,
             backupMode: BackupMode.backupOnly,
+            volumeHooksRaw: const [],
           ),
         );
 
@@ -72,6 +75,7 @@ void main() {
           () => mockBackupController.backup(
             backupLabel: Options.defaultBackupLabel,
             cacheDir: cacheDir,
+            volumeHooks: const {},
           ),
         );
 
@@ -90,6 +94,7 @@ void main() {
             remoteHostRawWasParsed: true,
             backupCache: cacheDir,
             backupMode: BackupMode.uploadOnly,
+            volumeHooksRaw: const [],
           ),
         );
 
@@ -106,6 +111,10 @@ void main() {
       test('runs full backup', () async {
         const testRemoteHost = 'test-host:/target';
         const testLabel = 'test-label';
+        const testVolumeHooksRaw = ['volume-1=service1.service'];
+        const testVolumeHooks = {
+          'volume-1': Hook(unit: 'service1', type: 'service'),
+        };
 
         final cacheDir = Directory.fromUri(testDir.uri.resolve('test/backup'));
 
@@ -115,6 +124,7 @@ void main() {
             remoteHostRawWasParsed: true,
             backupLabel: testLabel,
             backupCache: cacheDir,
+            volumeHooksRaw: testVolumeHooksRaw,
           ),
         );
 
@@ -122,6 +132,7 @@ void main() {
           () => mockBackupController.backup(
                 backupLabel: testLabel,
                 cacheDir: cacheDir,
+                volumeHooks: testVolumeHooks,
               ),
           () => mockUploadController.upload(
                 remoteHost: testRemoteHost,

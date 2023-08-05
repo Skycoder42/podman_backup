@@ -7,6 +7,7 @@ import '../adapters/compress_adapter.dart';
 import '../adapters/date_time_adapter.dart';
 import '../adapters/podman_adapter.dart';
 import '../adapters/systemctl_adapter.dart';
+import '../models/hook.dart';
 import 'backup_strategy.dart';
 import 'backup_strategy_builder.dart';
 
@@ -24,7 +25,7 @@ final backupControllerProvider = Provider(
 
 class BackupController {
   final BackupStrategyBuilder _backupStrategyBuilder;
-  final SystemctlAdapter _systemdAdapter;
+  final SystemctlAdapter _systemctlAdapter;
   final PodmanAdapter _podmanAdapter;
   final CompressAdapter _compressAdapter;
   final DateTimeAdapter _dateTimeAdapter;
@@ -32,7 +33,7 @@ class BackupController {
 
   BackupController(
     this._backupStrategyBuilder,
-    this._systemdAdapter,
+    this._systemctlAdapter,
     this._podmanAdapter,
     this._compressAdapter,
     this._dateTimeAdapter,
@@ -41,7 +42,7 @@ class BackupController {
   Future<void> backup({
     required String backupLabel,
     required Directory cacheDir,
-    required Map<String, String> volumeHooks,
+    required Map<String, Hook> volumeHooks,
   }) async {
     _logger.info('Building strategy');
     final strategy = await _backupStrategyBuilder.buildStrategy(
@@ -58,25 +59,29 @@ class BackupController {
   Future<void> _backupStep(
     BackupStrategy strategy,
     Directory cacheDir,
-    Map<String, String> volumeHooks,
+    Map<String, Hook> volumeHooks,
   ) async {
     _logger.info('Backing up volumes: ${strategy.volumes}');
     try {
       _logger.fine('Stopping services: ${strategy.services}');
-      await Future.wait(strategy.services.map(_systemdAdapter.stop));
+      await Future.wait(strategy.services.map(_systemctlAdapter.stop));
 
       for (final volume in strategy.volumes) {
         final volumeHook = volumeHooks[volume];
         if (volumeHook != null) {
-        } else {
-          await _createVolumeBackup(volume, cacheDir);
+          await _systemctlAdapter.start(volumeHook.getUnitName(volume));
+          if (!volumeHook.preHook) {
+            continue;
+          }
         }
+
+        await _createVolumeBackup(volume, cacheDir);
       }
     } finally {
       _logger.fine('Restarting services: ${strategy.services}');
       await Future.wait(
         strategy.services.map(
-          (service) => _systemdAdapter.start(service).catchError(
+          (service) => _systemctlAdapter.start(service).catchError(
                 test: (error) => error is Exception,
                 // ignore: avoid_types_on_closure_parameters
                 (Object e) => _logger.warning(

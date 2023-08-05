@@ -7,6 +7,7 @@ import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 
 import '../adapters/environment_adapter.dart';
+import '../models/hook.dart';
 
 part 'options.g.dart';
 
@@ -72,17 +73,16 @@ class Options {
 
   @CliOption(
     name: 'volume-hook',
-    abbr: 'V',
+    abbr: 'H',
     valueHelp: 'volume>=[!]<hook.service',
-    help: 'A mapping of volumes to custom backup services. '
-        'Each volume listed here will not be backed up normally, '
-        'but instead by invoking the given service. The following rules apply:\n'
-        'If the service ends with "@.service", '
-        'the name of the volume will be passed to the service.\n'
-        'If the service is prefixed with a "!", it will run before the '
-        'actual backup to prepare it. If not specified, the hook will '
-        'replace the normal backup instead.\n'
-        'Can be specified multiple times.',
+    help: 'A mapping of volumes to custom backup systemd units. Each volume '
+        'listed here will not be backed up normally, but instead by invoking '
+        'the given systemd unit. The following rules apply:\n'
+        '- If the unit is a template unit, the name of the volume will be '
+        'passed to the unit invocation.\n'
+        '- If the unit is prefixed with a "!", it will run before the '
+        'actual backup to prepare it instead of replacing it.\n'
+        '- Can be specified multiple times.',
   )
   @internal
   final List<String> volumeHooksRaw;
@@ -139,10 +139,8 @@ class Options {
 
   String getRemoteHost() => remoteHostRaw!;
 
-  Map<String, String> getVolumeHooks() => Map.fromEntries(
-        volumeHooksRaw
-            .map((e) => e.split('='))
-            .map((e) => MapEntry(e.first, e.skip(1).join('='))),
+  Map<String, Hook> getVolumeHooks() => Map.fromEntries(
+        volumeHooksRaw.map(Hook.parsePair),
       );
 
   static ArgParser buildArgParser(EnvironmentAdapter environmentAdapter) =>
@@ -173,5 +171,3 @@ Level _logLevelFromString(String level) =>
     Level.LEVELS.singleWhere((element) => element.name == level.toUpperCase());
 
 Directory _directoryFromString(String directory) => Directory(directory);
-
-Map<String, String> _mapFromString(String elements) => {};
