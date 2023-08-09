@@ -81,14 +81,16 @@ abstract class IntegrationTestCase {
   Future<void> createVolume(
     String name, {
     bool backedUp = true,
+    String? hook,
   }) async {
+    final label = Platform.environment['PODMAN_BACKUP_LABEL'] ??
+        'de.skycoder42.podman_backup';
     await _podman([
       'volume',
       'create',
       if (backedUp) ...[
         '--label',
-        Platform.environment['PODMAN_BACKUP_LABEL'] ??
-            'de.skycoder42.podman_backup'
+        if (hook != null) '$label=$hook' else label,
       ],
       name,
     ]);
@@ -108,8 +110,9 @@ abstract class IntegrationTestCase {
   @protected
   Future<void> verifyVolume(
     Directory backupDir,
-    String name,
-  ) async {
+    String name, {
+    bool withInfo = false,
+  }) async {
     final pattern = volumePattern(name);
     final volumeFile = await backupDir
         .list()
@@ -120,11 +123,26 @@ abstract class IntegrationTestCase {
     final outDir = await Directory.systemTemp.createTemp();
     try {
       await _run('tar', ['-xf', volumeFile.path, '-C', outDir.path]);
-      final dataFile = File.fromUri(outDir.uri.resolve('data.txt'));
-      expect(dataFile.existsSync(), isTrue);
-      await expectLater(dataFile.readAsString(), completion(name));
+      await verifyVolumeContent(outDir, name, withInfo: withInfo);
     } finally {
       await outDir.delete(recursive: true);
+    }
+  }
+
+  @protected
+  Future<void> verifyVolumeContent(
+    Directory volumeDir,
+    String name, {
+    bool withInfo = false,
+  }) async {
+    final dataFile = File.fromUri(volumeDir.uri.resolve('data.txt'));
+    expect(dataFile.existsSync(), isTrue);
+    await expectLater(dataFile.readAsString(), completion(name));
+
+    if (withInfo) {
+      final infoFile = File.fromUri(volumeDir.uri.resolve('backup.info'));
+      expect(infoFile.existsSync(), isTrue);
+      await expectLater(infoFile.readAsString(), completion(name));
     }
   }
 

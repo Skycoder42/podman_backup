@@ -49,5 +49,29 @@ void main() {
         },
       );
     });
+
+    testData<(Hook, String)>(
+      'getUnitName returns correct unit name',
+      const [
+        (Hook(unit: 'simple', type: 'service'), 'simple.service'),
+        (
+          Hook(unit: 'template', type: 'service', isTemplate: true),
+          'template@test-volume.service',
+        ),
+        (Hook(unit: 'pre', type: 'timer', preHook: true), 'pre.timer'),
+        (
+          Hook(
+            unit: 'pre@template',
+            type: 'container',
+            preHook: true,
+            isTemplate: true,
+          ),
+          'pre@template@test-volume.container',
+        ),
+      ],
+      (fixture) {
+        expect(fixture.$1.getUnitName('test-volume'), fixture.$2);
+      },
+    );
   });
 }

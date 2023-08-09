@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:podman_backup/src/cli/options.dart';
 import 'package:test/test.dart';
@@ -57,6 +58,52 @@ class BackupTestCase extends IntegrationTestCase {
         _State.started,
       ]);
     });
+
+    test('can backup a single volume with simple replacement hook', () async {
+      // arrange
+      final backupDir = await Directory('/tmp/backup').create();
+      addTearDown(() => backupDir.delete(recursive: true));
+
+      const volume = 'test-volume-s1-1';
+      await createVolume(volume, hook: 'test-backup-hook.service');
+      await startService('test-service-1.service');
+
+      // act
+      await runSut();
+
+      // assert
+      expect(cacheDir.list().length, completion(0));
+      expect(backupDir.list().length, completion(1));
+      await verifyVolumeContent(backupDir, volume);
+
+      _expectStateLogs('test-service-1.service', const [
+        _State.started,
+        _State.stopped,
+        _State.started,
+      ]);
+    });
+
+    test('can backup a single volume with template pre-hook', () async {
+      // arrange
+      const volume = 'test-volume-s1-1';
+      await createVolume(volume, hook: '!test-pre-hook@.service');
+      await startService('test-service-1.service');
+
+      // act
+      await runSut();
+
+      // assert
+      expect(cacheDir.list().length, completion(1));
+      await verifyVolume(backupDir, volume, withInfo: true);
+
+      _expectStateLogs('test-service-1.service', const [
+        _State.started,
+        _State.stopped,
+        _State.started,
+      ]);
+    });
+
+    // TODO add in full test
 
     test('can backup a multiple, cross-attached volumes', () async {
       // arrange
