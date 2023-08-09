@@ -7,7 +7,7 @@ import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 
 import '../adapters/environment_adapter.dart';
-import '../models/hook.dart';
+import '../adapters/posix_adapter.dart';
 
 part 'options.g.dart';
 
@@ -72,20 +72,13 @@ class Options {
   final Directory backupCache;
 
   @CliOption(
-    name: 'volume-hook',
-    abbr: 'H',
-    valueHelp: 'volume>=[!]<hook.service',
-    help: 'A mapping of volumes to custom backup systemd units. Each volume '
-        'listed here will not be backed up normally, but instead by invoking '
-        'the given systemd unit. The following rules apply:\n'
-        '- If the unit is a template unit, the name of the volume will be '
-        'passed to the unit invocation.\n'
-        '- If the unit is prefixed with a "!", it will run before the '
-        'actual backup to prepare it instead of replacing it.\n'
-        '- Can be specified multiple times.',
+    negatable: true,
+    provideDefaultToOverride: true,
+    help: 'Specifies whether systemctl should be invoked as user '
+        '(by adding "--user" to every command) or as system. The default is '
+        'set automatically depending on whether it is running as root or not.',
   )
-  @internal
-  final List<String> volumeHooksRaw;
+  final bool user;
 
   @CliOption(
     convert: _logLevelFromString,
@@ -131,7 +124,7 @@ class Options {
     this.backupMode = BackupMode.full,
     this.backupLabel = Options.defaultBackupLabel,
     required this.backupCache,
-    required this.volumeHooksRaw,
+    required this.user,
     this.logLevel = Level.INFO,
     this.version = false,
     this.help = false,
@@ -139,17 +132,17 @@ class Options {
 
   String getRemoteHost() => remoteHostRaw!;
 
-  Map<String, Hook> getVolumeHooks() => Map.fromEntries(
-        volumeHooksRaw.map(Hook.parsePair),
-      );
-
-  static ArgParser buildArgParser(EnvironmentAdapter environmentAdapter) =>
+  static ArgParser buildArgParser(
+    EnvironmentAdapter environmentAdapter,
+    PosixAdapter posixAdapter,
+  ) =>
       _$populateOptionsParser(
         ArgParser(
           allowTrailingOptions: false,
           usageLineLength: stdout.hasTerminal ? stdout.terminalColumns : null,
         ),
         backupCacheDefaultOverride: _backupDir(environmentAdapter).path,
+        userDefaultOverride: !posixAdapter.isRoot,
       );
 
   static Options parseOptions(ArgResults argResults) =>

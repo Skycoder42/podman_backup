@@ -7,6 +7,7 @@ import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../adapters/environment_adapter.dart';
+import '../adapters/posix_adapter.dart';
 import '../constants/pubspec.yaml.g.dart' as pubspec;
 import 'options.dart';
 
@@ -14,18 +15,26 @@ import 'options.dart';
 final cliParserProvider = Provider(
   (ref) => CliParser(
     ref.watch(environmentAdapterProvider),
+    ref.watch(posixAdapterProvider),
   ),
 );
 // coverage:ignore-end
 
 class CliParser {
   final EnvironmentAdapter _environmentAdapter;
+  final PosixAdapter _posixAdapter;
   final _logger = Logger('$CliParser');
 
-  CliParser(this._environmentAdapter);
+  CliParser(
+    this._environmentAdapter,
+    this._posixAdapter,
+  );
 
   Options parse(List<String> arguments) {
-    final argParser = Options.buildArgParser(_environmentAdapter);
+    final argParser = Options.buildArgParser(
+      _environmentAdapter,
+      _posixAdapter,
+    );
 
     try {
       final argResults = argParser.parse(arguments);

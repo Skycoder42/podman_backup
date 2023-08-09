@@ -6,7 +6,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:podman_backup/src/adapters/process_adapter.dart';
 import 'package:podman_backup/src/upload/upload_controller.dart';
 import 'package:test/test.dart';
-import 'package:tuple/tuple.dart';
 
 class MockProcessAdapter extends Mock implements ProcessAdapter {}
 
@@ -31,24 +30,24 @@ void main() {
     });
 
     group('upload', () {
-      testData<Tuple2<Level, String?>>(
+      testData<(Level, String?)>(
         'runs rsync with correct arguments',
         const [
-          Tuple2(Level.ALL, '--verbose'),
-          Tuple2(Level.FINEST, '--verbose'),
-          Tuple2(Level.FINER, '--progress'),
-          Tuple2(Level.FINE, null),
-          Tuple2(Level.CONFIG, null),
-          Tuple2(Level.INFO, null),
-          Tuple2(Level.WARNING, null),
-          Tuple2(Level.SEVERE, null),
-          Tuple2(Level.SHOUT, null),
-          Tuple2(Level.OFF, null),
+          (Level.ALL, '--verbose'),
+          (Level.FINEST, '--verbose'),
+          (Level.FINER, '--progress'),
+          (Level.FINE, null),
+          (Level.CONFIG, null),
+          (Level.INFO, null),
+          (Level.WARNING, null),
+          (Level.SEVERE, null),
+          (Level.SHOUT, null),
+          (Level.OFF, null),
         ],
         (fixture) async {
           const testRemoteHost = 'test.de:/test/path';
 
-          Logger.root.level = fixture.item1;
+          Logger.root.level = fixture.$1;
 
           await sut.upload(
             remoteHost: testRemoteHost,
@@ -59,7 +58,7 @@ void main() {
             () => mockProcessAdapter.run(
               'rsync',
               [
-                if (fixture.item2 != null) fixture.item2!,
+                if (fixture.$2 != null) fixture.$2!,
                 '--recursive',
                 '--copy-links',
                 '--times',

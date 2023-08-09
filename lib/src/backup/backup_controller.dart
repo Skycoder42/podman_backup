@@ -7,7 +7,6 @@ import '../adapters/compress_adapter.dart';
 import '../adapters/date_time_adapter.dart';
 import '../adapters/podman_adapter.dart';
 import '../adapters/systemctl_adapter.dart';
-import '../models/hook.dart';
 import 'backup_strategy.dart';
 import 'backup_strategy_builder.dart';
 
@@ -42,7 +41,6 @@ class BackupController {
   Future<void> backup({
     required String backupLabel,
     required Directory cacheDir,
-    required Map<String, Hook> volumeHooks,
   }) async {
     _logger.info('Building strategy');
     final strategy = await _backupStrategyBuilder.buildStrategy(
@@ -51,7 +49,7 @@ class BackupController {
 
     _logger.info('Executing strategy');
     while (strategy.next()) {
-      await _backupStep(strategy, cacheDir, volumeHooks);
+      await _backupStep(strategy, cacheDir);
     }
     _logger.info('Strategy finished');
   }
@@ -59,18 +57,16 @@ class BackupController {
   Future<void> _backupStep(
     BackupStrategy strategy,
     Directory cacheDir,
-    Map<String, Hook> volumeHooks,
   ) async {
     _logger.info('Backing up volumes: ${strategy.volumes}');
     try {
       _logger.fine('Stopping services: ${strategy.services}');
       await Future.wait(strategy.services.map(_systemctlAdapter.stop));
 
-      for (final volume in strategy.volumes) {
-        final volumeHook = volumeHooks[volume];
-        if (volumeHook != null) {
-          await _systemctlAdapter.start(volumeHook.getUnitName(volume));
-          if (!volumeHook.preHook) {
+      for (final (volume, hook) in strategy.volumes) {
+        if (hook != null) {
+          await _systemctlAdapter.start(hook.getUnitName(volume));
+          if (!hook.preHook) {
             continue;
           }
         }

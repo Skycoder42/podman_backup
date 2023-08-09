@@ -22,30 +22,40 @@ void main() {
       sut = SystemctlAdapter(mockProcessAdapter);
     });
 
-    test('start invokes systemd start', () async {
-      const testUnit = 'test.service';
+    testData<bool>(
+      'start invokes systemd start',
+      const [true, false],
+      (fixture) async {
+        const testUnit = 'test.service';
+        sut.runAsUser = fixture;
 
-      await sut.start(testUnit);
+        await sut.start(testUnit);
 
-      verify(
-        () => mockProcessAdapter.run(
-          'systemctl',
-          ['--user', 'start', testUnit],
-        ),
-      );
-    });
+        verify(
+          () => mockProcessAdapter.run(
+            'systemctl',
+            [if (fixture) '--user', 'start', testUnit],
+          ),
+        );
+      },
+    );
 
-    test('stop invokes systemd stop', () async {
-      const testUnit = 'test.service';
+    testData<bool>(
+      'stop invokes systemd stop',
+      const [true, false],
+      (fixture) async {
+        const testUnit = 'test.service';
+        sut.runAsUser = fixture;
 
-      await sut.stop(testUnit);
+        await sut.stop(testUnit);
 
-      verify(
-        () => mockProcessAdapter.run(
-          'systemctl',
-          ['--user', 'stop', testUnit],
-        ),
-      );
-    });
+        verify(
+          () => mockProcessAdapter.run(
+            'systemctl',
+            [if (fixture) '--user', 'stop', testUnit],
+          ),
+        );
+      },
+    );
   });
 }

@@ -72,6 +72,7 @@ abstract class IntegrationTestCase {
             remoteHostRawWasParsed: true,
             backupMode: backupMode,
             backupCache: cacheDir,
+            user: true,
           ),
         );
   }

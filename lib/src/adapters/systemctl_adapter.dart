@@ -13,6 +13,8 @@ final systemctlAdapterProvider = Provider(
 class SystemctlAdapter {
   final ProcessAdapter _processAdapter;
 
+  bool runAsUser = true;
+
   SystemctlAdapter(this._processAdapter);
 
   Future<void> start(String unit) => _runSystemd(['start', unit]);
@@ -21,6 +23,9 @@ class SystemctlAdapter {
 
   Future<void> _runSystemd(List<String> args) => _processAdapter.run(
         'systemctl',
-        ['--user', ...args],
+        [
+          if (runAsUser) '--user',
+          ...args,
+        ],
       );
 }

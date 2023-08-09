@@ -1,9 +1,15 @@
 import 'package:meta/meta.dart';
 
-class BackupStrategy {
-  final Map<String, Set<String>> _pendingVolumes;
+import '../models/hook.dart';
 
-  final _activeVolumes = <String>[];
+typedef VolumeDetails = (Hook? hook, Set<String> services);
+
+typedef VolumeWithLabel = (String volume, Hook? hook);
+
+class BackupStrategy {
+  final Map<String, VolumeDetails> _pendingVolumes;
+
+  final _activeVolumes = <VolumeWithLabel>[];
   final _activeServices = <String>{};
 
   BackupStrategy(this._pendingVolumes);
@@ -20,26 +26,26 @@ class BackupStrategy {
     return true;
   }
 
-  List<String> get volumes => _activeVolumes;
+  List<VolumeWithLabel> get volumes => _activeVolumes;
 
   List<String> get services => _activeServices.toList();
 
   void _processVolume(String nextVolume) {
     assert(_pendingVolumes.containsKey(nextVolume));
 
-    final attachedServices = _pendingVolumes.remove(nextVolume)!;
-    for (final service in attachedServices) {
+    final (hook, services) = _pendingVolumes.remove(nextVolume)!;
+    for (final service in services) {
       if (_activeServices.add(service)) {
         _pendingVolumes.entries
-            .where((entry) => entry.value.contains(service))
+            .where((entry) => entry.value.$2.contains(service))
             .map((entry) => entry.key)
             .toList() // to prevent concurrent modification
             .forEach(_processVolume);
       }
     }
-    _activeVolumes.add(nextVolume);
+    _activeVolumes.add((nextVolume, hook));
   }
 
   @visibleForTesting
-  Map<String, Set<String>> get debugTestInternalVolumes => _pendingVolumes;
+  Map<String, VolumeDetails> get debugTestInternalVolumes => _pendingVolumes;
 }

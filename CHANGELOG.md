@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Support for running alternative backup services
+  - By setting the backup label to a non empty string, a hook is registered
+  - Is the name of a systemd unit or template unit
+  - Can run as preparation or instead of the normal backup
+  - Backup logic (ordering, container-management, etc.) still apply
+
 ## [1.1.0] - 2023-08-04
 ### Added
 - Add support for detecting pods
@@ -35,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release
 
+[Unreleased]: https://github.com/Skycoder42/podman_backup/compare/v1.1.0...vHEAD
 [1.1.0]: https://github.com/Skycoder42/podman_backup/compare/v1.0.4...v1.1.0
 [1.0.4]: https://github.com/Skycoder42/podman_backup/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/Skycoder42/podman_backup/compare/v1.0.2...v1.0.3

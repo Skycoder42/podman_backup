@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:dart_test_tools/test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:podman_backup/src/adapters/systemctl_adapter.dart';
 import 'package:podman_backup/src/backup/backup_controller.dart';
 import 'package:podman_backup/src/cli/options.dart';
-import 'package:podman_backup/src/models/hook.dart';
 import 'package:podman_backup/src/podman_backup.dart';
 import 'package:podman_backup/src/upload/upload_controller.dart';
 import 'package:test/test.dart';
@@ -12,6 +12,8 @@ import 'package:test/test.dart';
 class MockBackupController extends Mock implements BackupController {}
 
 class MockUploadController extends Mock implements UploadController {}
+
+class MockSystemctlAdapter extends Mock implements SystemctlAdapter {}
 
 void main() {
   setUpAll(() {
@@ -21,6 +23,7 @@ void main() {
   group('$PodmanBackup', () {
     final mockBackupController = MockBackupController();
     final mockUploadController = MockUploadController();
+    final mockSystemctlAdapter = MockSystemctlAdapter();
 
     late Directory testDir;
     late PodmanBackup sut;
@@ -28,12 +31,12 @@ void main() {
     setUp(() async {
       reset(mockBackupController);
       reset(mockUploadController);
+      reset(mockSystemctlAdapter);
 
       when(
         () => mockBackupController.backup(
           backupLabel: any(named: 'backupLabel'),
           cacheDir: any(named: 'cacheDir'),
-          volumeHooks: any(named: 'volumeHooks'),
         ),
       ).thenReturnAsync(null);
       when(
@@ -45,6 +48,7 @@ void main() {
 
       testDir = await Directory.systemTemp.createTemp();
       sut = PodmanBackup(
+        mockSystemctlAdapter,
         mockBackupController,
         mockUploadController,
       );
@@ -53,7 +57,8 @@ void main() {
     tearDown(() async {
       await testDir.delete(recursive: true);
 
-      verifyNoMoreInteractions(mockBackupController);
+      verifyNoMoreInteractions(mockSystemctlAdapter);
+      verifyNoMoreInteractions(mockUploadController);
       verifyNoMoreInteractions(mockUploadController);
     });
 
@@ -67,17 +72,17 @@ void main() {
             remoteHostRawWasParsed: true,
             backupCache: cacheDir,
             backupMode: BackupMode.backupOnly,
-            volumeHooksRaw: const [],
+            user: true,
           ),
         );
 
-        verify(
+        verifyInOrder([
+          () => mockSystemctlAdapter.runAsUser = true,
           () => mockBackupController.backup(
-            backupLabel: Options.defaultBackupLabel,
-            cacheDir: cacheDir,
-            volumeHooks: const {},
-          ),
-        );
+                backupLabel: Options.defaultBackupLabel,
+                cacheDir: cacheDir,
+              ),
+        ]);
 
         expect(cacheDir.existsSync(), isTrue);
       });
@@ -94,16 +99,17 @@ void main() {
             remoteHostRawWasParsed: true,
             backupCache: cacheDir,
             backupMode: BackupMode.uploadOnly,
-            volumeHooksRaw: const [],
+            user: true,
           ),
         );
 
-        verify(
+        verifyInOrder([
+          () => mockSystemctlAdapter.runAsUser = true,
           () => mockUploadController.upload(
-            remoteHost: testRemoteHost,
-            cacheDir: cacheDir,
-          ),
-        );
+                remoteHost: testRemoteHost,
+                cacheDir: cacheDir,
+              ),
+        ]);
 
         expect(cacheDir.existsSync(), isTrue);
       });
@@ -111,10 +117,6 @@ void main() {
       test('runs full backup', () async {
         const testRemoteHost = 'test-host:/target';
         const testLabel = 'test-label';
-        const testVolumeHooksRaw = ['volume-1=service1.service'];
-        const testVolumeHooks = {
-          'volume-1': Hook(unit: 'service1', type: 'service'),
-        };
 
         final cacheDir = Directory.fromUri(testDir.uri.resolve('test/backup'));
 
@@ -124,15 +126,15 @@ void main() {
             remoteHostRawWasParsed: true,
             backupLabel: testLabel,
             backupCache: cacheDir,
-            volumeHooksRaw: testVolumeHooksRaw,
+            user: false,
           ),
         );
 
         verifyInOrder([
+          () => mockSystemctlAdapter.runAsUser = false,
           () => mockBackupController.backup(
                 backupLabel: testLabel,
                 cacheDir: cacheDir,
-                volumeHooks: testVolumeHooks,
               ),
           () => mockUploadController.upload(
                 remoteHost: testRemoteHost,

@@ -9,7 +9,6 @@ import 'package:podman_backup/src/adapters/process_adapter.dart';
 import 'package:podman_backup/src/models/container.dart';
 import 'package:podman_backup/src/models/volume.dart';
 import 'package:test/test.dart';
-import 'package:tuple/tuple.dart';
 
 class MockProcessAdapter extends Mock implements ProcessAdapter {}
 
@@ -26,13 +25,13 @@ void main() {
     });
 
     group('ps', () {
-      testData<Tuple3<bool, Map<String, String>, List<String>>>(
+      testData<(bool, Map<String, String>, List<String>)>(
         'invokes podman ps with correct arguments',
         const [
-          Tuple3(false, {}, []),
-          Tuple3(true, {}, ['--all']),
-          Tuple3(false, {'a': 'b'}, ['--filter', 'a=b']),
-          Tuple3(
+          (false, {}, []),
+          (true, {}, ['--all']),
+          (false, {'a': 'b'}, ['--filter', 'a=b']),
+          (
             true,
             {'a': '1', 'x': 'y'},
             ['--all', '--filter', 'a=1', '--filter', 'x=y'],
@@ -42,12 +41,12 @@ void main() {
           when(() => mockProcessAdapter.streamJson(any(), any()))
               .thenReturnAsync(const <dynamic>[]);
 
-          await sut.ps(all: fixture.item1, filters: fixture.item2);
+          await sut.ps(all: fixture.$1, filters: fixture.$2);
 
           verify(
             () => mockProcessAdapter.streamJson(
               'podman',
-              ['ps', '--format', 'json', ...fixture.item3],
+              ['ps', '--format', 'json', ...fixture.$3],
             ),
           );
         },
@@ -83,12 +82,12 @@ void main() {
     });
 
     group('volumeList', () {
-      testData<Tuple2<Map<String, String>, List<String>>>(
+      testData<(Map<String, String>, List<String>)>(
         'invokes podman ps with correct arguments',
         const [
-          Tuple2({}, []),
-          Tuple2({'a': 'b'}, ['--filter', 'a=b']),
-          Tuple2(
+          ({}, []),
+          ({'a': 'b'}, ['--filter', 'a=b']),
+          (
             {'a': '1', 'x': 'y'},
             ['--filter', 'a=1', '--filter', 'x=y'],
           ),
@@ -97,12 +96,12 @@ void main() {
           when(() => mockProcessAdapter.streamJson(any(), any()))
               .thenReturnAsync(const <dynamic>[]);
 
-          await sut.volumeList(filters: fixture.item1);
+          await sut.volumeList(filters: fixture.$1);
 
           verify(
             () => mockProcessAdapter.streamJson(
               'podman',
-              ['volume', 'list', '--format', 'json', ...fixture.item2],
+              ['volume', 'list', '--format', 'json', ...fixture.$2],
             ),
           );
         },

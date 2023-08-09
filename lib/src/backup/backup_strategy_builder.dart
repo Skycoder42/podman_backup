@@ -3,6 +3,7 @@ import 'package:riverpod/riverpod.dart';
 
 import '../adapters/podman_adapter.dart';
 import '../models/container.dart';
+import '../models/hook.dart';
 import '../models/volume.dart';
 import 'backup_strategy.dart';
 
@@ -31,16 +32,25 @@ class BackupStrategyBuilder {
     );
     _logger.finest('Found volumes: $volumes');
 
-    final strategyData = <String, Set<String>>{};
+    final strategyData = <String, VolumeDetails>{};
     for (final volume in volumes) {
       _logger.fine('Loading attached services for volume $volume');
+      final hook = _getHook(volume, backupLabel);
       final attachedServices = await _getContainerUnits(volume);
-      strategyData[volume.name] = attachedServices;
+      strategyData[volume.name] = (hook, attachedServices);
       _logger.finest('Found referencing services: $attachedServices');
     }
 
     _logger.fine('Building backup strategy');
     return BackupStrategy(strategyData);
+  }
+
+  Hook? _getHook(Volume volume, String backupLabel) {
+    final labelValue = volume.labels[backupLabel];
+    if (labelValue == null || labelValue.isEmpty) {
+      return null;
+    }
+    return Hook.parse(labelValue);
   }
 
   Future<Set<String>> _getContainerUnits(Volume volume) =>

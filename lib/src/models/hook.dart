@@ -4,7 +4,7 @@ part 'hook.freezed.dart';
 
 @freezed
 class Hook with _$Hook {
-  static final _parseRegexp = RegExp(r'^([^=]+)=(\!)?([^@]*)(@)?\.(\w+)?$');
+  static final _parseRegexp = RegExp(r'^(\!)?(.*[^@])(@)?\.(\w+)?$');
 
   const factory Hook({
     required String unit,
@@ -18,20 +18,21 @@ class Hook with _$Hook {
   String getUnitName(String volume) =>
       isTemplate ? '$unit@$volume.$type' : '$unit.$type';
 
-  static MapEntry<String, Hook> parsePair(String pair) {
-    final match = _parseRegexp.matchAsPrefix(pair);
+  factory Hook.parse(String value) {
+    final match = _parseRegexp.matchAsPrefix(value);
     if (match == null) {
-      throw Exception('TODO');
+      throw FormatException(
+        'Not a valid hook definition. '
+        'Must be in the format: [!]<service>[@].service',
+        value,
+      );
     }
 
-    return MapEntry(
-      match[1]!,
-      Hook(
-        preHook: match[2] != null,
-        unit: match[3]!,
-        isTemplate: match[4] != null,
-        type: match[5]!,
-      ),
+    return Hook(
+      preHook: match[1] != null,
+      unit: match[2]!,
+      isTemplate: match[3] != null,
+      type: match[4]!,
     );
   }
 }

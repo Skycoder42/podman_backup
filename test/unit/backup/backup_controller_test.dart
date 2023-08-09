@@ -13,8 +13,8 @@ import 'package:podman_backup/src/adapters/systemctl_adapter.dart';
 import 'package:podman_backup/src/backup/backup_controller.dart';
 import 'package:podman_backup/src/backup/backup_strategy.dart';
 import 'package:podman_backup/src/backup/backup_strategy_builder.dart';
+import 'package:podman_backup/src/models/hook.dart';
 import 'package:test/test.dart';
-import 'package:tuple/tuple.dart';
 
 class MockBackupStrategyBuilder extends Mock implements BackupStrategyBuilder {}
 
@@ -27,6 +27,8 @@ class MockPodmanAdapter extends Mock implements PodmanAdapter {}
 class MockCompressAdapter extends Mock implements CompressAdapter {}
 
 class MockDateTimeAdapter extends Mock implements DateTimeAdapter {}
+
+// TODO update tests
 
 void main() {
   setUpAll(() {
@@ -90,14 +92,14 @@ void main() {
       verifyNoMoreInteractions(mockDateTimeAdapter);
     });
 
-    void setupStrategy(List<Tuple2<List<String>, List<String>>> entries) {
+    void setupStrategy(List<(List<(String, Hook?)>, List<String>)> entries) {
       var index = -1;
       when(() => mockBackupStrategy.next())
           .thenAnswer((i) => ++index < entries.length);
       when(() => mockBackupStrategy.volumes)
-          .thenAnswer((i) => entries[index].item1);
+          .thenAnswer((i) => entries[index].$1);
       when(() => mockBackupStrategy.services)
-          .thenAnswer((i) => entries[index].item2);
+          .thenAnswer((i) => entries[index].$2);
     }
 
     File backupFile(String volume) {
@@ -123,7 +125,6 @@ void main() {
         await sut.backup(
           backupLabel: testBackupLabel,
           cacheDir: testCacheDir,
-          volumeHooks: const {},
         );
 
         verifyInOrder([
@@ -143,13 +144,12 @@ void main() {
         when(() => mockPodmanAdapter.volumeExport(any()))
             .thenStream(testExportStream);
         setupStrategy(const [
-          Tuple2([testVolume], []),
+          ([(testVolume, null)], []),
         ]);
 
         await sut.backup(
           backupLabel: testBackupLabel,
           cacheDir: testCacheDir,
-          volumeHooks: const {},
         );
 
         verifyInOrder([
@@ -178,6 +178,96 @@ void main() {
         );
       });
 
+      test('runs backup with simple replacement hook', () async {
+        const testVolume = 'test-volume';
+        final testExportBytes = List.filled(10, 10);
+        final testExportStream = Stream.value(testExportBytes);
+        when(() => mockPodmanAdapter.volumeExport(any()))
+            .thenStream(testExportStream);
+        setupStrategy(const [
+          ([(testVolume, Hook(unit: 'replace', type: 'service'))], []),
+        ]);
+
+        await sut.backup(
+          backupLabel: testBackupLabel,
+          cacheDir: testCacheDir,
+        );
+
+        verifyInOrder([
+          () => mockBackupStrategyBuilder.buildStrategy(
+                backupLabel: testBackupLabel,
+              ),
+          () => mockBackupStrategy.next(),
+          () => mockBackupStrategy.volumes,
+          () => mockBackupStrategy.services,
+          () => mockBackupStrategy.services,
+          () => mockBackupStrategy.volumes,
+          () => mockSystemctlAdapter.start('replace.service'),
+          () => mockBackupStrategy.services,
+          () => mockBackupStrategy.services,
+          () => mockBackupStrategy.next(),
+        ]);
+
+        expect(testCacheDir.list().length, completion(0));
+        final volumeBackup = backupFile(testVolume);
+        expect(volumeBackup, isNot(_fseExists));
+      });
+
+      test('runs backup with complex pre backup hook', () async {
+        const testVolume = 'test-volume';
+        final testExportBytes = List.filled(10, 10);
+        final testExportStream = Stream.value(testExportBytes);
+        when(() => mockPodmanAdapter.volumeExport(any()))
+            .thenStream(testExportStream);
+        setupStrategy(const [
+          (
+            [
+              (
+                testVolume,
+                Hook(
+                  unit: 'pre',
+                  type: 'service',
+                  isTemplate: true,
+                  preHook: true,
+                )
+              )
+            ],
+            []
+          ),
+        ]);
+
+        await sut.backup(
+          backupLabel: testBackupLabel,
+          cacheDir: testCacheDir,
+        );
+
+        verifyInOrder([
+          () => mockBackupStrategyBuilder.buildStrategy(
+                backupLabel: testBackupLabel,
+              ),
+          () => mockBackupStrategy.next(),
+          () => mockBackupStrategy.volumes,
+          () => mockBackupStrategy.services,
+          () => mockBackupStrategy.services,
+          () => mockBackupStrategy.volumes,
+          () => mockSystemctlAdapter.start('pre@$testVolume.service'),
+          () => mockDateTimeAdapter.utcNow,
+          () => mockPodmanAdapter.volumeExport(testVolume),
+          () => mockCompressAdapter.bind(testExportStream),
+          () => mockBackupStrategy.services,
+          () => mockBackupStrategy.services,
+          () => mockBackupStrategy.next(),
+        ]);
+
+        expect(testCacheDir.list().length, completion(1));
+        final volumeBackup = backupFile(testVolume);
+        expect(volumeBackup, _fseExists);
+        expect(
+          volumeBackup.readAsBytes(),
+          completion(Uint8List.fromList(testExportBytes)),
+        );
+      });
+
       test('runs backup for single, attached volume', () async {
         const testVolume = 'test-volume';
         const testService = 'test-service';
@@ -186,13 +276,12 @@ void main() {
         when(() => mockPodmanAdapter.volumeExport(any()))
             .thenStream(testExportStream);
         setupStrategy(const [
-          Tuple2([testVolume], [testService]),
+          ([(testVolume, null)], [testService]),
         ]);
 
         await sut.backup(
           backupLabel: testBackupLabel,
           cacheDir: testCacheDir,
-          volumeHooks: const {},
         );
 
         verifyInOrder([
@@ -241,14 +330,13 @@ void main() {
         when(() => mockPodmanAdapter.volumeExport(testVolume3))
             .thenStream(testExportStream3);
         setupStrategy(const [
-          Tuple2([testVolume1, testVolume2], []),
-          Tuple2([testVolume3], []),
+          ([(testVolume1, null), (testVolume2, null)], []),
+          ([(testVolume3, null)], []),
         ]);
 
         await sut.backup(
           backupLabel: testBackupLabel,
           cacheDir: testCacheDir,
-          volumeHooks: const {},
         );
 
         verifyInOrder([
@@ -313,13 +401,12 @@ void main() {
         when(() => mockPodmanAdapter.volumeExport(any()))
             .thenStream(testExportStream);
         setupStrategy(const [
-          Tuple2([testVolume], [testService1, testService2, testService3]),
+          ([(testVolume, null)], [testService1, testService2, testService3]),
         ]);
 
         await sut.backup(
           backupLabel: testBackupLabel,
           cacheDir: testCacheDir,
-          volumeHooks: const {},
         );
 
         verifyInOrder([
@@ -354,7 +441,7 @@ void main() {
         );
       });
 
-      test('runs backup for multiple volumes with different services',
+      test('runs backup for multiple volumes with different hooks and services',
           () async {
         const testVolume1 = 'test-volume-1';
         const testVolume2 = 'test-volume-2';
@@ -376,14 +463,27 @@ void main() {
         when(() => mockPodmanAdapter.volumeExport(testVolume3))
             .thenStream(testExportStream3);
         setupStrategy(const [
-          Tuple2([testVolume1, testVolume2], [testService1]),
-          Tuple2([testVolume3], [testService2, testService3]),
+          (
+            [
+              (testVolume1, null),
+              (testVolume2, Hook(unit: 'pre', type: 'timer', preHook: true)),
+            ],
+            [testService1],
+          ),
+          (
+            [
+              (
+                testVolume3,
+                Hook(unit: 'backup', type: 'service', isTemplate: true),
+              )
+            ],
+            [testService2, testService3],
+          ),
         ]);
 
         await sut.backup(
           backupLabel: testBackupLabel,
           cacheDir: testCacheDir,
-          volumeHooks: const {},
         );
 
         verifyInOrder([
@@ -399,6 +499,7 @@ void main() {
           () => mockDateTimeAdapter.utcNow,
           () => mockPodmanAdapter.volumeExport(testVolume1),
           () => mockCompressAdapter.bind(testExportStream1),
+          () => mockSystemctlAdapter.start('pre.timer'),
           () => mockDateTimeAdapter.utcNow,
           () => mockPodmanAdapter.volumeExport(testVolume2),
           () => mockCompressAdapter.bind(testExportStream2),
@@ -412,9 +513,7 @@ void main() {
           () => mockSystemctlAdapter.stop(testService2),
           () => mockSystemctlAdapter.stop(testService3),
           () => mockBackupStrategy.volumes,
-          () => mockDateTimeAdapter.utcNow,
-          () => mockPodmanAdapter.volumeExport(testVolume3),
-          () => mockCompressAdapter.bind(testExportStream3),
+          () => mockSystemctlAdapter.start('backup@$testVolume3.service'),
           () => mockBackupStrategy.services,
           () => mockBackupStrategy.services,
           () => mockSystemctlAdapter.start(testService2),
@@ -422,7 +521,7 @@ void main() {
           () => mockBackupStrategy.next(),
         ]);
 
-        expect(testCacheDir.list().length, completion(3));
+        expect(testCacheDir.list().length, completion(2));
         final volumeBackup1 = backupFile(testVolume1);
         final volumeBackup2 = backupFile(testVolume2);
         final volumeBackup3 = backupFile(testVolume3);
@@ -436,11 +535,7 @@ void main() {
           volumeBackup2.readAsBytes(),
           completion(Uint8List.fromList(testExportBytes2)),
         );
-        expect(volumeBackup3, _fseExists);
-        expect(
-          volumeBackup3.readAsBytes(),
-          completion(Uint8List.fromList(testExportBytes3)),
-        );
+        expect(volumeBackup3, isNot(_fseExists));
       });
 
       test('restarts stopped services if stopping fails', () async {
@@ -449,14 +544,13 @@ void main() {
         when(() => mockSystemctlAdapter.stop(any()))
             .thenThrow(Exception('test error'));
         setupStrategy(const [
-          Tuple2([testVolume], [testService]),
+          ([(testVolume, null)], [testService]),
         ]);
 
         await expectLater(
           () => sut.backup(
             backupLabel: testBackupLabel,
             cacheDir: testCacheDir,
-            volumeHooks: const {},
           ),
           throwsException,
         );
@@ -489,7 +583,7 @@ void main() {
         when(() => mockSystemctlAdapter.start(any()))
             .thenAnswer((i) async => throw testException);
         setupStrategy(const [
-          Tuple2([testVolume], [testService]),
+          ([(testVolume, null)], [testService]),
         ]);
 
         // verify log message
@@ -507,7 +601,6 @@ void main() {
         await sut.backup(
           backupLabel: testBackupLabel,
           cacheDir: testCacheDir,
-          volumeHooks: const {},
         );
 
         verifyInOrder([

@@ -3,6 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:podman_backup/src/adapters/podman_adapter.dart';
 import 'package:podman_backup/src/backup/backup_strategy_builder.dart';
 import 'package:podman_backup/src/models/container.dart';
+import 'package:podman_backup/src/models/hook.dart';
 import 'package:podman_backup/src/models/volume.dart';
 import 'package:test/test.dart';
 
@@ -55,11 +56,51 @@ void main() {
         expect(strategy.debugTestInternalVolumes, hasLength(2));
         expect(
           strategy.debugTestInternalVolumes,
-          containsPair(testVolume1, isEmpty),
+          containsPair(testVolume1, isRecord(null, <String>{})),
         );
         expect(
           strategy.debugTestInternalVolumes,
-          containsPair(testVolume2, isEmpty),
+          containsPair(testVolume2, isRecord(null, <String>{})),
+        );
+
+        verifyInOrder([
+          () => mockPodmanAdapter.volumeList(filters: {'label': testLabel}),
+          () => mockPodmanAdapter.ps(filters: {'volume': testVolume1}),
+          () => mockPodmanAdapter.ps(filters: {'volume': testVolume2}),
+        ]);
+        verifyNoMoreInteractions(mockPodmanAdapter);
+      });
+
+      test('adds hook configuration if the label has a value', () async {
+        const testVolume1 = 'test-volume-1';
+        const testVolume2 = 'test-volume-2';
+
+        when(() => mockPodmanAdapter.volumeList(filters: any(named: 'filters')))
+            .thenReturnAsync(
+          const [
+            Volume(name: testVolume1, labels: {testLabel: ''}),
+            Volume(
+              name: testVolume2,
+              labels: {testLabel: 'test-1.service'},
+            )
+          ],
+        );
+        when(() => mockPodmanAdapter.ps(filters: any(named: 'filters')))
+            .thenReturnAsync(const []);
+
+        final strategy = await sut.buildStrategy(backupLabel: testLabel);
+
+        expect(strategy.debugTestInternalVolumes, hasLength(2));
+        expect(
+          strategy.debugTestInternalVolumes,
+          containsPair(testVolume1, isRecord(null, <String>{})),
+        );
+        expect(
+          strategy.debugTestInternalVolumes,
+          containsPair(
+            testVolume2,
+            isRecord(const Hook(unit: 'test-1', type: 'service'), <String>{}),
+          ),
         );
 
         verifyInOrder([
@@ -90,7 +131,10 @@ void main() {
           const [
             Volume(name: testVolume1, labels: {}),
             Volume(name: testVolume2, labels: {}),
-            Volume(name: testVolume3, labels: {}),
+            Volume(
+              name: testVolume3,
+              labels: {testLabel: '!test-service3@.service'},
+            ),
             Volume(name: testVolume4, labels: {}),
           ],
         );
@@ -149,27 +193,38 @@ void main() {
         expect(strategy.debugTestInternalVolumes, hasLength(4));
         expect(
           strategy.debugTestInternalVolumes,
-          containsPair(testVolume1, _services([testContainer1])),
+          containsPair(
+            testVolume1,
+            isRecord(null, _services([testContainer1])),
+          ),
         );
         expect(
           strategy.debugTestInternalVolumes,
           containsPair(
             testVolume2,
-            _services([testContainer2, testContainer4]),
+            isRecord(null, _services([testContainer2, testContainer4])),
           ),
         );
         expect(
           strategy.debugTestInternalVolumes,
           containsPair(
             testVolume3,
-            _services([testContainer1, testContainer3, testContainer5]),
+            isRecord(
+              const Hook(
+                unit: 'test-service3',
+                type: 'service',
+                isTemplate: true,
+                preHook: true,
+              ),
+              _services([testContainer1, testContainer3, testContainer5]),
+            ),
           ),
         );
         expect(
           strategy.debugTestInternalVolumes,
           containsPair(
             testVolume4,
-            _services([testContainer6i, testContainer7i]),
+            isRecord(null, _services([testContainer6i, testContainer7i])),
           ),
         );
 
