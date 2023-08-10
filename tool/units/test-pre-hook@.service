@@ -13,7 +13,7 @@ ExecStart=/usr/bin/podman run \
 	--rm \
 	--replace \
 	--name 'test-pre-hook-%i' \
-	-v '%i:/mnt/volume:ro' \
+	-v '%i:/mnt/volume' \
 	docker.io/library/alpine:latest /bin/sh -c "echo -n '%i' >> /mnt/volume/backup.info"
 ExecStop=/usr/bin/podman stop \
 	--ignore \
