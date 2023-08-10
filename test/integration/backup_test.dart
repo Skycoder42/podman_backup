@@ -74,7 +74,7 @@ class BackupTestCase extends IntegrationTestCase {
 
       // assert
       expect(cacheDir.list().length, completion(0));
-      expect(backupDir.list().length, completion(1));
+      expect(backupDir.list().length, completion(2)); // data and timestamp
       await verifyVolumeContent(backupDir, volume);
 
       _expectStateLogs('test-service-1.service', const [
