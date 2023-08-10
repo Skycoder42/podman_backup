@@ -15,7 +15,7 @@ ExecStart=/usr/bin/podman run \
 	--name test-backup-hook \
 	-v test-volume-s1-1:/mnt/test-volume-s1-1:ro \
   -v /tmp/backup:/mnt/backup \
-	docker.io/library/alpine:latest /bin/sh -c 'cp -a /mnt/test-volume-s1-1/ /mnt/backup/'
+	docker.io/library/alpine:latest /bin/sh -c 'cp -a /mnt/test-volume-s1-1/* /mnt/backup/'
 ExecStop=/usr/bin/podman stop \
 	--ignore \
 	--cidfile=%t/%n.ctr-id
