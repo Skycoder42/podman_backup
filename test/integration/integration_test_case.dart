@@ -135,6 +135,9 @@ abstract class IntegrationTestCase {
     String name, {
     bool withInfo = false,
   }) async {
+    printOnFailure(
+      'Contents of $volumeDir: ${volumeDir.listSync(recursive: true)}',
+    );
     final dataFile = File.fromUri(volumeDir.uri.resolve('data.txt'));
     expect(dataFile.existsSync(), isTrue);
     await expectLater(dataFile.readAsString(), completion(name));

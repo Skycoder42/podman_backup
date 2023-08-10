@@ -13,11 +13,6 @@ class Hook with _$Hook {
     @Default(false) bool preHook,
   }) = _Hook;
 
-  const Hook._();
-
-  String getUnitName(String volume) =>
-      isTemplate ? '$unit@$volume.$type' : '$unit.$type';
-
   factory Hook.parse(String value) {
     final match = _parseRegexp.matchAsPrefix(value);
     if (match == null) {
@@ -35,4 +30,12 @@ class Hook with _$Hook {
       type: match[4]!,
     );
   }
+
+  const Hook._();
+
+  String getUnitName(String volume) =>
+      isTemplate ? '$unit@$volume.$type' : '$unit.$type';
+
+  @override
+  String toString() => preHook ? '!${getUnitName('')}' : getUnitName('');
 }

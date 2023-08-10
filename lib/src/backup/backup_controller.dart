@@ -58,15 +58,19 @@ class BackupController {
     BackupStrategy strategy,
     Directory cacheDir,
   ) async {
-    _logger.info('Backing up volumes: ${strategy.volumes}');
+    _logger.info(
+      'Backing up volumes: ${strategy.volumes.map((t) => t.$1).toList()}',
+    );
     try {
       _logger.fine('Stopping services: ${strategy.services}');
       await Future.wait(strategy.services.map(_systemctlAdapter.stop));
 
       for (final (volume, hook) in strategy.volumes) {
         if (hook != null) {
+          _logger.fine('Executing backup hook: $hook');
           await _systemctlAdapter.start(hook.getUnitName(volume));
           if (!hook.preHook) {
+            _logger.finer('Skipping normal backup because of pre-hook');
             continue;
           }
         }
