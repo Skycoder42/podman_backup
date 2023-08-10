@@ -67,6 +67,7 @@ class BackupTestCase extends IntegrationTestCase {
       const volume = 'test-volume-s1-1';
       await createVolume(volume, hook: 'test-backup-hook.service');
       await startService('test-service-1.service');
+      logUnitOnFailure('test-backup-hook.service');
 
       // act
       await runSut();
@@ -88,6 +89,7 @@ class BackupTestCase extends IntegrationTestCase {
       const volume = 'test-volume-s1-1';
       await createVolume(volume, hook: '!test-pre-hook@.service');
       await startService('test-service-1.service');
+      logUnitOnFailure('test-pre-hook@$volume.service');
 
       // act
       await runSut();

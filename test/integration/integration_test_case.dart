@@ -152,9 +152,13 @@ abstract class IntegrationTestCase {
   @protected
   Future<void> startService(String service) async {
     await _systemctl(['start', service]);
-    addTearDown(() => _run('journalctl', ['--user', '-u', service]));
+    logUnitOnFailure(service);
     addTearDown(() => _systemctl(['stop', service]));
   }
+
+  void logUnitOnFailure(String unitName) =>
+      // ignore: discarded_futures
+      addTearDown(() => _run('journalctl', ['--user', '-u', unitName]));
 
   @protected
   Stream<String> journalctl(String service) =>
