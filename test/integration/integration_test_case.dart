@@ -113,6 +113,8 @@ abstract class IntegrationTestCase {
     String name, {
     bool withInfo = false,
   }) async {
+    printOnFailure('Files in $backupDir: ${backupDir.listSync()}');
+
     final pattern = volumePattern(name);
     final volumeFile = await backupDir
         .list()
