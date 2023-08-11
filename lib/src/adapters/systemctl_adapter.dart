@@ -21,6 +21,9 @@ class SystemctlAdapter {
 
   Future<void> stop(String unit) => _runSystemd(['stop', unit]);
 
+  Future<String> escape(String value) =>
+      _processAdapter.streamLines('systemd-escape', [value]).single;
+
   Future<void> _runSystemd(List<String> args) => _processAdapter.run(
         'systemctl',
         [

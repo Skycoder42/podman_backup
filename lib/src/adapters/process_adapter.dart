@@ -99,6 +99,15 @@ class ProcessAdapter {
     }
   }
 
+  Stream<String> streamLines(
+    String executable,
+    List<String> arguments, {
+    int? expectedExitCode = 0,
+  }) =>
+      streamRaw(executable, arguments, expectedExitCode: expectedExitCode)
+          .transform(systemEncoding.decoder)
+          .transform(const LineSplitter());
+
   Future<Object?> streamJson(
     String executable,
     List<String> arguments, {
