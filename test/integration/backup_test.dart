@@ -61,8 +61,8 @@ class BackupTestCase extends IntegrationTestCase {
 
     test('can backup a single volume with simple replacement hook', () async {
       // arrange
-      final backupDir = await Directory('/tmp/backup').create();
-      addTearDown(() => backupDir.delete(recursive: true));
+      final extraBackupDir = await Directory('/tmp/backup').create();
+      addTearDown(() => extraBackupDir.delete(recursive: true));
 
       const volume = 'test-volume-s1-1';
       await createVolume(volume, hook: 'test-backup-hook.service');
@@ -74,8 +74,8 @@ class BackupTestCase extends IntegrationTestCase {
 
       // assert
       expect(cacheDir.list().length, completion(0));
-      expect(backupDir.list().length, completion(2)); // data and timestamp
-      await verifyVolumeContent(backupDir, volume);
+      expect(extraBackupDir.list().length, completion(2)); // data and timestamp
+      await verifyVolumeContent(extraBackupDir, volume);
 
       _expectStateLogs('test-service-1.service', const [
         _State.started,
@@ -95,8 +95,8 @@ class BackupTestCase extends IntegrationTestCase {
       await runSut();
 
       // assert
-      await expectLater(cacheDir.list().length, completion(1));
-      await verifyVolume(backupDir, volume, withInfo: true);
+      expect(cacheDir.list().length, completion(1));
+      await verifyVolume(cacheDir, volume, withInfo: true);
 
       _expectStateLogs('test-service-1.service', const [
         _State.started,
