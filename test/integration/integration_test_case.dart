@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -115,7 +113,6 @@ abstract class IntegrationTestCase {
     String name, {
     bool withInfo = false,
   }) async {
-    print('### BEFORE get backup file');
     final pattern = volumePattern(name);
     final volumeFile = await backupDir
         .list()
@@ -123,17 +120,12 @@ abstract class IntegrationTestCase {
         .cast<File>()
         .singleWhere((f) => pattern.hasMatch(f.path));
 
-    print('### BEFORE create temp dir');
     final outDir = await Directory.systemTemp.createTemp();
     try {
-      print('### BEFORE extract');
       await _run('tar', ['-xf', volumeFile.path, '-C', outDir.path]);
-      print('### BEFORE verify content');
       await verifyVolumeContent(outDir, name, withInfo: withInfo);
     } finally {
-      print('### BEFORE delete temp dir');
       await outDir.delete(recursive: true);
-      print('### AFTER delete temp dir');
     }
   }
 
@@ -143,23 +135,18 @@ abstract class IntegrationTestCase {
     String name, {
     bool withInfo = false,
   }) async {
-    print('### BEFORE validate data file exists');
     printOnFailure(
       'Contents of $volumeDir: ${volumeDir.listSync(recursive: true)}',
     );
     final dataFile = File.fromUri(volumeDir.uri.resolve('data.txt'));
     expect(dataFile.existsSync(), isTrue);
-    print('### BEFORE validate data file content');
     await expectLater(dataFile.readAsString(), completion(name));
 
     if (withInfo) {
-      print('### BEFORE validate info file exists');
       final infoFile = File.fromUri(volumeDir.uri.resolve('backup.info'));
       expect(infoFile.existsSync(), isTrue);
-      print('### BEFORE validate info file content');
       await expectLater(infoFile.readAsString(), completion(name));
     }
-    print('### AFTER vvalidations');
   }
 
   @protected

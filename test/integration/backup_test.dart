@@ -95,18 +95,14 @@ class BackupTestCase extends IntegrationTestCase {
       await runSut();
 
       // assert
-      print('### BEFORE dir length');
       await expectLater(cacheDir.list().length, completion(1));
-      print('### BEFORE volume');
       await verifyVolume(backupDir, volume, withInfo: true);
 
-      print('### BEFORE service logs');
       _expectStateLogs('test-service-1.service', const [
         _State.started,
         _State.stopped,
         _State.started,
       ]);
-      print('### AFTER test body');
     });
 
     // TODO add in full test
