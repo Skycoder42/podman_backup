@@ -33,9 +33,8 @@ class Hook with _$Hook {
 
   const Hook._();
 
-  String getUnitName(String volume) =>
-      isTemplate ? '$unit@$volume.$type' : '$unit.$type';
+  String get systemdUnit => isTemplate ? '$unit@.$type' : '$unit.$type';
 
   @override
-  String toString() => preHook ? '!${getUnitName('')}' : getUnitName('');
+  String toString() => preHook ? '!$systemdUnit' : systemdUnit;
 }

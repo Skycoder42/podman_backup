@@ -7,6 +7,7 @@ import '../adapters/compress_adapter.dart';
 import '../adapters/date_time_adapter.dart';
 import '../adapters/podman_adapter.dart';
 import '../adapters/systemctl_adapter.dart';
+import '../models/hook.dart';
 import 'backup_strategy.dart';
 import 'backup_strategy_builder.dart';
 
@@ -68,7 +69,7 @@ class BackupController {
       for (final (volume, hook) in strategy.volumes) {
         if (hook != null) {
           _logger.fine('Executing backup hook: $hook');
-          await _systemctlAdapter.start(hook.getUnitName(volume));
+          await _systemctlAdapter.start(await _getUnitName(hook, volume));
           if (!hook.preHook) {
             _logger.finer('Skipping normal backup because of pre-hook');
             continue;
@@ -108,5 +109,16 @@ class BackupController {
         .volumeExport(volume)
         .transform(_compressAdapter)
         .pipe(backupFile.openWrite());
+  }
+
+  Future<String> _getUnitName(Hook hook, String volume) {
+    if (hook.isTemplate) {
+      return _systemctlAdapter.escape(
+        template: hook.systemdUnit,
+        value: volume,
+      );
+    } else {
+      return Future.value(hook.systemdUnit);
+    }
   }
 }

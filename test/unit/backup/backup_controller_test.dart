@@ -215,10 +215,17 @@ void main() {
 
       test('runs backup with complex pre backup hook', () async {
         const testVolume = 'test-volume';
+        const testUnit = 'pre@escaped-$testVolume.service';
         final testExportBytes = List.filled(10, 10);
         final testExportStream = Stream.value(testExportBytes);
         when(() => mockPodmanAdapter.volumeExport(any()))
             .thenStream(testExportStream);
+        when(
+          () => mockSystemctlAdapter.escape(
+            template: any(named: 'template'),
+            value: any(named: 'value'),
+          ),
+        ).thenReturnAsync(testUnit);
         setupStrategy(const [
           (
             [
@@ -250,7 +257,11 @@ void main() {
           () => mockBackupStrategy.services,
           () => mockBackupStrategy.services,
           () => mockBackupStrategy.volumes,
-          () => mockSystemctlAdapter.start('pre@$testVolume.service'),
+          () => mockSystemctlAdapter.escape(
+                template: 'pre@.service',
+                value: testVolume,
+              ),
+          () => mockSystemctlAdapter.start(testUnit),
           () => mockDateTimeAdapter.utcNow,
           () => mockPodmanAdapter.volumeExport(testVolume),
           () => mockCompressAdapter.bind(testExportStream),
@@ -446,6 +457,7 @@ void main() {
         const testVolume1 = 'test-volume-1';
         const testVolume2 = 'test-volume-2';
         const testVolume3 = 'test-volume-3';
+        const testUnit = 'backup@escaped.service';
         const testService1 = 'test-service1';
         const testService2 = 'test-service2';
         const testService3 = 'test-service3';
@@ -462,6 +474,12 @@ void main() {
             .thenStream(testExportStream2);
         when(() => mockPodmanAdapter.volumeExport(testVolume3))
             .thenStream(testExportStream3);
+        when(
+          () => mockSystemctlAdapter.escape(
+            template: any(named: 'template'),
+            value: any(named: 'value'),
+          ),
+        ).thenReturnAsync(testUnit);
         setupStrategy(const [
           (
             [
@@ -513,7 +531,11 @@ void main() {
           () => mockSystemctlAdapter.stop(testService2),
           () => mockSystemctlAdapter.stop(testService3),
           () => mockBackupStrategy.volumes,
-          () => mockSystemctlAdapter.start('backup@$testVolume3.service'),
+          () => mockSystemctlAdapter.escape(
+                template: 'backup@.service',
+                value: testVolume3,
+              ),
+          () => mockSystemctlAdapter.start(testUnit),
           () => mockBackupStrategy.services,
           () => mockBackupStrategy.services,
           () => mockSystemctlAdapter.start(testService2),

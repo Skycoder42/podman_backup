@@ -12,9 +12,9 @@ ExecStart=/usr/bin/podman run \
 	--cgroups=no-conmon \
 	--rm \
 	--replace \
-	--name 'test-pre-hook-%i' \
-	-v '%i:/mnt/volume' \
-	docker.io/library/alpine:latest /bin/sh -c "echo -n '%i' >> /mnt/volume/backup.info"
+	--name 'test-pre-hook-%I' \
+	-v '%I:/mnt/volume' \
+	docker.io/library/alpine:latest /bin/sh -c "echo -n '%I' >> /mnt/volume/backup.info"
 ExecStop=/usr/bin/podman stop \
 	--ignore \
 	--cidfile=%t/%n.ctr-id

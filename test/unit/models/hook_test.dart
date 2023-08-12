@@ -51,12 +51,12 @@ void main() {
     });
 
     testData<(Hook, String)>(
-      'getUnitName returns correct unit name',
+      'systemdUnit returns correct unit name',
       const [
         (Hook(unit: 'simple', type: 'service'), 'simple.service'),
         (
           Hook(unit: 'template', type: 'service', isTemplate: true),
-          'template@test-volume.service',
+          'template@.service',
         ),
         (Hook(unit: 'pre', type: 'timer', preHook: true), 'pre.timer'),
         (
@@ -66,11 +66,11 @@ void main() {
             preHook: true,
             isTemplate: true,
           ),
-          'pre@template@test-volume.container',
+          'pre@template@.container',
         ),
       ],
       (fixture) {
-        expect(fixture.$1.getUnitName('test-volume'), fixture.$2);
+        expect(fixture.$1.systemdUnit, fixture.$2);
       },
     );
   });

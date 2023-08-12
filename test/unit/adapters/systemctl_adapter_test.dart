@@ -57,5 +57,38 @@ void main() {
         );
       },
     );
+
+    group('escape', () {
+      test('invokes systemd-escape', () async {
+        const template = 'test-template';
+        const value = 'test-value';
+        const escaped = 'test-escaped';
+        when(() => mockProcessAdapter.streamLines(any(), any()))
+            .thenStream(Stream.value(escaped));
+
+        final result = await sut.escape(template: template, value: value);
+
+        expect(result, escaped);
+        verify(
+          () => mockProcessAdapter.streamLines('systemd-escape', [
+            '--template',
+            template,
+            value,
+          ]),
+        );
+      });
+
+      test('throws if result is not a single value stream', () async {
+        const template = 'test-template';
+        const value = 'test-value';
+        when(() => mockProcessAdapter.streamLines(any(), any()))
+            .thenStream(Stream.fromIterable(['a', 'b']));
+
+        expect(
+          () => sut.escape(template: template, value: value),
+          throwsA(isStateError),
+        );
+      });
+    });
   });
 }
