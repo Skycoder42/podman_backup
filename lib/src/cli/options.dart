@@ -13,14 +13,29 @@ part 'options.g.dart';
 
 enum BackupMode {
   full,
+  backupUpload,
+  uploadCleanup,
   backupOnly,
-  uploadOnly;
+  uploadOnly,
+  cleanupOnly;
 }
 
 extension BackupModeX on BackupMode {
-  bool get backup => this == BackupMode.full || this == BackupMode.backupOnly;
+  bool get backup =>
+      this == BackupMode.full ||
+      this == BackupMode.backupUpload ||
+      this == BackupMode.backupOnly;
 
-  bool get upload => this == BackupMode.full || this == BackupMode.uploadOnly;
+  bool get upload =>
+      this == BackupMode.full ||
+      this == BackupMode.backupUpload ||
+      this == BackupMode.uploadCleanup ||
+      this == BackupMode.uploadOnly;
+
+  bool get cleanup =>
+      this == BackupMode.full ||
+      this == BackupMode.uploadCleanup ||
+      this == BackupMode.cleanupOnly;
 }
 
 @CliOptions()
@@ -45,9 +60,14 @@ class Options {
     valueHelp: 'mode',
     help: 'The mode to run the tool in.',
     allowedHelp: {
-      BackupMode.full: 'Perform backup and upload the backed up files.',
+      BackupMode.full:
+          'Perform backup, upload the backed up files and cleanup old backups.',
+      BackupMode.backupUpload: 'Perform backup and upload the backed up files',
+      BackupMode.uploadCleanup:
+          'Upload the backed up files and cleanup old backups.',
       BackupMode.backupOnly: 'Only perform the backup.',
       BackupMode.uploadOnly: 'Only upload previously backed up files.',
+      BackupMode.cleanupOnly: 'Only cleanup old backups on the remote.'
     },
   )
   final BackupMode backupMode;
