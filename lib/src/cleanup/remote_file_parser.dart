@@ -5,7 +5,7 @@ import 'package:riverpod/riverpod.dart';
 import '../models/remote_file_info.dart';
 
 // coverage:ignore-start
-final remoteFileParserProvider = Provider(
+final remoteFileTransformerProvider = Provider(
   (ref) => const RemoteFileTransformer(),
 );
 // coverage:ignore-end
@@ -21,8 +21,9 @@ class RemoteFileTransformer
 
 class RemoteFileTransformerSink implements EventSink<String> {
   static final _splitRegexp = RegExp(r'\s+');
-  static final _backupRegexp =
-      RegExp(r'.*-(\d{4})_(\d{2})_(\d{2})_(\d{2})_(\d{2})_(\d{2})\.tar\.xz$');
+  static final _backupRegexp = RegExp(
+    r'^(.+)-(\d{4})_(\d{2})_(\d{2})_(\d{2})_(\d{2})_(\d{2})\.tar\.xz$',
+  );
 
   final EventSink<RemoteFileInfo> _sink;
 
@@ -63,26 +64,31 @@ class RemoteFileTransformerSink implements EventSink<String> {
       throw FormatException('Not a valid sftp "ls -l" line', line);
     }
 
+    final (volume, backupDate) = _extractBackupInfo(fileName);
     return RemoteFileInfo(
-      name: fileName,
+      fileName: fileName,
       sizeInBytes: int.parse(sizeInBytes, radix: 10),
-      backupDate: _extractBackupDate(fileName),
+      volume: volume,
+      backupDate: backupDate,
     );
   }
 
-  DateTime _extractBackupDate(String filename) {
+  (String, DateTime) _extractBackupInfo(String filename) {
     final match = _backupRegexp.matchAsPrefix(filename);
     if (match == null) {
       throw FormatException('Not a valid backup file name', filename);
     }
 
-    return DateTime.utc(
-      int.parse(match[1]!, radix: 10),
-      int.parse(match[2]!, radix: 10),
-      int.parse(match[3]!, radix: 10),
-      int.parse(match[4]!, radix: 10),
-      int.parse(match[5]!, radix: 10),
-      int.parse(match[6]!, radix: 10),
+    return (
+      match[1]!,
+      DateTime.utc(
+        int.parse(match[2]!, radix: 10),
+        int.parse(match[3]!, radix: 10),
+        int.parse(match[4]!, radix: 10),
+        int.parse(match[5]!, radix: 10),
+        int.parse(match[6]!, radix: 10),
+        int.parse(match[7]!, radix: 10),
+      ),
     );
   }
 }

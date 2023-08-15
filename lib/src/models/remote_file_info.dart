@@ -5,8 +5,9 @@ part 'remote_file_info.freezed.dart';
 @freezed
 class RemoteFileInfo with _$RemoteFileInfo {
   const factory RemoteFileInfo({
-    required String name,
+    required String fileName,
     required int sizeInBytes,
+    required String volume,
     required DateTime backupDate,
   }) = _RemoteFileInfo;
 
