@@ -103,10 +103,14 @@ class ProcessAdapter {
     String executable,
     List<String> arguments, {
     int? expectedExitCode = 0,
+    Stream<String>? stdinLines,
   }) =>
-      streamRaw(executable, arguments, expectedExitCode: expectedExitCode)
-          .transform(systemEncoding.decoder)
-          .transform(const LineSplitter());
+      streamRaw(
+        executable,
+        arguments,
+        expectedExitCode: expectedExitCode,
+        stdin: stdinLines?.map(_addNewline).transform(systemEncoding.encoder),
+      ).transform(systemEncoding.decoder).transform(const LineSplitter());
 
   Future<Object?> streamJson(
     String executable,
@@ -120,4 +124,6 @@ class ProcessAdapter {
 
   String _logLine(String executable, List<String> arguments) =>
       '<<$executable ${arguments.join(' ')}>>';
+
+  String _addNewline(String line) => '$line\n';
 }

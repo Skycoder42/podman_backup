@@ -1,21 +1,51 @@
+import 'dart:async';
+
 import 'package:riverpod/riverpod.dart';
 
 import '../models/remote_file_info.dart';
 
 // coverage:ignore-start
 final remoteFileParserProvider = Provider(
-  (ref) => RemoteFileParser(),
+  (ref) => const RemoteFileTransformer(),
 );
 // coverage:ignore-end
 
-class RemoteFileParser {
+class RemoteFileTransformer
+    extends StreamTransformerBase<String, RemoteFileInfo> {
+  const RemoteFileTransformer();
+
+  @override
+  Stream<RemoteFileInfo> bind(Stream<String> files) =>
+      Stream.eventTransformed(files, RemoteFileTransformerSink.new);
+}
+
+class RemoteFileTransformerSink implements EventSink<String> {
   static final _splitRegexp = RegExp(r'\s+');
   static final _backupRegexp =
-      RegExp(r'.*-(\d{4})_(\d{2})_(\d{2})_(\d{2})_(\d{2})_(\d{2})$');
+      RegExp(r'.*-(\d{4})_(\d{2})_(\d{2})_(\d{2})_(\d{2})_(\d{2})\.tar\.xz$');
 
-  Stream<RemoteFileInfo> parse(Stream<String> files) => files.map(_mapLsLine);
+  final EventSink<RemoteFileInfo> _sink;
 
-  RemoteFileInfo _mapLsLine(String line) {
+  const RemoteFileTransformerSink(this._sink);
+
+  @override
+  void add(String event) {
+    try {
+      _sink.add(_mapLine(event));
+      // ignore: avoid_catches_without_on_clauses
+    } catch (e, s) {
+      _sink.addError(e, s);
+    }
+  }
+
+  @override
+  void addError(Object error, [StackTrace? stackTrace]) =>
+      _sink.addError(error, stackTrace);
+
+  @override
+  void close() => _sink.close();
+
+  RemoteFileInfo _mapLine(String line) {
     final [
       _, // permissions,
       _, // links
@@ -24,7 +54,7 @@ class RemoteFileParser {
       sizeInBytes,
       _, // last modified month
       _, // last modified day
-      _, // last modified time
+      _, // last modified year
       fileName,
       ...rest,
     ] = line.split(_splitRegexp);
