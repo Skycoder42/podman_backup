@@ -28,16 +28,18 @@ class CleanupController {
     Duration? maxAge,
     int? maxBytesTotal,
   }) async {
-    final filesAllowedToBeDeleted =
-        await _remoteFileProxy.collectDeletableFiles(remoteHost, minKeep);
+    final remoteFiles = _remoteFileProxy.listRemoteFiles(remoteHost);
 
-    final filesToDelete = _cleanupFilter.filterDeletableFiles(
-      filesAllowedToBeDeleted,
+    final filesToDelete = await _cleanupFilter.collectDeletableFiles(
+      remoteFiles,
+      minKeep: minKeep,
       maxKeep: maxKeep,
       maxAge: maxAge,
       maxBytesTotal: maxBytesTotal,
     );
 
-    await _remoteFileProxy.deleteFiles(remoteHost, filesToDelete);
+    if (filesToDelete.isNotEmpty) {
+      await _remoteFileProxy.deleteFiles(remoteHost, filesToDelete);
+    }
   }
 }
