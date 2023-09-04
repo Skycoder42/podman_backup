@@ -67,7 +67,7 @@ class Options {
           'Upload the backed up files and cleanup old backups.',
       BackupMode.backupOnly: 'Only perform the backup.',
       BackupMode.uploadOnly: 'Only upload previously backed up files.',
-      BackupMode.cleanupOnly: 'Only cleanup old backups on the remote.'
+      BackupMode.cleanupOnly: 'Only cleanup old backups on the remote.',
     },
   )
   final BackupMode backupMode;

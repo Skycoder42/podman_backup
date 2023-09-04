@@ -29,7 +29,7 @@ class PodmanAdapter {
           if (all) '--all',
           for (final filter in filters.entries) ...[
             '--filter',
-            '${filter.key}=${filter.value}'
+            '${filter.key}=${filter.value}',
           ],
         ],
         Container.fromJsonList,
@@ -46,7 +46,7 @@ class PodmanAdapter {
           'json',
           for (final filter in filters.entries) ...[
             '--filter',
-            '${filter.key}=${filter.value}'
+            '${filter.key}=${filter.value}',
           ],
         ],
         Volume.fromJsonList,

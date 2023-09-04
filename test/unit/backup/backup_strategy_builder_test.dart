@@ -45,7 +45,7 @@ void main() {
             .thenReturnAsync(
           const [
             Volume(name: testVolume1, labels: {}),
-            Volume(name: testVolume2, labels: {})
+            Volume(name: testVolume2, labels: {}),
           ],
         );
         when(() => mockPodmanAdapter.ps(filters: any(named: 'filters')))
@@ -82,7 +82,7 @@ void main() {
             Volume(
               name: testVolume2,
               labels: {testLabel: 'test-1.service'},
-            )
+            ),
           ],
         );
         when(() => mockPodmanAdapter.ps(filters: any(named: 'filters')))

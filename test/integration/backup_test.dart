@@ -120,7 +120,7 @@ class BackupTestCase extends IntegrationTestCase {
         volume21,
         volume22,
         volume23,
-        volume24
+        volume24,
       ];
 
       for (final volume in backedUpVolumes) {

@@ -237,7 +237,7 @@ void main() {
                   isTemplate: true,
                   preHook: true,
                 )
-              )
+              ),
             ],
             []
           ),
@@ -493,7 +493,7 @@ void main() {
               (
                 testVolume3,
                 Hook(unit: 'backup', type: 'service', isTemplate: true),
-              )
+              ),
             ],
             [testService2, testService3],
           ),

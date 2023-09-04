@@ -302,9 +302,9 @@ void main() {
               1,
               true,
               'yes',
-              [1.2, 3]
+              [1.2, 3],
             ],
-          }
+          },
         };
 
         final result = sut.streamJson('bash', [

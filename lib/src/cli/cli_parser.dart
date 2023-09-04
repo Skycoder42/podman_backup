@@ -8,7 +8,7 @@ import 'package:riverpod/riverpod.dart';
 
 import '../adapters/environment_adapter.dart';
 import '../adapters/posix_adapter.dart';
-import '../constants/pubspec.yaml.g.dart' as pubspec;
+import '../constants/pubspec.yaml.g.dart';
 import 'options.dart';
 
 // coverage:ignore-start
@@ -54,7 +54,7 @@ class CliParser {
         stdout
           ..write(Platform.script.pathSegments.last)
           ..write(' ')
-          ..writeln(pubspec.version);
+          ..writeln(Pubspec.version.canonical);
         exit(0);
       }
 
