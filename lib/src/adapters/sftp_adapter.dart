@@ -63,14 +63,19 @@ class SftpAdapter {
 
   BatchBuilder batch(String remoteHost) => BatchBuilder._(this, remoteHost);
 
-  Stream<String> _executeBatch(BatchBuilder batchBuilder) =>
-      _processAdapter.streamLines(
-        'sftp',
-        [
-          '-b',
-          '-',
-          batchBuilder._remoteHost,
-        ],
-        stdinLines: Stream.fromIterable(batchBuilder._commands),
-      );
+  Stream<String> _executeBatch(BatchBuilder batchBuilder) {
+    if (batchBuilder._commands.isEmpty) {
+      throw StateError('Cannot execute an empty batch');
+    }
+
+    return _processAdapter.streamLines(
+      'sftp',
+      [
+        '-b',
+        '-',
+        batchBuilder._remoteHost,
+      ],
+      stdinLines: Stream.fromIterable(batchBuilder._commands),
+    );
+  }
 }

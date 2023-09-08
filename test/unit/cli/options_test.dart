@@ -18,8 +18,11 @@ void main() {
       'backup is mapped correctly',
       const [
         (BackupMode.full, true),
+        (BackupMode.backupUpload, true),
+        (BackupMode.uploadCleanup, false),
         (BackupMode.backupOnly, true),
         (BackupMode.uploadOnly, false),
+        (BackupMode.cleanupOnly, false),
       ],
       (fixture) {
         expect(fixture.$1.backup, fixture.$2);
@@ -30,11 +33,29 @@ void main() {
       'upload is mapped correctly',
       const [
         (BackupMode.full, true),
+        (BackupMode.backupUpload, true),
+        (BackupMode.uploadCleanup, true),
         (BackupMode.backupOnly, false),
         (BackupMode.uploadOnly, true),
+        (BackupMode.cleanupOnly, false),
       ],
       (fixture) {
         expect(fixture.$1.upload, fixture.$2);
+      },
+    );
+
+    testData<(BackupMode, bool)>(
+      'cleanup is mapped correctly',
+      const [
+        (BackupMode.full, true),
+        (BackupMode.backupUpload, false),
+        (BackupMode.uploadCleanup, true),
+        (BackupMode.backupOnly, false),
+        (BackupMode.uploadOnly, false),
+        (BackupMode.cleanupOnly, true),
+      ],
+      (fixture) {
+        expect(fixture.$1.cleanup, fixture.$2);
       },
     );
   });

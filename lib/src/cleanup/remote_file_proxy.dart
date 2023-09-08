@@ -2,7 +2,7 @@ import 'package:riverpod/riverpod.dart';
 
 import '../adapters/sftp_adapter.dart';
 import '../models/remote_file_info.dart';
-import 'remote_file_parser.dart';
+import 'remote_file_transformer.dart';
 
 // coverage:ignore-start
 final remoteFileProxyProvider = Provider(

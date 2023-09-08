@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../models/remote_file_info.dart';
@@ -19,6 +20,7 @@ class RemoteFileTransformer
       Stream.eventTransformed(files, RemoteFileTransformerSink.new);
 }
 
+@visibleForTesting
 class RemoteFileTransformerSink implements EventSink<String> {
   static final _splitRegexp = RegExp(r'\s+');
   static final _backupRegexp = RegExp(

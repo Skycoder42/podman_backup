@@ -4,7 +4,7 @@ import 'package:riverpod/riverpod.dart';
 import 'package:rxdart/transformers.dart';
 
 import '../models/remote_file_info.dart';
-import 'map_values_x.dart';
+import 'map_extensions.dart';
 
 // coverage:ignore-start
 final cleanupFilterProvider = Provider(
@@ -83,11 +83,11 @@ class CleanupFilter {
           .toMap();
 
   _InfoMap _filterCount(_InfoMap infoMap, int minKeep, int maxKeep) {
-    if (maxKeep <= minKeep) {
+    if (maxKeep < minKeep) {
       throw ArgumentError.value(
         maxKeep,
         'maxKeep',
-        'Must be greater than minKeep ($minKeep)',
+        'Must be greater or equal than minKeep ($minKeep)',
       );
     }
 
@@ -107,21 +107,8 @@ class CleanupFilter {
   ) {
     var sizeSum = 0;
     return infos
-        .sortedByCompare(
-          (info) => info.sizeInBytes,
-          (a, b) => a - b,
-        )
+        .sortedBy((info) => info.backupDate)
+        .reversed
         .takeWhile((info) => (sizeSum += info.sizeInBytes) <= maxBytesTotal);
   }
-}
-
-extension _MapEntryStreamX<TKey, TValue> on Stream<MapEntry<TKey, TValue>> {
-  Stream<MapEntry<TKey, TNewValue>> mapValue<TNewValue>(
-    TNewValue Function(TValue) convert,
-  ) =>
-      map((e) => MapEntry(e.key, convert(e.value)));
-
-  Future<Map<TKey, TValue>> toMap() async => {
-        await for (final entry in this) entry.key: entry.value,
-      };
 }

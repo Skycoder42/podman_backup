@@ -230,6 +230,29 @@ void main() {
         ]);
       });
 
+      test('forwards stdin to child process if given', () {
+        final expectedLines = [
+          'line1',
+          'line2',
+          '',
+          'line3line4',
+        ];
+
+        final stream = sut.streamLines(
+          'cat',
+          const [],
+          stdinLines: Stream.fromIterable(expectedLines),
+        );
+
+        expect(
+          stream,
+          emitsInOrder(<dynamic>[
+            ...expectedLines,
+            emitsDone,
+          ]),
+        );
+      });
+
       test('emits error on unexpected exit code', () {
         const arguments = ['-c', 'echo line1; exit 1'];
         final stream = sut.streamLines('bash', arguments);
