@@ -101,6 +101,41 @@ class Options {
   final bool user;
 
   @CliOption(
+    abbr: 'M',
+    defaultsTo: 1,
+    valueHelp: 'count',
+    help: 'The minimum number of backups to keep per volume, '
+        'regardless of all the other cleanup filters. Must be at least 1.',
+  )
+  final int minKeep;
+
+  @CliOption(
+    abbr: 'K',
+    valueHelp: 'count',
+    help: 'The maximum number of backups to keep per volume. Must be at least '
+        'as much as --min-keep. If not specified, no limit is applied.',
+  )
+  final int? maxKeep;
+
+  @CliOption(
+    abbr: 'A',
+    valueHelp: 'days',
+    help: 'The maximum age (in days) a backup is allowed to be. '
+        'Older backups will be deleted. If not specified, no limit is applied.',
+  )
+  final int? maxAge;
+
+  @CliOption(
+    abbr: 'S',
+    valueHelp: 'MB',
+    help: 'The maximum total size (in Mega-Bytes) all backups combined are '
+        'allowed to take up on the backup device. If this limit is reached, '
+        'the oldest backups will be deleted. If not specified, '
+        'no limit is applied.',
+  )
+  final int? maxTotalSize;
+
+  @CliOption(
     convert: _logLevelFromString,
     abbr: 'L',
     allowed: [
@@ -141,11 +176,15 @@ class Options {
   const Options({
     required this.remoteHostRaw,
     required this.remoteHostRawWasParsed,
-    this.backupMode = BackupMode.full,
-    this.backupLabel = Options.defaultBackupLabel,
+    required this.backupMode,
+    required this.backupLabel,
     required this.backupCache,
     required this.user,
-    this.logLevel = Level.INFO,
+    required this.minKeep,
+    required this.maxKeep,
+    required this.maxAge,
+    required this.maxTotalSize,
+    required this.logLevel,
     this.version = false,
     this.help = false,
   });

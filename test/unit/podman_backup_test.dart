@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dart_test_tools/test.dart';
+import 'package:logging/logging.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:podman_backup/src/adapters/systemctl_adapter.dart';
 import 'package:podman_backup/src/backup/backup_controller.dart';
@@ -70,9 +71,15 @@ void main() {
           Options(
             remoteHostRaw: '',
             remoteHostRawWasParsed: true,
+            backupLabel: Options.defaultBackupLabel,
             backupCache: cacheDir,
             backupMode: BackupMode.backupOnly,
             user: true,
+            minKeep: 1,
+            maxKeep: null,
+            maxAge: null,
+            maxTotalSize: null,
+            logLevel: Level.ALL,
           ),
         );
 
@@ -97,9 +104,15 @@ void main() {
           Options(
             remoteHostRaw: testRemoteHost,
             remoteHostRawWasParsed: true,
+            backupLabel: Options.defaultBackupLabel,
             backupCache: cacheDir,
             backupMode: BackupMode.uploadOnly,
             user: true,
+            minKeep: 1,
+            maxKeep: null,
+            maxAge: null,
+            maxTotalSize: null,
+            logLevel: Level.ALL,
           ),
         );
 
@@ -126,7 +139,13 @@ void main() {
             remoteHostRawWasParsed: true,
             backupLabel: testLabel,
             backupCache: cacheDir,
+            backupMode: BackupMode.full,
             user: false,
+            minKeep: 1,
+            maxKeep: null,
+            maxAge: null,
+            maxTotalSize: null,
+            logLevel: Level.ALL,
           ),
         );
 

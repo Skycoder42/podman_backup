@@ -70,9 +70,15 @@ abstract class IntegrationTestCase {
           Options(
             remoteHostRaw: 'integration_test_local:${backupDir.path}',
             remoteHostRawWasParsed: true,
+            backupLabel: Options.defaultBackupLabel,
             backupMode: backupMode,
             backupCache: cacheDir,
             user: true,
+            minKeep: 1,
+            maxKeep: null,
+            maxAge: null,
+            maxTotalSize: null,
+            logLevel: Level.ALL,
           ),
         );
   }

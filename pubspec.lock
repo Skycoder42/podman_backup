@@ -61,10 +61,10 @@ packages:
     dependency: "direct dev"
     description:
       name: build_cli
-      sha256: "6f338cfdaa6705752f7a2a5eff5c65b7b0272c32c1545c5de41514ec1dbea311"
+      sha256: ce6a27bdf9c6a08c926c3dcbc07fe9ac512f6fcdc14230e40298799784035fb7
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.2"
+    version: "2.2.3"
   build_cli_annotations:
     dependency: "direct main"
     description:
@@ -93,10 +93,10 @@ packages:
     dependency: transitive
     description:
       name: build_resolvers
-      sha256: a7417cc44d9edb3f2c8760000270c99dba8c72ff66d0146772b8326565780745
+      sha256: d912852cce27c9e80a93603db721c267716894462e7033165178b91138587972
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.1"
+    version: "2.3.2"
   build_runner:
     dependency: "direct dev"
     description:
