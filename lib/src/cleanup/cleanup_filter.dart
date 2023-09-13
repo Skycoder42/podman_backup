@@ -3,19 +3,26 @@ import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:rxdart/transformers.dart';
 
+import '../adapters/date_time_adapter.dart';
 import '../models/remote_file_info.dart';
 import 'map_extensions.dart';
 
 // coverage:ignore-start
 final cleanupFilterProvider = Provider(
-  (ref) => CleanupFilter(),
+  (ref) => CleanupFilter(
+    ref.watch(dateTimeAdapterProvider),
+  ),
 );
 // coverage:ignore-end
 
 typedef _InfoMap = Map<String, Iterable<RemoteFileInfo>>;
 
 class CleanupFilter {
+  final DateTimeAdapter _dateTime;
+
   final _logger = Logger('$CleanupFilter');
+
+  CleanupFilter(this._dateTime);
 
   Future<Set<RemoteFileInfo>> collectDeletableFiles(
     Stream<RemoteFileInfo> remoteFiles, {
@@ -37,7 +44,7 @@ class CleanupFilter {
       return const {};
     }
 
-    final filesAllowedToBeDeleted = await _collectDeletableFiles(
+    final (filesAllowedToBeDeleted, bytesToKeep) = await _collectDeletableFiles(
       remoteFiles,
       minKeep,
     );
@@ -56,7 +63,7 @@ class CleanupFilter {
     // apply size filter
     var allFilesToKeep = filesToKeep.values.expand((infos) => infos);
     if (maxBytesTotal != null) {
-      allFilesToKeep = _filterSize(allFilesToKeep, maxBytesTotal);
+      allFilesToKeep = _filterSize(allFilesToKeep, bytesToKeep, maxBytesTotal);
     }
 
     // calculate deletion diff
@@ -67,20 +74,27 @@ class CleanupFilter {
     return filesToDelete;
   }
 
-  Future<_InfoMap> _collectDeletableFiles(
+  Future<(_InfoMap, int)> _collectDeletableFiles(
     Stream<RemoteFileInfo> files,
     int minKeep,
-  ) =>
-      files
-          .groupBy((info) => info.volume)
-          .asyncMap((group) async => MapEntry(group.key, await group.toList()))
-          .mapValue(
-            (infos) => infos
-                .sortedBy((info) => info.backupDate)
-                .reversed
-                .skip(minKeep),
-          )
-          .toMap();
+  ) async {
+    var bytesToKeep = 0;
+
+    final infoMap = await files
+        .groupBy((info) => info.volume)
+        .collect()
+        .mapValue(
+          (infos) => infos
+              .sortedBy((info) => info.backupDate)
+              .reversed
+              .extract(minKeep, (i) => bytesToKeep += i.sizeInBytes)
+              // .toList is required to not iterate this multiple times
+              .toList(),
+        )
+        .toMap();
+
+    return (infoMap, bytesToKeep);
+  }
 
   _InfoMap _filterCount(_InfoMap infoMap, int minKeep, int maxKeep) {
     if (maxKeep < minKeep) {
@@ -95,17 +109,18 @@ class CleanupFilter {
   }
 
   _InfoMap _filterAge(_InfoMap infoMap, Duration maxAge) {
-    final minDate = DateTime.now().subtract(maxAge);
+    final minDate = _dateTime.utcNow.subtract(maxAge);
     return infoMap.forValues(
-      (value) => value.where((info) => info.backupDate.isAfter(minDate)),
+      (value) => value.where((info) => !info.backupDate.isBefore(minDate)),
     );
   }
 
   Iterable<RemoteFileInfo> _filterSize(
     Iterable<RemoteFileInfo> infos,
+    int bytesToKeep,
     int maxBytesTotal,
   ) {
-    var sizeSum = 0;
+    var sizeSum = bytesToKeep;
     return infos
         .sortedBy((info) => info.backupDate)
         .reversed
