@@ -36,8 +36,8 @@ class FullTest extends IntegrationTestCase {
       await runSut();
 
       // assert
-      expect(cacheDir.list(), emitsDone);
-      expect(backupDir.list(), hasLength(1));
+      expect(cacheDir.list().length, completion(0));
+      expect(backupDir.list().length, completion(1));
       await verifyVolume(backupDir, volume1);
     });
   }

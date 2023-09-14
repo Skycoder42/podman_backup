@@ -34,7 +34,7 @@ class UploadTestCase extends IntegrationTestCase {
       expect(backedUpFile.readAsStringSync(), backupFileName);
 
       expect(backupFile.existsSync(), isFalse);
-      expect(cacheDir.list(), emitsDone);
+      expect(cacheDir.list().length, completion(0));
     });
 
     test('Can upload a multiple backed up files and replaces target files',
@@ -69,7 +69,7 @@ class UploadTestCase extends IntegrationTestCase {
       for (final backupFile in backupFiles) {
         expect(backupFile.existsSync(), isFalse);
       }
-      expect(cacheDir.list(), emitsDone);
+      expect(cacheDir.list().length, completion(0));
     });
   }
 

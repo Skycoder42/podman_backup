@@ -71,7 +71,7 @@ abstract class IntegrationTestCase {
     int minKeep = 1,
     int? maxKeep,
     Duration? maxAge,
-    int? maxTotalSizeBytes,
+    int? maxTotalSizeMegaBytes,
   }) async {
     final di = ProviderContainer();
     addTearDown(di.dispose);
@@ -86,7 +86,7 @@ abstract class IntegrationTestCase {
             minKeep: minKeep,
             maxKeep: maxKeep,
             maxAgeRaw: maxAge?.inDays,
-            maxTotalSizeRaw: maxTotalSizeBytes,
+            maxTotalSizeRaw: maxTotalSizeMegaBytes,
             logLevel: Level.ALL,
           ),
         );

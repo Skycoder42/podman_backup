@@ -84,7 +84,7 @@ class CleanupTestCase extends IntegrationTestCase {
       );
 
       // act
-      await _runSut(maxKeep: 2, maxTotalSizeBytes: 100 * 1024 * 1024);
+      await _runSut(maxKeep: 2, maxTotalSizeMegaBytes: 100);
 
       // assert
       expect(backupDir.list().length, completion(3));
@@ -100,7 +100,7 @@ class CleanupTestCase extends IntegrationTestCase {
     int minKeep = 1,
     int? maxKeep,
     Duration? maxAge,
-    int? maxTotalSizeBytes,
+    int? maxTotalSizeMegaBytes,
   }) =>
       runPodmanBackup(
         backupMode: BackupMode.cleanupOnly,
@@ -109,7 +109,7 @@ class CleanupTestCase extends IntegrationTestCase {
         minKeep: minKeep,
         maxKeep: maxKeep,
         maxAge: maxAge,
-        maxTotalSizeBytes: maxTotalSizeBytes,
+        maxTotalSizeMegaBytes: maxTotalSizeMegaBytes,
       );
 
   Future<File> _createUploadedBackup(
