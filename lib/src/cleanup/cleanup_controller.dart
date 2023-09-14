@@ -1,3 +1,4 @@
+import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'cleanup_filter.dart';
@@ -15,6 +16,7 @@ final cleanupControllerProvider = Provider(
 class CleanupController {
   final RemoteFileProxy _remoteFileProxy;
   final CleanupFilter _cleanupFilter;
+  final _logger = Logger('$CleanupController');
 
   CleanupController(
     this._remoteFileProxy,
@@ -28,6 +30,7 @@ class CleanupController {
     Duration? maxAge,
     int? maxBytesTotal,
   }) async {
+    _logger.info('Building cleanup strategy');
     final remoteFiles = _remoteFileProxy.listRemoteFiles(remoteHost);
 
     final filesToDelete = await _cleanupFilter.collectDeletableFiles(
@@ -39,7 +42,13 @@ class CleanupController {
     );
 
     if (filesToDelete.isNotEmpty) {
+      _logger.info(
+        'Executing cleanup - deleting ${filesToDelete.length} backups',
+      );
       await _remoteFileProxy.deleteFiles(remoteHost, filesToDelete);
+      _logger.info('Cleanup finished');
+    } else {
+      _logger.info('No backups need to be cleaned up!');
     }
   }
 }

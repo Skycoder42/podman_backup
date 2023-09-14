@@ -5,6 +5,7 @@ import 'package:logging/logging.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:podman_backup/src/adapters/systemctl_adapter.dart';
 import 'package:podman_backup/src/backup/backup_controller.dart';
+import 'package:podman_backup/src/cleanup/cleanup_controller.dart';
 import 'package:podman_backup/src/cli/options.dart';
 import 'package:podman_backup/src/podman_backup.dart';
 import 'package:podman_backup/src/upload/upload_controller.dart';
@@ -13,6 +14,8 @@ import 'package:test/test.dart';
 class MockBackupController extends Mock implements BackupController {}
 
 class MockUploadController extends Mock implements UploadController {}
+
+class MockCleanupController extends Mock implements CleanupController {}
 
 class MockSystemctlAdapter extends Mock implements SystemctlAdapter {}
 
@@ -24,6 +27,7 @@ void main() {
   group('$PodmanBackup', () {
     final mockBackupController = MockBackupController();
     final mockUploadController = MockUploadController();
+    final mockCleanupController = MockCleanupController();
     final mockSystemctlAdapter = MockSystemctlAdapter();
 
     late Directory testDir;
@@ -32,6 +36,7 @@ void main() {
     setUp(() async {
       reset(mockBackupController);
       reset(mockUploadController);
+      reset(mockCleanupController);
       reset(mockSystemctlAdapter);
 
       when(
@@ -46,12 +51,22 @@ void main() {
           cacheDir: any(named: 'cacheDir'),
         ),
       ).thenReturnAsync(null);
+      when(
+        () => mockCleanupController.cleanupOldBackups(
+          any(),
+          minKeep: any(named: 'minKeep'),
+          maxKeep: any(named: 'maxKeep'),
+          maxAge: any(named: 'maxAge'),
+          maxBytesTotal: any(named: 'maxBytesTotal'),
+        ),
+      ).thenReturnAsync(null);
 
       testDir = await Directory.systemTemp.createTemp();
       sut = PodmanBackup(
         mockSystemctlAdapter,
         mockBackupController,
         mockUploadController,
+        mockCleanupController,
       );
     });
 
@@ -61,6 +76,7 @@ void main() {
       verifyNoMoreInteractions(mockSystemctlAdapter);
       verifyNoMoreInteractions(mockUploadController);
       verifyNoMoreInteractions(mockUploadController);
+      verifyNoMoreInteractions(mockCleanupController);
     });
 
     group('run', () {
@@ -77,8 +93,8 @@ void main() {
             user: true,
             minKeep: 1,
             maxKeep: null,
-            maxAge: null,
-            maxTotalSize: null,
+            maxAgeRaw: null,
+            maxTotalSizeRaw: null,
             logLevel: Level.ALL,
           ),
         );
@@ -110,8 +126,8 @@ void main() {
             user: true,
             minKeep: 1,
             maxKeep: null,
-            maxAge: null,
-            maxTotalSize: null,
+            maxAgeRaw: null,
+            maxTotalSizeRaw: null,
             logLevel: Level.ALL,
           ),
         );
@@ -125,6 +141,40 @@ void main() {
         ]);
 
         expect(cacheDir.existsSync(), isTrue);
+      });
+
+      test('runs cleanup only', () async {
+        const testRemoteHost = 'test-host:/target';
+        final cacheDir =
+            await Directory.fromUri(testDir.uri.resolve('test/upload'))
+                .create(recursive: true);
+
+        await sut.run(
+          Options(
+            remoteHostRaw: testRemoteHost,
+            remoteHostRawWasParsed: true,
+            backupLabel: Options.defaultBackupLabel,
+            backupCache: cacheDir,
+            backupMode: BackupMode.cleanupOnly,
+            user: true,
+            minKeep: 3,
+            maxKeep: 5,
+            maxAgeRaw: 30,
+            maxTotalSizeRaw: 1024,
+            logLevel: Level.ALL,
+          ),
+        );
+
+        verifyInOrder([
+          () => mockSystemctlAdapter.runAsUser = true,
+          () => mockCleanupController.cleanupOldBackups(
+                testRemoteHost,
+                minKeep: 3,
+                maxKeep: 5,
+                maxAge: const Duration(days: 30),
+                maxBytesTotal: 1024 * 1024 * 1024,
+              ),
+        ]);
       });
 
       test('runs full backup', () async {
@@ -143,8 +193,8 @@ void main() {
             user: false,
             minKeep: 1,
             maxKeep: null,
-            maxAge: null,
-            maxTotalSize: null,
+            maxAgeRaw: null,
+            maxTotalSizeRaw: null,
             logLevel: Level.ALL,
           ),
         );
@@ -159,6 +209,10 @@ void main() {
                 remoteHost: testRemoteHost,
                 cacheDir: cacheDir,
               ),
+          () => mockCleanupController.cleanupOldBackups(
+                testRemoteHost,
+              ),
+          () => mockCleanupController,
         ]);
 
         expect(cacheDir.existsSync(), isTrue);

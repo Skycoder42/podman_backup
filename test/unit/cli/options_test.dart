@@ -143,5 +143,54 @@ void main() {
         expect(options.logLevel, fixture ?? Level.INFO);
       },
     );
+
+    group('getters', () {
+      test('getRemoteHost returns remote host', () {
+        const testRemoteHost = 'test-remote-host';
+        final parser = Options.buildArgParser(
+          mockEnvironmentAdapter,
+          mockPosixAdapter,
+        );
+        final options = Options.parseOptions(
+          parser.parse(const ['--remote', testRemoteHost]),
+        );
+
+        expect(options.getRemoteHost(), testRemoteHost);
+      });
+
+      testData<(List<String>, Duration?)>(
+        'getMaxAge returns correct value',
+        const [
+          ([], null),
+          (['--max-age', '10'], Duration(days: 10)),
+        ],
+        (fixture) {
+          final parser = Options.buildArgParser(
+            mockEnvironmentAdapter,
+            mockPosixAdapter,
+          );
+          final options = Options.parseOptions(parser.parse(fixture.$1));
+
+          expect(options.getMaxAge(), fixture.$2);
+        },
+      );
+
+      testData<(List<String>, int?)>(
+        'getMaxTotalSize returns correct value',
+        const [
+          ([], null),
+          (['--max-total-size', '10'], 10 * 1024 * 1024),
+        ],
+        (fixture) {
+          final parser = Options.buildArgParser(
+            mockEnvironmentAdapter,
+            mockPosixAdapter,
+          );
+          final options = Options.parseOptions(parser.parse(fixture.$1));
+
+          expect(options.getMaxTotalSize(), fixture.$2);
+        },
+      );
+    });
   });
 }

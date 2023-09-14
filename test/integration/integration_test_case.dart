@@ -10,7 +10,7 @@ import 'package:riverpod/riverpod.dart';
 import 'package:test/test.dart';
 
 abstract class IntegrationTestCase {
-  late String _timestampPrefix;
+  late String _timestampSuffix;
 
   @protected
   late Directory cacheDir;
@@ -32,11 +32,7 @@ abstract class IntegrationTestCase {
       cacheDir = await Directory.systemTemp.createTemp();
       backupDir = await Directory.systemTemp.createTemp();
 
-      _timestampPrefix = DateTime.now()
-          .toUtc()
-          .toIso8601String()
-          .substring(0, 10)
-          .replaceAll('-', '_');
+      _timestampSuffix = createTimestampSuffix(DateTime.now(), 10);
     });
 
     tearDown(() async {
@@ -54,15 +50,28 @@ abstract class IntegrationTestCase {
     group(name, build);
   }
 
+  String createTimestampSuffix(DateTime dateTime, [int cutAt = 19]) => dateTime
+      .toUtc()
+      .toIso8601String()
+      .substring(0, cutAt)
+      .replaceAll('-', '_')
+      .replaceAll(':', '_')
+      .replaceAll('.', '_')
+      .replaceAll('T', '_');
+
   @protected
   RegExp volumePattern(String volume) =>
-      RegExp('.*\\/$volume-$_timestampPrefix(_\\d{2}){3}.tar.xz');
+      RegExp('.*\\/$volume-$_timestampSuffix(_\\d{2}){3}.tar.xz');
 
   @protected
   Future<void> runPodmanBackup({
     required BackupMode backupMode,
     required Directory backupDir,
     required Directory cacheDir,
+    int minKeep = 1,
+    int? maxKeep,
+    Duration? maxAge,
+    int? maxTotalSizeBytes,
   }) async {
     final di = ProviderContainer();
     addTearDown(di.dispose);
@@ -74,10 +83,10 @@ abstract class IntegrationTestCase {
             backupMode: backupMode,
             backupCache: cacheDir,
             user: true,
-            minKeep: 1,
-            maxKeep: null,
-            maxAge: null,
-            maxTotalSize: null,
+            minKeep: minKeep,
+            maxKeep: maxKeep,
+            maxAgeRaw: maxAge?.inDays,
+            maxTotalSizeRaw: maxTotalSizeBytes,
             logLevel: Level.ALL,
           ),
         );

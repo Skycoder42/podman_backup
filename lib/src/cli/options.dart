@@ -52,6 +52,7 @@ class Options {
   )
   @internal
   final String? remoteHostRaw;
+  @internal
   final bool remoteHostRawWasParsed;
 
   @CliOption(
@@ -118,14 +119,17 @@ class Options {
   final int? maxKeep;
 
   @CliOption(
+    name: 'max-age',
     abbr: 'A',
     valueHelp: 'days',
     help: 'The maximum age (in days) a backup is allowed to be. '
         'Older backups will be deleted. If not specified, no limit is applied.',
   )
-  final int? maxAge;
+  @internal
+  final int? maxAgeRaw;
 
   @CliOption(
+    name: 'max-total-size',
     abbr: 'S',
     valueHelp: 'MB',
     help: 'The maximum total size (in Mega-Bytes) all backups combined are '
@@ -133,7 +137,8 @@ class Options {
         'the oldest backups will be deleted. If not specified, '
         'no limit is applied.',
   )
-  final int? maxTotalSize;
+  @internal
+  final int? maxTotalSizeRaw;
 
   @CliOption(
     convert: _logLevelFromString,
@@ -182,14 +187,20 @@ class Options {
     required this.user,
     required this.minKeep,
     required this.maxKeep,
-    required this.maxAge,
-    required this.maxTotalSize,
+    required this.maxAgeRaw,
+    required this.maxTotalSizeRaw,
     required this.logLevel,
     this.version = false,
     this.help = false,
   });
 
   String getRemoteHost() => remoteHostRaw!;
+
+  Duration? getMaxAge() =>
+      maxAgeRaw != null ? Duration(days: maxAgeRaw!) : null;
+
+  int? getMaxTotalSize() =>
+      maxTotalSizeRaw != null ? maxTotalSizeRaw! * _mb : null;
 
   static ArgParser buildArgParser(
     EnvironmentAdapter environmentAdapter,
@@ -223,3 +234,6 @@ Level _logLevelFromString(String level) =>
     Level.LEVELS.singleWhere((element) => element.name == level.toUpperCase());
 
 Directory _directoryFromString(String directory) => Directory(directory);
+
+const _kb = 1024;
+const _mb = 1024 * _kb;

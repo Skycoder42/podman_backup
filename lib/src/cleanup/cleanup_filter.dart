@@ -19,7 +19,6 @@ typedef _InfoMap = Map<String, Iterable<RemoteFileInfo>>;
 
 class CleanupFilter {
   final DateTimeAdapter _dateTime;
-
   final _logger = Logger('$CleanupFilter');
 
   CleanupFilter(this._dateTime);
@@ -44,6 +43,7 @@ class CleanupFilter {
       return const {};
     }
 
+    _logger.fine('Securing $minKeep backups for every volume');
     final (filesAllowedToBeDeleted, bytesToKeep) = await _collectDeletableFiles(
       remoteFiles,
       minKeep,
@@ -52,17 +52,23 @@ class CleanupFilter {
 
     // apply count filter
     if (maxKeep != null) {
+      _logger.fine('Filter out old backups if there are more than $maxKeep');
       filesToKeep = _filterCount(filesToKeep, minKeep, maxKeep);
     }
 
     // apply age filter
     if (maxAge != null) {
+      _logger.fine('Filter out backups older than ${maxAge.inDays} days');
       filesToKeep = _filterAge(filesToKeep, maxAge);
     }
 
     // apply size filter
     var allFilesToKeep = filesToKeep.values.expand((infos) => infos);
     if (maxBytesTotal != null) {
+      _logger.fine(
+        'Filter out old backups to limit backups size to '
+        '${maxBytesTotal / (1024 * 1024)} MB',
+      );
       allFilesToKeep = _filterSize(allFilesToKeep, bytesToKeep, maxBytesTotal);
     }
 
@@ -71,6 +77,10 @@ class CleanupFilter {
         .expand((infos) => infos)
         .toSet()
         .difference(allFilesToKeep.toSet());
+    _logger.fine('Found ${filesToDelete.length} backups to be deleted');
+    for (final file in filesToDelete) {
+      _logger.finest('- ${file.fileName}');
+    }
     return filesToDelete;
   }
 
