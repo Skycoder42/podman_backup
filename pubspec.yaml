@@ -22,7 +22,7 @@ dependencies:
   logging: ^1.2.0
   meta: ^1.11.0
   posix: ^5.0.0
-  riverpod: ^2.4.5
+  riverpod: ^2.4.6
   rxdart: ^0.27.7
 
 dev_dependencies:
