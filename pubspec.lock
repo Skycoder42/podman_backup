@@ -557,10 +557,10 @@ packages:
     dependency: "direct main"
     description:
       name: riverpod
-      sha256: "2e84315036e64c59affaff7443dea51247bc2fe704461a32f26a27986fb63d55"
+      sha256: f003970b2b47fc708f0697299e32693fd8f5e2d490edcba65e4987f88b840cf4
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.5"
+    version: "2.4.7"
   rxdart:
     dependency: "direct main"
     description:
