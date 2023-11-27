@@ -6,5 +6,6 @@ presets:
   integration:
     timeout: 2x
     test_on: linux
+    concurrency: 1
     paths:
       - test/integration
