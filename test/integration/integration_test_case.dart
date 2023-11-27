@@ -173,13 +173,14 @@ abstract class IntegrationTestCase {
     addTearDown(() => _systemctl(['stop', service]));
   }
 
-  void logUnitOnFailure(String unitName) =>
-      // ignore: discarded_futures
-      addTearDown(() => _run('journalctl', ['--user', '-u', unitName]));
+  void logUnitOnFailure(String unitName) => addTearDown(
+        // ignore: discarded_futures
+        () => _run('journalctl', ['--user', '--no-pager', '-u', unitName]),
+      );
 
   @protected
   Stream<String> journalctl(String service) =>
-      _stream('journalctl', ['--user', '-u', service]);
+      _stream('journalctl', ['--user', '--no-pager', '-u', service]);
 
   Future<void> _podman(List<String> arguments) => _run('podman', arguments);
 

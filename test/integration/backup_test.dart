@@ -216,7 +216,6 @@ class BackupTestCase extends IntegrationTestCase {
       journalctl(service).toList(),
       completion(
         allOf(
-          _containsStatesInOrder(service, states),
           _containsNStates(
             stateCounts[_State.started]!,
             service,
@@ -227,6 +226,7 @@ class BackupTestCase extends IntegrationTestCase {
             service,
             _State.stopped,
           ),
+          _containsStatesInOrder(service, states),
         ),
       ),
     );
