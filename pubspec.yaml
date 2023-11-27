@@ -1,11 +1,11 @@
 name: podman_backup
 description: A small dart tool to push regular backups of podman volumes to a remote.
 homepage: https://github.com/Skycoder42/podman_backup
-version: 1.3.0
+version: 1.3.1
 publish_to: none
 
 environment:
-  sdk: ^3.1.0
+  sdk: ^3.2.0
 
 platforms:
   linux:
