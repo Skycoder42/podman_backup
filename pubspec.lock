@@ -269,10 +269,10 @@ packages:
     dependency: "direct dev"
     description:
       name: dart_test_tools
-      sha256: "0b39c6362e5cb10729b1b96aa5a5a1d43e922c2e8de326e0d9673fddebfca137"
+      sha256: cefdbf87014edef9ac6f8e2caf48205361e43d64a43480e2176ae2145f40db85
       url: "https://pub.dev"
     source: hosted
-    version: "5.5.0"
+    version: "5.6.0"
   dotenv:
     dependency: transitive
     description:
