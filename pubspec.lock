@@ -157,10 +157,10 @@ packages:
     dependency: transitive
     description:
       name: cider
-      sha256: "918ded9f4473d8042247b9e66a90101eb5ff72935c31df5d511a55f14e085ef0"
+      sha256: "8e147719af74ca3df4864ba0bf1674606dfa691d659d05b93884487d96f09ede"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.4"
+    version: "0.2.6"
   cli_util:
     dependency: transitive
     description:
@@ -229,26 +229,26 @@ packages:
     dependency: "direct dev"
     description:
       name: custom_lint
-      sha256: "22bd87a362f433ba6aae127a7bac2838645270737f3721b180916d7c5946cb5d"
+      sha256: f89ff83efdba7c8996e86bb3bad0b759d58f9b19ae4d0e277a386ddd8b481217
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.11"
+    version: "0.6.0"
   custom_lint_builder:
     dependency: transitive
     description:
       name: custom_lint_builder
-      sha256: "7d0b094266b5c357769fffb920826b1a08373290f3c5c44b86253aae6873d5fc"
+      sha256: "9cdd9987feaa6925ec5f98d64de4fbbb5d94248ff77bbf2489366efad6c4baef"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.11"
+    version: "0.6.0"
   custom_lint_core:
     dependency: transitive
     description:
       name: custom_lint_core
-      sha256: "77dd37e9afe5ed86fc75de22ed3dfae5afb75303111358766550af23e7de53cd"
+      sha256: "9003a91409c9f1db6e2e50b4870d1d5e802e5923b25f7261bf3cb3e11ea9d4fb"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.11"
+    version: "0.6.0"
   dart_pre_commit:
     dependency: "direct dev"
     description:
@@ -269,10 +269,10 @@ packages:
     dependency: "direct dev"
     description:
       name: dart_test_tools
-      sha256: cefdbf87014edef9ac6f8e2caf48205361e43d64a43480e2176ae2145f40db85
+      sha256: ad69ce12a8690c46537295b53f81cc3664136f8118b53159d9d50d36162194be
       url: "https://pub.dev"
     source: hosted
-    version: "5.6.0"
+    version: "5.6.1"
   dotenv:
     dependency: transitive
     description:
@@ -413,10 +413,10 @@ packages:
     dependency: transitive
     description:
       name: lint
-      sha256: "77b3777e8e9adca8e942da1e835882ae3248dfa00488a2ebbdbc1f1a4aa3f4a7"
+      sha256: d758a5211fce7fd3f5e316f804daefecdc34c7e53559716125e6da7388ae8565
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.0"
+    version: "2.3.0"
   logging:
     dependency: "direct main"
     description:
@@ -685,10 +685,10 @@ packages:
     dependency: transitive
     description:
       name: synchronized
-      sha256: "5fcbd27688af6082f5abd611af56ee575342c30e87541d0245f7ff99faa02c60"
+      sha256: "539ef412b170d65ecdafd780f924e5be3f60032a1128df156adad6c5b373d558"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.0"
+    version: "3.1.0+1"
   term_glyph:
     dependency: transitive
     description:
@@ -757,10 +757,10 @@ packages:
     dependency: transitive
     description:
       name: version_manipulation
-      sha256: "9ef166939794d5bd80309cc6dbfe33c9f81674ba1c73ac117a866fd2dc746846"
+      sha256: e90782d610bde19765d2808ec06bc8ed9e04640a4dd07d1a3d370728ce9dae7f
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.2"
+    version: "0.2.0"
   vm_service:
     dependency: transitive
     description:
@@ -805,9 +805,9 @@ packages:
     dependency: transitive
     description:
       name: yaml_writer
-      sha256: "76740047e3d4b1687c588bc8cb3466bea55a7d915a91bb23e99ea2a8c58337b6"
+      sha256: f182931a598f9a3fd29ff528f0caab98fffa713583e30c12c7a27ce0b66c1308
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.3"
+    version: "2.0.0"
 sdks:
   dart: ">=3.1.0 <4.0.0"
