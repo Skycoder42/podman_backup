@@ -33,6 +33,7 @@ jobs:
     permissions:
       contents: write
     with:
+      enabledPlatforms: ${{ needs.ci.outputs.enabledPlatforms }}
       buildRunner: true
 
   aur:
