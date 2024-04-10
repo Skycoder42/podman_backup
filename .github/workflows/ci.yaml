@@ -54,25 +54,6 @@ jobs:
     permissions:
       contents: write
     with:
-      version: ${{ needs.cd.outputs.releaseVersion }}
-
-  package_cloud:
-    name: Upload to package cloud
-    needs:
-      - cd
-      - deb
-    if: needs.cd.outputs.releaseCreated == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download debian package from release
-        run: >-
-          curl -fL
-          -o 'podman_backup_${{ needs.cd.outputs.releaseVersion }}-1_amd64.deb'
-          'https://github.com/Skycoder42/podman_backup/releases/download/v${{ needs.cd.outputs.releaseVersion }}/podman_backup_${{ needs.cd.outputs.releaseVersion }}-1_amd64.deb'
-      - name: Deploy to packagecloud.io
-        uses: lpenz/ghaction-packagecloud@v0.4
-        with:
-          repository: podman_backup/ubuntu/jammy
-          files: podman_backup_${{ needs.cd.outputs.releaseVersion }}-1_amd64.deb
-        env:
-          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+      packagecloudRepository: podman_backup/ubuntu/jammy
+    secrets:
+      packagecloudToken: ${{ secrets.PACKAGECLOUD_TOKEN }}
