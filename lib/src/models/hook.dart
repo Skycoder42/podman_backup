@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'hook.freezed.dart';
 
 @freezed
-class Hook with _$Hook {
+sealed class Hook with _$Hook {
   static final _parseRegexp = RegExp(r'^(\!)?(.*[^@])(@)?\.(\w+)?$');
 
   const factory Hook({

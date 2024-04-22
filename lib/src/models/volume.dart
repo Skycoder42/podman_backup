@@ -7,7 +7,7 @@ part 'volume.freezed.dart';
 part 'volume.g.dart';
 
 @freezed
-class Volume with _$Volume {
+sealed class Volume with _$Volume {
   const factory Volume({
     @JsonKey(name: 'Name') required String name,
     @JsonKey(name: 'Labels') required Map<String, String> labels,

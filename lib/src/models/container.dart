@@ -7,7 +7,7 @@ part 'container.freezed.dart';
 part 'container.g.dart';
 
 @freezed
-class Container with _$Container {
+sealed class Container with _$Container {
   const factory Container({
     @JsonKey(name: 'Id') required String id,
     @JsonKey(name: 'Exited') required bool exited,
