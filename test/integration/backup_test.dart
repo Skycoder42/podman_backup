@@ -257,7 +257,7 @@ class BackupTestCase extends IntegrationTestCase {
       );
 
   String _logStatement(String service, _State state) =>
-      '${state.value} Podman $service.';
+      '${state.value} $service - Podman $service.';
 }
 
 enum _State {
