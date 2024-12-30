@@ -130,13 +130,13 @@ void main() {
       expect(
         stream.collect(),
         emitsInAnyOrder([
-          isA<MapEntry>()
+          isA<MapEntry<int, Iterable<int>>>()
               .having((m) => m.key, 'key', 0)
               .having((m) => m.value, 'value', const [0, 3, 6, 9]),
-          isA<MapEntry>()
+          isA<MapEntry<int, Iterable<int>>>()
               .having((m) => m.key, 'key', 1)
               .having((m) => m.value, 'value', const [1, 4, 7]),
-          isA<MapEntry>()
+          isA<MapEntry<int, Iterable<int>>>()
               .having((m) => m.key, 'key', 2)
               .having((m) => m.value, 'value', const [2, 5, 8]),
           emitsDone,

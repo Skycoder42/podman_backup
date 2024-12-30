@@ -183,7 +183,7 @@ class BackupTestCase extends IntegrationTestCase {
       await verifyVolume(cacheDir, volume2);
 
       // wait a few seconds for containers to be started
-      await Future.delayed(const Duration(seconds: 5));
+      await Future<void>.delayed(const Duration(seconds: 5));
       _expectStateLogs('test-pod.service', const [
         _State.started,
         _State.stopped,

@@ -40,6 +40,6 @@ class RemoteFileProxy {
       deleteBatch.rm(file.fileName, noEcho: true);
     }
 
-    await deleteBatch.execute().drain();
+    await deleteBatch.execute().drain<void>();
   }
 }

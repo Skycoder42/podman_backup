@@ -75,7 +75,7 @@ void main() {
             ignoreResult: fixture.$4,
           );
 
-        await batch.execute().drain();
+        await batch.execute().drain<void>();
 
         verify(
           () => mockProcessAdapter.streamLines(
@@ -109,7 +109,7 @@ void main() {
             ignoreResult: fixture.$2,
           );
 
-        await batch.execute().drain();
+        await batch.execute().drain<void>();
 
         verify(
           () => mockProcessAdapter.streamLines(
@@ -129,7 +129,7 @@ void main() {
 
     test('throws for empty batch', () async {
       expect(
-        () => sut.batch(testRemoteHost).execute().drain(),
+        () => sut.batch(testRemoteHost).execute().drain<void>(),
         throwsStateError,
       );
     });
