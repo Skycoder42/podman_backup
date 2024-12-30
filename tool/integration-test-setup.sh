@@ -22,7 +22,7 @@ popd
 echo ::endgroup::
 
 echo ::group::Setup SSH
-sudo systemctl start sshd.service
+sudo systemctl start ssh.service
 
 mkdir -p ~/.ssh && chmod 700 ~/.ssh
 ssh-keygen -t ed25519 -N '' -f ~/.ssh/id_ed25519
