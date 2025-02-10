@@ -31,7 +31,7 @@ dev_dependencies:
   custom_lint: ^0.7.0
   dart_pre_commit: ^5.4.1
   dart_test_tools: ^6.0.1
-  freezed: ^2.5.7
+  freezed: ^3.0.0-0.0.dev
   json_serializable: ^6.9.0
   mocktail: ^1.0.4
   pubspec_generator: ^4.0.0
