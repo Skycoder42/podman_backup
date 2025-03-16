@@ -3,4 +3,3 @@ include: package:dart_test_tools/strict.yaml
 analyzer:
   exclude:
     - "**.g.dart"
-    - lib/gen/package_metadata.dart

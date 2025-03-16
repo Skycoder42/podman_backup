@@ -19,6 +19,7 @@ jobs:
       coverageExclude: >-
         "**/*.freezed.dart"
         "**/*.g.dart"
+        "lib/gen/package_metadata.dart"
       integrationTestPaths: -P integration
       integrationTestSetup: >-
         {
