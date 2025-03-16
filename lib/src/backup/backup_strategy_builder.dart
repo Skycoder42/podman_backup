@@ -9,9 +9,7 @@ import 'backup_strategy.dart';
 
 // coverage:ignore-start
 final backupStrategyBuilderProvider = Provider(
-  (ref) => BackupStrategyBuilder(
-    ref.watch(podmanAdapterProvider),
-  ),
+  (ref) => BackupStrategyBuilder(ref.watch(podmanAdapterProvider)),
 );
 // coverage:ignore-end
 
@@ -21,14 +19,10 @@ class BackupStrategyBuilder {
 
   BackupStrategyBuilder(this._podmanAdapter);
 
-  Future<BackupStrategy> buildStrategy({
-    required String backupLabel,
-  }) async {
+  Future<BackupStrategy> buildStrategy({required String backupLabel}) async {
     _logger.fine('Loading volumes with label $backupLabel');
     final volumes = await _podmanAdapter.volumeList(
-      filters: {
-        'label': backupLabel,
-      },
+      filters: {'label': backupLabel},
     );
     _logger.finest('Found volumes: $volumes');
 
@@ -62,9 +56,7 @@ class BackupStrategyBuilder {
 
   Stream<Container> _findAttachedContainers(Volume volume) async* {
     final containers = await _podmanAdapter.ps(
-      filters: {
-        'volume': volume.name,
-      },
+      filters: {'volume': volume.name},
     );
 
     yield* Stream.fromIterable(containers).asyncMap(_findPodInfraContainer);

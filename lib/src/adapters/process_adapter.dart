@@ -6,9 +6,7 @@ import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 // coverage:ignore-start
-final processAdapterProvider = Provider(
-  (ref) => ProcessAdapter(stderr),
-);
+final processAdapterProvider = Provider((ref) => ProcessAdapter(stderr));
 // coverage:ignore-end
 
 class ProcessFailed implements Exception {
@@ -20,7 +18,8 @@ class ProcessFailed implements Exception {
 
   // coverage:ignore-start
   @override
-  String toString() => 'ProcessFailed: $executable ${arguments.join(' ')} '
+  String toString() =>
+      'ProcessFailed: $executable ${arguments.join(' ')} '
       'failed with exit code $exitCode';
   // coverage:ignore-end
 }
@@ -45,9 +44,7 @@ class ProcessAdapter {
     );
 
     final exitCode = await proc.exitCode;
-    _logger.finer(
-      '$logLine completed with exit code: $exitCode',
-    );
+    _logger.finer('$logLine completed with exit code: $exitCode');
     if (expectedExitCode != null) {
       if (exitCode != expectedExitCode) {
         throw ProcessFailed(executable, arguments, exitCode);
@@ -65,10 +62,7 @@ class ProcessAdapter {
   }) async* {
     final logLine = _logLine(executable, arguments);
     _logger.finer('Streaming $logLine...');
-    final proc = await Process.start(
-      executable,
-      arguments,
-    );
+    final proc = await Process.start(executable, arguments);
 
     Future<void>? stdinPipeDone;
     if (stdin != null) {
@@ -86,9 +80,7 @@ class ProcessAdapter {
       await stdinPipeDone;
 
       final exitCode = await proc.exitCode;
-      _logger.finer(
-        '$logLine completed with exit code: $exitCode',
-      );
+      _logger.finer('$logLine completed with exit code: $exitCode');
       if (expectedExitCode != null) {
         if (exitCode != expectedExitCode) {
           throw ProcessFailed(executable, arguments, exitCode);
@@ -104,23 +96,23 @@ class ProcessAdapter {
     List<String> arguments, {
     int? expectedExitCode = 0,
     Stream<String>? stdinLines,
-  }) =>
-      streamRaw(
-        executable,
-        arguments,
-        expectedExitCode: expectedExitCode,
-        stdin: stdinLines?.map(_addNewline).transform(systemEncoding.encoder),
-      ).transform(systemEncoding.decoder).transform(const LineSplitter());
+  }) => streamRaw(
+    executable,
+    arguments,
+    expectedExitCode: expectedExitCode,
+    stdin: stdinLines?.map(_addNewline).transform(systemEncoding.encoder),
+  ).transform(systemEncoding.decoder).transform(const LineSplitter());
 
   Future<Object?> streamJson(
     String executable,
     List<String> arguments, {
     int? expectedExitCode = 0,
   }) =>
-      streamRaw(executable, arguments, expectedExitCode: expectedExitCode)
-          .transform(systemEncoding.decoder)
-          .transform(json.decoder)
-          .single;
+      streamRaw(
+        executable,
+        arguments,
+        expectedExitCode: expectedExitCode,
+      ).transform(systemEncoding.decoder).transform(json.decoder).single;
 
   String _logLine(String executable, List<String> arguments) =>
       '<<$executable ${arguments.join(' ')}>>';

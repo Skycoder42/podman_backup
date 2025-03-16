@@ -11,7 +11,8 @@ import 'package:test/test.dart';
 class MockEventSink<T> extends Mock implements EventSink<T> {}
 
 void main() {
-  const testLine = '-rw-r--r-- 1 vscode vscode  1203 Sep  5 2023 '
+  const testLine =
+      '-rw-r--r-- 1 vscode vscode  1203 Sep  5 2023 '
       'my-backup-file-2023_04_12_10_15_44.tar.xz';
   final testRemoteFileInfo = RemoteFileInfo(
     fileName: 'my-backup-file-2023_04_12_10_15_44.tar.xz',
@@ -39,9 +40,7 @@ void main() {
       test('adds mapped line to sink', () {
         sut.add(testLine);
 
-        verify(
-          () => mockEventSink.add(testRemoteFileInfo),
-        );
+        verify(() => mockEventSink.add(testRemoteFileInfo));
       });
 
       testData<(String, Matcher)>(
@@ -53,7 +52,7 @@ void main() {
               (m) => m.message,
               'message',
               contains('Pattern matching error'),
-            )
+            ),
           ),
           (
             '1 2 3 4 5 6 7 8 9 extra_element',
@@ -77,11 +76,7 @@ void main() {
                   'message',
                   'Not a valid backup file name',
                 )
-                .having(
-                  (m) => m.source,
-                  'source',
-                  'invalid_backup_file_name',
-                ),
+                .having((m) => m.source, 'source', 'invalid_backup_file_name'),
           ),
           (
             '1 2 3 4 not_a_number 6 7 8 volume-0001_01_01_00_00_00.tar.xz',

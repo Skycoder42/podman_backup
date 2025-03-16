@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 import 'dart:math';
 
 import 'package:dart_test_tools/test.dart';
@@ -27,18 +29,16 @@ void main() {
     setUp(() {
       reset(mockDateTimeAdapter);
 
-      when(() => mockDateTimeAdapter.utcNow)
-          .thenReturn(DateTime.utc(2023, 1, 15));
+      when(
+        () => mockDateTimeAdapter.utcNow,
+      ).thenReturn(DateTime.utc(2023, 1, 15));
 
       sut = CleanupFilter(mockDateTimeAdapter);
     });
 
-    test('throws if minKeep is less than 1', () async {
+    test('throws if minKeep is less than 1', () {
       expect(
-        () => sut.collectDeletableFiles(
-          const Stream.empty(),
-          minKeep: 0,
-        ),
+        () => sut.collectDeletableFiles(const Stream.empty(), minKeep: 0),
         throwsA(
           isArgumentError
               .having((m) => m.name, 'name', 'minKeep')
@@ -49,7 +49,7 @@ void main() {
 
     test(
       'logs warning and returns empty set if no cleanup options are specified',
-      () async {
+      () {
         expect(
           Logger.root.onRecord,
           emits(
@@ -60,28 +60,20 @@ void main() {
         );
 
         expect(
-          sut.collectDeletableFiles(
-            const Stream.empty(),
-            minKeep: 1,
-          ),
+          sut.collectDeletableFiles(const Stream.empty(), minKeep: 1),
           completion(isEmpty),
         );
       },
     );
 
     testData<
-        (
-          List<RemoteFileInfo>,
-          int,
-          int?,
-          Duration?,
-          int?,
-          Set<RemoteFileInfo>
-        )>(
+      (List<RemoteFileInfo>, int, int?, Duration?, int?, Set<RemoteFileInfo>)
+    >(
       'correctly determines files to be deleted',
-      dataToString: (fixture) =>
-          'minKeep: ${fixture.$2}, maxKeep: ${fixture.$3}, '
-          'maxAge: ${fixture.$4?.inDays}, maxBytesTotal: ${fixture.$5}',
+      dataToString:
+          (fixture) =>
+              'minKeep: ${fixture.$2}, maxKeep: ${fixture.$3}, '
+              'maxAge: ${fixture.$4?.inDays}, maxBytesTotal: ${fixture.$5}',
       [
         ([], 1, null, null, null, {}),
         (
@@ -104,7 +96,7 @@ void main() {
             rfi('volume1', DateTime.utc(2023)),
             rfi('volume2', DateTime.utc(2023, 4)),
             rfi('volume3', DateTime.utc(2023, 7)),
-          }
+          },
         ),
         (
           [
@@ -119,9 +111,7 @@ void main() {
           2,
           null,
           null,
-          {
-            rfi('volume1', DateTime.utc(2023)),
-          }
+          {rfi('volume1', DateTime.utc(2023))},
         ),
         (
           [
@@ -129,8 +119,11 @@ void main() {
             rfi('volume1', DateTime.utc(2023, 1, 9)),
             rfi(
               'volume1',
-              DateTime.utc(2023, 1, 10)
-                  .subtract(const Duration(microseconds: 1)),
+              DateTime.utc(
+                2023,
+                1,
+                10,
+              ).subtract(const Duration(microseconds: 1)),
             ),
             rfi('volume1', DateTime.utc(2023, 1, 10)),
             rfi('volume1', DateTime.utc(2023, 1, 11)),
@@ -148,11 +141,14 @@ void main() {
             rfi('volume1', DateTime.utc(2023, 1, 9)),
             rfi(
               'volume1',
-              DateTime.utc(2023, 1, 10)
-                  .subtract(const Duration(microseconds: 1)),
+              DateTime.utc(
+                2023,
+                1,
+                10,
+              ).subtract(const Duration(microseconds: 1)),
             ),
             rfi('volume2', DateTime.utc(2023, 1, 5)),
-          }
+          },
         ),
         (
           [
@@ -183,7 +179,7 @@ void main() {
             rfi('volume3', DateTime.utc(2023, 1, 4), 104),
             rfi('volume1', DateTime.utc(2023, 1, 6), 106),
             rfi('volume1', DateTime.utc(2023, 1, 7), 107),
-          }
+          },
         ),
         (
           [
@@ -208,7 +204,7 @@ void main() {
             rfi('volume2', DateTime.utc(2023, 1, 4)),
             rfi('volume2', DateTime.utc(2023, 1, 9)),
             rfi('volume3', DateTime.utc(2023, 1, 4)),
-          }
+          },
         ),
         (
           [
@@ -228,7 +224,7 @@ void main() {
             rfi('volume1', DateTime.utc(2023, 1, 11), 500),
             rfi('volume1', DateTime.utc(2023, 1, 12), 400),
             rfi('volume2', DateTime.utc(2023, 1, 5), 400),
-          }
+          },
         ),
         (
           [
@@ -251,7 +247,7 @@ void main() {
             rfi('volume1', DateTime.utc(2023, 1, 9), 400),
             rfi('volume1', DateTime.utc(2023, 1, 10), 300),
             rfi('volume2', DateTime.utc(2023, 1, 10), 300),
-          }
+          },
         ),
         (
           [
@@ -278,7 +274,7 @@ void main() {
             rfi('volume2', DateTime.utc(2023, 1, 5), 300),
             rfi('volume2', DateTime.utc(2023, 1, 10), 300),
             rfi('volume3', DateTime.utc(2023, 1, 10), 300),
-          }
+          },
         ),
       ],
       (fixture) async {

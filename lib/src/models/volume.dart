@@ -15,7 +15,8 @@ sealed class Volume with _$Volume {
 
   factory Volume.fromJson(Map<String, dynamic> json) => _$VolumeFromJson(json);
 
-  static List<Volume> fromJsonList(List<dynamic> json) => json
-      .map((dynamic e) => Volume.fromJson(e as Map<String, dynamic>))
-      .toList();
+  static List<Volume> fromJsonList(List<dynamic> json) =>
+      json
+          .map((dynamic e) => Volume.fromJson(e as Map<String, dynamic>))
+          .toList();
 }

@@ -17,7 +17,7 @@ enum BackupMode {
   uploadCleanup,
   backupOnly,
   uploadOnly,
-  cleanupOnly;
+  cleanupOnly,
 }
 
 extension BackupModeX on BackupMode {
@@ -47,7 +47,8 @@ class Options {
     name: 'remote',
     abbr: 'r',
     valueHelp: 'host',
-    help: 'The remote <host> to send the backups to, '
+    help:
+        'The remote <host> to send the backups to, '
         'in the format: [USER@]HOST:DEST. (required)',
   )
   @internal
@@ -77,7 +78,8 @@ class Options {
     abbr: 'l',
     defaultsTo: Options.defaultBackupLabel,
     valueHelp: 'label',
-    help: 'The label that volumes should be filtered by '
+    help:
+        'The label that volumes should be filtered by '
         'to detect which volumes to backup.',
   )
   final String backupLabel;
@@ -87,7 +89,8 @@ class Options {
     abbr: 'c',
     valueHelp: 'directory',
     provideDefaultToOverride: true,
-    help: 'The directory to cache backups in before uploading them to '
+    help:
+        'The directory to cache backups in before uploading them to '
         'the backup host.',
   )
   final Directory backupCache;
@@ -95,7 +98,8 @@ class Options {
   @CliOption(
     negatable: true,
     provideDefaultToOverride: true,
-    help: 'Specifies whether systemctl should be invoked as user '
+    help:
+        'Specifies whether systemctl should be invoked as user '
         '(by adding "--user" to every command) or as system. The default is '
         'set automatically depending on whether it is running as root or not.',
   )
@@ -105,7 +109,8 @@ class Options {
     abbr: 'M',
     defaultsTo: 1,
     valueHelp: 'count',
-    help: 'The minimum number of backups to keep per volume, '
+    help:
+        'The minimum number of backups to keep per volume, '
         'regardless of all the other cleanup filters. Must be at least 1.',
   )
   final int minKeep;
@@ -113,7 +118,8 @@ class Options {
   @CliOption(
     abbr: 'K',
     valueHelp: 'count',
-    help: 'The maximum number of backups to keep per volume. Must be at least '
+    help:
+        'The maximum number of backups to keep per volume. Must be at least '
         'as much as --min-keep. If not specified, no limit is applied.',
   )
   final int? maxKeep;
@@ -122,7 +128,8 @@ class Options {
     name: 'max-age',
     abbr: 'A',
     valueHelp: 'days',
-    help: 'The maximum age (in days) a backup is allowed to be. '
+    help:
+        'The maximum age (in days) a backup is allowed to be. '
         'Older backups will be deleted. If not specified, no limit is applied.',
   )
   @internal
@@ -132,7 +139,8 @@ class Options {
     name: 'max-total-size',
     abbr: 'S',
     valueHelp: 'MB',
-    help: 'The maximum total size (in Mega-Bytes) all backups combined are '
+    help:
+        'The maximum total size (in Mega-Bytes) all backups combined are '
         'allowed to take up on the backup device. If this limit is reached, '
         'the oldest backups will be deleted. If not specified, '
         'no limit is applied.',
@@ -157,7 +165,8 @@ class Options {
     ],
     defaultsTo: 'info',
     valueHelp: 'level',
-    help: 'Customize the logging level. '
+    help:
+        'Customize the logging level. '
         'Listed from most verbose (all) to least verbose (off).',
   )
   final Level logLevel;
@@ -205,15 +214,14 @@ class Options {
   static ArgParser buildArgParser(
     EnvironmentAdapter environmentAdapter,
     PosixAdapter posixAdapter,
-  ) =>
-      _$populateOptionsParser(
-        ArgParser(
-          allowTrailingOptions: false,
-          usageLineLength: stdout.hasTerminal ? stdout.terminalColumns : null,
-        ),
-        backupCacheDefaultOverride: _backupDir(environmentAdapter).path,
-        userDefaultOverride: !posixAdapter.isRoot,
-      );
+  ) => _$populateOptionsParser(
+    ArgParser(
+      allowTrailingOptions: false,
+      usageLineLength: stdout.hasTerminal ? stdout.terminalColumns : null,
+    ),
+    backupCacheDefaultOverride: _backupDir(environmentAdapter).path,
+    userDefaultOverride: !posixAdapter.isRoot,
+  );
 
   static Options parseOptions(ArgResults argResults) =>
       _$parseOptionsResult(argResults);
@@ -224,9 +232,7 @@ class Options {
       return Directory('$home/.cache/podman_backup');
     }
 
-    return Directory.fromUri(
-      Directory.systemTemp.uri.resolve('podman_backup'),
-    );
+    return Directory.fromUri(Directory.systemTemp.uri.resolve('podman_backup'));
   }
 }
 

@@ -27,10 +27,7 @@ void main() {
 
     group('run', () {
       test('runs executable', () {
-        final result = sut.run('bash', const [
-          '-c',
-          'echo out; >&2 echo err',
-        ]);
+        final result = sut.run('bash', const ['-c', 'echo out; >&2 echo err']);
 
         expect(result, completion(0));
       });
@@ -62,11 +59,10 @@ void main() {
       });
 
       test('does not throw if disabled', () {
-        final result = sut.run(
-          'bash',
-          ['-c', 'exit 1'],
-          expectedExitCode: null,
-        );
+        final result = sut.run('bash', [
+          '-c',
+          'exit 1',
+        ], expectedExitCode: null);
 
         expect(result, completion(1));
       });
@@ -79,19 +75,17 @@ void main() {
           'echo line1; echo line2; echo; echo -n line3; echo line4',
         ]);
 
-        final expected = StringBuffer()
-          ..writeln('line1')
-          ..writeln('line2')
-          ..writeln()
-          ..writeln('line3line4');
+        final expected =
+            StringBuffer()
+              ..writeln('line1')
+              ..writeln('line2')
+              ..writeln()
+              ..writeln('line3line4');
         final expectedBytes = systemEncoding.encode(expected.toString());
 
         expect(
           stream.expand((bytes) => bytes),
-          emitsInOrder(<dynamic>[
-            ...expectedBytes,
-            emitsDone,
-          ]),
+          emitsInOrder(<dynamic>[...expectedBytes, emitsDone]),
         );
       });
 
@@ -110,11 +104,12 @@ void main() {
       });
 
       test('forwards stdin to child process if given', () {
-        final expected = StringBuffer()
-          ..writeln('line1')
-          ..writeln('line2')
-          ..writeln()
-          ..writeln('line3line4');
+        final expected =
+            StringBuffer()
+              ..writeln('line1')
+              ..writeln('line2')
+              ..writeln()
+              ..writeln('line3line4');
         final expectedBytes = systemEncoding.encode(expected.toString());
 
         final stream = sut.streamRaw(
@@ -125,10 +120,7 @@ void main() {
 
         expect(
           stream.expand((bytes) => bytes),
-          emitsInOrder(<dynamic>[
-            ...expectedBytes,
-            emitsDone,
-          ]),
+          emitsInOrder(<dynamic>[...expectedBytes, emitsDone]),
         );
       });
 
@@ -155,11 +147,7 @@ void main() {
 
       test('emits error on custom unexpected exit code', () {
         const arguments = ['-c', 'echo line1'];
-        final stream = sut.streamRaw(
-          'bash',
-          arguments,
-          expectedExitCode: 42,
-        );
+        final stream = sut.streamRaw('bash', arguments, expectedExitCode: 42);
 
         final expectedBytes = systemEncoding.encode('line1\n');
 
@@ -179,20 +167,16 @@ void main() {
       });
 
       test('does not emit error if exit code validation is disabled', () {
-        final stream = sut.streamRaw(
-          'bash',
-          ['-c', 'echo line1; exit 12'],
-          expectedExitCode: null,
-        );
+        final stream = sut.streamRaw('bash', [
+          '-c',
+          'echo line1; exit 12',
+        ], expectedExitCode: null);
 
         final expectedBytes = systemEncoding.encode('line1\n');
 
         expect(
           stream.expand((bytes) => bytes),
-          emitsInOrder(<dynamic>[
-            ...expectedBytes,
-            emitsDone,
-          ]),
+          emitsInOrder(<dynamic>[...expectedBytes, emitsDone]),
         );
       });
     });
@@ -231,12 +215,7 @@ void main() {
       });
 
       test('forwards stdin to child process if given', () {
-        final expectedLines = [
-          'line1',
-          'line2',
-          '',
-          'line3line4',
-        ];
+        final expectedLines = ['line1', 'line2', '', 'line3line4'];
 
         final stream = sut.streamLines(
           'cat',
@@ -244,13 +223,7 @@ void main() {
           stdinLines: Stream.fromIterable(expectedLines),
         );
 
-        expect(
-          stream,
-          emitsInOrder(<dynamic>[
-            ...expectedLines,
-            emitsDone,
-          ]),
-        );
+        expect(stream, emitsInOrder(<dynamic>[...expectedLines, emitsDone]));
       });
 
       test('emits error on unexpected exit code', () {
@@ -274,11 +247,7 @@ void main() {
 
       test('emits error on custom unexpected exit code', () {
         const arguments = ['-c', 'echo line1'];
-        final stream = sut.streamLines(
-          'bash',
-          arguments,
-          expectedExitCode: 42,
-        );
+        final stream = sut.streamLines('bash', arguments, expectedExitCode: 42);
 
         expect(
           stream,
@@ -296,19 +265,12 @@ void main() {
       });
 
       test('does not emit error if exit code validation is disabled', () {
-        final stream = sut.streamLines(
-          'bash',
-          ['-c', 'echo line1; exit 12'],
-          expectedExitCode: null,
-        );
+        final stream = sut.streamLines('bash', [
+          '-c',
+          'echo line1; exit 12',
+        ], expectedExitCode: null);
 
-        expect(
-          stream,
-          emitsInOrder(<dynamic>[
-            'line1',
-            emitsDone,
-          ]),
-        );
+        expect(stream, emitsInOrder(<dynamic>['line1', emitsDone]));
       });
     });
 
@@ -335,10 +297,7 @@ void main() {
           "echo '${json.encode(jsonData)}'",
         ]);
 
-        expect(
-          result,
-          completion(jsonData),
-        );
+        expect(result, completion(jsonData));
       });
 
       test('forwards stderr to dart stderr', () async {
@@ -369,11 +328,7 @@ void main() {
       test('emits error on custom unexpected exit code', () {
         const arguments = ['-c', "echo '[1, 2, 3]'; exit 0"];
         expect(
-          sut.streamJson(
-            'bash',
-            arguments,
-            expectedExitCode: 1,
-          ),
+          sut.streamJson('bash', arguments, expectedExitCode: 1),
           throwsA(
             isA<ProcessFailed>()
                 .having((m) => m.executable, 'executable', 'bash')
@@ -386,11 +341,7 @@ void main() {
       test('does not emit error if exit code validation is disabled', () {
         const arguments = ['-c', "echo '\"hello\"'; exit 111"];
         expect(
-          sut.streamJson(
-            'bash',
-            arguments,
-            expectedExitCode: null,
-          ),
+          sut.streamJson('bash', arguments, expectedExitCode: null),
           completes,
         );
       });

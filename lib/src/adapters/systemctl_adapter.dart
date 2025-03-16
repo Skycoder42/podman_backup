@@ -4,9 +4,7 @@ import 'process_adapter.dart';
 
 // coverage:ignore-start
 final systemctlAdapterProvider = Provider(
-  (ref) => SystemctlAdapter(
-    ref.watch(processAdapterProvider),
-  ),
+  (ref) => SystemctlAdapter(ref.watch(processAdapterProvider)),
 );
 // coverage:ignore-end
 
@@ -21,21 +19,13 @@ class SystemctlAdapter {
 
   Future<void> stop(String unit) => _runSystemd(['stop', unit]);
 
-  Future<String> escape({
-    required String template,
-    required String value,
-  }) =>
+  Future<String> escape({required String template, required String value}) =>
       _processAdapter.streamLines('systemd-escape', [
         '--template',
         template,
         value,
       ]).single;
 
-  Future<void> _runSystemd(List<String> args) => _processAdapter.run(
-        'systemctl',
-        [
-          if (runAsUser) '--user',
-          ...args,
-        ],
-      );
+  Future<void> _runSystemd(List<String> args) =>
+      _processAdapter.run('systemctl', [if (runAsUser) '--user', ...args]);
 }

@@ -49,25 +49,19 @@ void main() {
 
           Logger.root.level = fixture.$1;
 
-          await sut.upload(
-            remoteHost: testRemoteHost,
-            cacheDir: testDir,
-          );
+          await sut.upload(remoteHost: testRemoteHost, cacheDir: testDir);
 
           verify(
-            () => mockProcessAdapter.run(
-              'rsync',
-              [
-                if (fixture.$2 != null) fixture.$2!,
-                '--recursive',
-                '--copy-links',
-                '--times',
-                '--remove-source-files',
-                '--human-readable',
-                '${testDir.path}/',
-                '$testRemoteHost/',
-              ],
-            ),
+            () => mockProcessAdapter.run('rsync', [
+              if (fixture.$2 != null) fixture.$2!,
+              '--recursive',
+              '--copy-links',
+              '--times',
+              '--remove-source-files',
+              '--human-readable',
+              '${testDir.path}/',
+              '$testRemoteHost/',
+            ]),
           );
         },
       );

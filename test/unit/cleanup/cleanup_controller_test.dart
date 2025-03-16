@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 import 'package:dart_test_tools/test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:podman_backup/src/cleanup/cleanup_controller.dart';
@@ -21,12 +23,13 @@ void main() {
 
     late CleanupController sut;
 
-    setUp(() async {
+    setUp(() {
       reset(mockRemoteFileProxy);
       reset(mockCleanupFilter);
 
-      when(() => mockRemoteFileProxy.deleteFiles(any(), any()))
-          .thenReturnAsync(null);
+      when(
+        () => mockRemoteFileProxy.deleteFiles(any(), any()),
+      ).thenReturnAsync(null);
 
       sut = CleanupController(mockRemoteFileProxy, mockCleanupFilter);
     });
@@ -53,8 +56,9 @@ void main() {
         const maxAge = Duration(days: 7);
         const maxBytesTotal = 3411223;
 
-        when(() => mockRemoteFileProxy.listRemoteFiles(any()))
-            .thenStream(remoteFilesStream);
+        when(
+          () => mockRemoteFileProxy.listRemoteFiles(any()),
+        ).thenStream(remoteFilesStream);
         when(
           () => mockCleanupFilter.collectDeletableFiles(
             any(),
@@ -76,12 +80,12 @@ void main() {
         verifyInOrder([
           () => mockRemoteFileProxy.listRemoteFiles(testRemoteHost),
           () => mockCleanupFilter.collectDeletableFiles(
-                remoteFilesStream,
-                minKeep: minKeep,
-                maxKeep: maxKeep,
-                maxAge: maxAge,
-                maxBytesTotal: maxBytesTotal,
-              ),
+            remoteFilesStream,
+            minKeep: minKeep,
+            maxKeep: maxKeep,
+            maxAge: maxAge,
+            maxBytesTotal: maxBytesTotal,
+          ),
           () => mockRemoteFileProxy.deleteFiles(testRemoteHost, filesToDelete),
         ]);
       });
@@ -90,8 +94,9 @@ void main() {
         const remoteFilesStream = Stream<RemoteFileInfo>.empty();
         const filesToDelete = <RemoteFileInfo>{};
 
-        when(() => mockRemoteFileProxy.listRemoteFiles(any()))
-            .thenStream(remoteFilesStream);
+        when(
+          () => mockRemoteFileProxy.listRemoteFiles(any()),
+        ).thenStream(remoteFilesStream);
         when(
           () => mockCleanupFilter.collectDeletableFiles(
             any(),
@@ -107,9 +112,9 @@ void main() {
         verifyInOrder([
           () => mockRemoteFileProxy.listRemoteFiles(testRemoteHost),
           () => mockCleanupFilter.collectDeletableFiles(
-                remoteFilesStream,
-                minKeep: 1,
-              ),
+            remoteFilesStream,
+            minKeep: 1,
+          ),
         ]);
       });
     });

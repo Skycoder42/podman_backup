@@ -102,9 +102,9 @@ void main() {
         verifyInOrder([
           () => mockSystemctlAdapter.runAsUser = true,
           () => mockBackupController.backup(
-                backupLabel: Options.defaultBackupLabel,
-                cacheDir: cacheDir,
-              ),
+            backupLabel: Options.defaultBackupLabel,
+            cacheDir: cacheDir,
+          ),
         ]);
 
         expect(cacheDir.existsSync(), isTrue);
@@ -112,9 +112,9 @@ void main() {
 
       test('runs upload only', () async {
         const testRemoteHost = 'test-host:/target';
-        final cacheDir =
-            await Directory.fromUri(testDir.uri.resolve('test/upload'))
-                .create(recursive: true);
+        final cacheDir = await Directory.fromUri(
+          testDir.uri.resolve('test/upload'),
+        ).create(recursive: true);
 
         await sut.run(
           Options(
@@ -135,9 +135,9 @@ void main() {
         verifyInOrder([
           () => mockSystemctlAdapter.runAsUser = true,
           () => mockUploadController.upload(
-                remoteHost: testRemoteHost,
-                cacheDir: cacheDir,
-              ),
+            remoteHost: testRemoteHost,
+            cacheDir: cacheDir,
+          ),
         ]);
 
         expect(cacheDir.existsSync(), isTrue);
@@ -145,9 +145,9 @@ void main() {
 
       test('runs cleanup only', () async {
         const testRemoteHost = 'test-host:/target';
-        final cacheDir =
-            await Directory.fromUri(testDir.uri.resolve('test/upload'))
-                .create(recursive: true);
+        final cacheDir = await Directory.fromUri(
+          testDir.uri.resolve('test/upload'),
+        ).create(recursive: true);
 
         await sut.run(
           Options(
@@ -168,12 +168,12 @@ void main() {
         verifyInOrder([
           () => mockSystemctlAdapter.runAsUser = true,
           () => mockCleanupController.cleanupOldBackups(
-                testRemoteHost,
-                minKeep: 3,
-                maxKeep: 5,
-                maxAge: const Duration(days: 30),
-                maxBytesTotal: 1024 * 1024 * 1024,
-              ),
+            testRemoteHost,
+            minKeep: 3,
+            maxKeep: 5,
+            maxAge: const Duration(days: 30),
+            maxBytesTotal: 1024 * 1024 * 1024,
+          ),
         ]);
       });
 
@@ -202,16 +202,14 @@ void main() {
         verifyInOrder([
           () => mockSystemctlAdapter.runAsUser = false,
           () => mockBackupController.backup(
-                backupLabel: testLabel,
-                cacheDir: cacheDir,
-              ),
+            backupLabel: testLabel,
+            cacheDir: cacheDir,
+          ),
           () => mockUploadController.upload(
-                remoteHost: testRemoteHost,
-                cacheDir: cacheDir,
-              ),
-          () => mockCleanupController.cleanupOldBackups(
-                testRemoteHost,
-              ),
+            remoteHost: testRemoteHost,
+            cacheDir: cacheDir,
+          ),
+          () => mockCleanupController.cleanupOldBackups(testRemoteHost),
           () => mockCleanupController,
         ]);
 

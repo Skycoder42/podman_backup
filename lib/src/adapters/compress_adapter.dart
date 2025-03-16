@@ -8,9 +8,7 @@ import 'process_adapter.dart';
 
 // coverage:ignore-start
 final compressAdapterProvider = Provider(
-  (ref) => CompressAdapter(
-    ref.watch(processAdapterProvider),
-  ),
+  (ref) => CompressAdapter(ref.watch(processAdapterProvider)),
 );
 // coverage:ignore-end
 
@@ -22,14 +20,11 @@ class CompressAdapter extends StreamTransformerBase<List<int>, List<int>> {
   Stream<List<int>> compress(Stream<List<int>> stream) => bind(stream);
 
   @override
-  Stream<List<int>> bind(Stream<List<int>> stream) => _processAdapter.streamRaw(
-        'xz',
-        [
-          '--compress',
-          '-9',
-          '--threads',
-          max(Platform.numberOfProcessors ~/ 2, 1).toString(),
-        ],
-        stdin: stream,
-      );
+  Stream<List<int>> bind(Stream<List<int>> stream) =>
+      _processAdapter.streamRaw('xz', [
+        '--compress',
+        '-9',
+        '--threads',
+        max(Platform.numberOfProcessors ~/ 2, 1).toString(),
+      ], stdin: stream);
 }

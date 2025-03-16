@@ -15,10 +15,10 @@ class BackupTestCase extends IntegrationTestCase {
   String get name => 'backup';
 
   Future<void> runSut() => runPodmanBackup(
-        backupMode: BackupMode.backupOnly,
-        backupDir: backupDir,
-        cacheDir: cacheDir,
-      );
+    backupMode: BackupMode.backupOnly,
+    backupDir: backupDir,
+    cacheDir: cacheDir,
+  );
 
   @override
   void build() {
@@ -203,10 +203,7 @@ class BackupTestCase extends IntegrationTestCase {
   }
 
   void _expectStateLogs(String service, List<_State> states) {
-    final stateCounts = <_State, int>{
-      _State.started: 0,
-      _State.stopped: 0,
-    };
+    final stateCounts = <_State, int>{_State.started: 0, _State.stopped: 0};
     for (final state in states) {
       stateCounts[state] = stateCounts[state]! + 1;
     }
@@ -249,12 +246,10 @@ class BackupTestCase extends IntegrationTestCase {
     int n,
     bool Function(T) filter, [
     String? description,
-  ]) =>
-      predicate<List<T>>(
-        (l) => l.where(filter).length == n,
-        description ??
-            'has exactly $n elements that match the filter predicate',
-      );
+  ]) => predicate<List<T>>(
+    (l) => l.where(filter).length == n,
+    description ?? 'has exactly $n elements that match the filter predicate',
+  );
 
   String _logStatement(String service, _State state) =>
       '${state.value} $service - Podman $service.';

@@ -36,36 +36,34 @@ void main() {
       verifyNoMoreInteractions(mockBatchBuilder);
     });
 
-    test(
-      'listRemoteFiles invokes ls batch and transforms results',
-      () async {
-        const testLine = '-rw-r--r-- 1 vscode vscode  1203 Sep  5 2023 '
-            'my-backup-file-2023_04_12_10_15_44.tar.xz';
-        final listStream = Stream.value(testLine);
-        when(() => mockBatchBuilder.execute()).thenStream(listStream);
+    test('listRemoteFiles invokes ls batch and transforms results', () async {
+      const testLine =
+          '-rw-r--r-- 1 vscode vscode  1203 Sep  5 2023 '
+          'my-backup-file-2023_04_12_10_15_44.tar.xz';
+      final listStream = Stream.value(testLine);
+      when(() => mockBatchBuilder.execute()).thenStream(listStream);
 
-        final result = sut.listRemoteFiles(testRemoteHost);
+      final result = sut.listRemoteFiles(testRemoteHost);
 
-        await expectLater(
-          result,
-          emitsInOrder(<dynamic>[
-            RemoteFileInfo(
-              fileName: 'my-backup-file-2023_04_12_10_15_44.tar.xz',
-              sizeInBytes: 1203,
-              volume: 'my-backup-file',
-              backupDate: DateTime.utc(2023, 4, 12, 10, 15, 44),
-            ),
-            emitsDone,
-          ]),
-        );
+      await expectLater(
+        result,
+        emitsInOrder(<dynamic>[
+          RemoteFileInfo(
+            fileName: 'my-backup-file-2023_04_12_10_15_44.tar.xz',
+            sizeInBytes: 1203,
+            volume: 'my-backup-file',
+            backupDate: DateTime.utc(2023, 4, 12, 10, 15, 44),
+          ),
+          emitsDone,
+        ]),
+      );
 
-        verifyInOrder([
-          () => mockSftpAdapter.batch(testRemoteHost),
-          () => mockBatchBuilder.ls(withDetails: true, noEcho: true),
-          () => mockBatchBuilder.execute(),
-        ]);
-      },
-    );
+      verifyInOrder([
+        () => mockSftpAdapter.batch(testRemoteHost),
+        () => mockBatchBuilder.ls(withDetails: true, noEcho: true),
+        () => mockBatchBuilder.execute(),
+      ]);
+    });
 
     test('deleteFiles invokes delete batch for all files', () async {
       final file1 = RemoteFileInfo(

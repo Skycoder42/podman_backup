@@ -73,8 +73,9 @@ void main() {
 
     group('sets correct backupCache defaults', () {
       test('sets correct path with HOME', () {
-        when(() => mockEnvironmentAdapter['HOME'])
-            .thenReturn('/home/test-user');
+        when(
+          () => mockEnvironmentAdapter['HOME'],
+        ).thenReturn('/home/test-user');
 
         final parser = Options.buildArgParser(
           mockEnvironmentAdapter,
@@ -108,10 +109,7 @@ void main() {
 
     testData<(bool, bool)>(
       'sets correct user defaults',
-      const [
-        (false, true),
-        (true, false),
-      ],
+      const [(false, true), (true, false)],
       (fixture) {
         when(() => mockPosixAdapter.isRoot).thenReturn(fixture.$1);
 
@@ -130,9 +128,7 @@ void main() {
       'can parse all log levels',
       const [null, ...Level.LEVELS],
       (fixture) {
-        final args = [
-          if (fixture != null) '-L${fixture.name.toLowerCase()}',
-        ];
+        final args = [if (fixture != null) '-L${fixture.name.toLowerCase()}'];
 
         final parser = Options.buildArgParser(
           mockEnvironmentAdapter,

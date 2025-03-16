@@ -25,8 +25,9 @@ void main() {
 
     group('buildStrategy', () {
       test('collects all volumes by label', () async {
-        when(() => mockPodmanAdapter.volumeList(filters: any(named: 'filters')))
-            .thenReturnAsync(const []);
+        when(
+          () => mockPodmanAdapter.volumeList(filters: any(named: 'filters')),
+        ).thenReturnAsync(const []);
 
         final strategy = await sut.buildStrategy(backupLabel: testLabel);
 
@@ -41,15 +42,15 @@ void main() {
         const testVolume1 = 'test-volume-1';
         const testVolume2 = 'test-volume-2';
 
-        when(() => mockPodmanAdapter.volumeList(filters: any(named: 'filters')))
-            .thenReturnAsync(
-          const [
-            Volume(name: testVolume1, labels: {}),
-            Volume(name: testVolume2, labels: {}),
-          ],
-        );
-        when(() => mockPodmanAdapter.ps(filters: any(named: 'filters')))
-            .thenReturnAsync(const []);
+        when(
+          () => mockPodmanAdapter.volumeList(filters: any(named: 'filters')),
+        ).thenReturnAsync(const [
+          Volume(name: testVolume1, labels: {}),
+          Volume(name: testVolume2, labels: {}),
+        ]);
+        when(
+          () => mockPodmanAdapter.ps(filters: any(named: 'filters')),
+        ).thenReturnAsync(const []);
 
         final strategy = await sut.buildStrategy(backupLabel: testLabel);
 
@@ -75,18 +76,15 @@ void main() {
         const testVolume1 = 'test-volume-1';
         const testVolume2 = 'test-volume-2';
 
-        when(() => mockPodmanAdapter.volumeList(filters: any(named: 'filters')))
-            .thenReturnAsync(
-          const [
-            Volume(name: testVolume1, labels: {testLabel: ''}),
-            Volume(
-              name: testVolume2,
-              labels: {testLabel: 'test-1.service'},
-            ),
-          ],
-        );
-        when(() => mockPodmanAdapter.ps(filters: any(named: 'filters')))
-            .thenReturnAsync(const []);
+        when(
+          () => mockPodmanAdapter.volumeList(filters: any(named: 'filters')),
+        ).thenReturnAsync(const [
+          Volume(name: testVolume1, labels: {testLabel: ''}),
+          Volume(name: testVolume2, labels: {testLabel: 'test-1.service'}),
+        ]);
+        when(
+          () => mockPodmanAdapter.ps(filters: any(named: 'filters')),
+        ).thenReturnAsync(const []);
 
         final strategy = await sut.buildStrategy(backupLabel: testLabel);
 
@@ -126,22 +124,19 @@ void main() {
         const testContainer6i = 'test-container-6i';
         const testContainer7i = 'test-container-7i';
 
-        when(() => mockPodmanAdapter.volumeList(filters: any(named: 'filters')))
-            .thenReturnAsync(
-          const [
-            Volume(name: testVolume1, labels: {}),
-            Volume(name: testVolume2, labels: {}),
-            Volume(
-              name: testVolume3,
-              labels: {testLabel: '!test-service3@.service'},
-            ),
-            Volume(name: testVolume4, labels: {}),
-          ],
-        );
         when(
-          () => mockPodmanAdapter.ps(
-            filters: any(named: 'filters'),
+          () => mockPodmanAdapter.volumeList(filters: any(named: 'filters')),
+        ).thenReturnAsync(const [
+          Volume(name: testVolume1, labels: {}),
+          Volume(name: testVolume2, labels: {}),
+          Volume(
+            name: testVolume3,
+            labels: {testLabel: '!test-service3@.service'},
           ),
+          Volume(name: testVolume4, labels: {}),
+        ]);
+        when(
+          () => mockPodmanAdapter.ps(filters: any(named: 'filters')),
         ).thenAnswer((i) async {
           final filters = i.namedArguments[#filters] as Map<String, String>;
           final volumeFilter = filters['volume'];
@@ -247,18 +242,15 @@ Container _createContainer(
   bool withLabel = true,
   bool isInfra = false,
   String pod = '',
-}) =>
-    Container(
-      id: containerName,
-      exited: false,
-      isInfra: isInfra,
-      names: [containerName],
-      labels: {
-        if (withLabel) 'PODMAN_SYSTEMD_UNIT': '$containerName.service',
-      },
-      pod: pod,
-      podName: pod.isNotEmpty ? '$pod-name' : '',
-    );
+}) => Container(
+  id: containerName,
+  exited: false,
+  isInfra: isInfra,
+  names: [containerName],
+  labels: {if (withLabel) 'PODMAN_SYSTEMD_UNIT': '$containerName.service'},
+  pod: pod,
+  podName: pod.isNotEmpty ? '$pod-name' : '',
+);
 
 Set<String> _services(List<String> containers) =>
     containers.map((c) => '$c.service').toSet();

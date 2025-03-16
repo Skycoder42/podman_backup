@@ -22,7 +22,7 @@ abstract class IntegrationTestCase {
   void build();
 
   void run() {
-    setUpAll(() async {
+    setUpAll(() {
       Logger.root.level = Level.ALL;
     });
 
@@ -75,7 +75,9 @@ abstract class IntegrationTestCase {
   }) async {
     final di = ProviderContainer();
     addTearDown(di.dispose);
-    await di.read(podmanBackupProvider).run(
+    await di
+        .read(podmanBackupProvider)
+        .run(
           Options(
             remoteHostRaw: 'integration_test_local:${backupDir.path}',
             remoteHostRawWasParsed: true,
@@ -98,15 +100,13 @@ abstract class IntegrationTestCase {
     bool backedUp = true,
     String? hook,
   }) async {
-    final label = Platform.environment['PODMAN_BACKUP_LABEL'] ??
+    final label =
+        Platform.environment['PODMAN_BACKUP_LABEL'] ??
         'de.skycoder42.podman_backup';
     await _podman([
       'volume',
       'create',
-      if (backedUp) ...[
-        '--label',
-        if (hook != null) '$label=$hook' else label,
-      ],
+      if (backedUp) ...['--label', if (hook != null) '$label=$hook' else label],
       name,
     ]);
     addTearDown(() => _podman(['volume', 'rm', '--force', name]));
@@ -174,9 +174,9 @@ abstract class IntegrationTestCase {
   }
 
   void logUnitOnFailure(String unitName) => addTearDown(
-        // ignore: discarded_futures
-        () => _run('journalctl', ['--user', '--no-pager', '-u', unitName]),
-      );
+    // ignore: discarded_futures
+    () => _run('journalctl', ['--user', '--no-pager', '-u', unitName]),
+  );
 
   @protected
   Stream<String> journalctl(String service) =>
@@ -208,10 +208,7 @@ abstract class IntegrationTestCase {
 
   Stream<String> _stream(String executable, List<String> arguments) async* {
     printOnFailure('> Streaming: $executable $arguments');
-    final proc = await Process.start(
-      executable,
-      arguments,
-    );
+    final proc = await Process.start(executable, arguments);
     _streamLogs('>! ', proc.stderr);
 
     yield* proc.stdout
@@ -230,6 +227,6 @@ abstract class IntegrationTestCase {
       .listen(printOnFailure);
 
   void _printLogRecord(LogRecord logRecord) =>
-      // ignore: avoid_print
-      print('${logRecord.time.toIso8601String()} $logRecord');
+  // ignore: avoid_print
+  print('${logRecord.time.toIso8601String()} $logRecord');
 }

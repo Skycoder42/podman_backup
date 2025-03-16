@@ -16,20 +16,16 @@ void main() {
     );
 
     testData<
-        (
-          Map<String, VolumeDetails>,
-          List<(List<String>, List<VolumeWithLabel>)>
-        )>(
+      (Map<String, VolumeDetails>, List<(List<String>, List<VolumeWithLabel>)>)
+    >(
       'creates correct strategy for pending volumes',
       [
         ({}, []),
         (
-          {
-            'volume1': (null, {}),
-          },
+          {'volume1': (null, {})},
           [
             ([], [('volume1', null)]),
-          ]
+          ],
         ),
         (
           {
@@ -41,7 +37,7 @@ void main() {
             ([], [('volume1', null)]),
             ([], [('volume2', testHook1)]),
             ([], [('volume3', testHook2)]),
-          ]
+          ],
         ),
         (
           {
@@ -49,7 +45,7 @@ void main() {
           },
           [
             (['service-A', 'service-B'], [('volume1', null)]),
-          ]
+          ],
         ),
         (
           {
@@ -59,7 +55,7 @@ void main() {
           [
             (['service-A', 'service-B'], [('volume1', testHook1)]),
             (['service-C', 'service-D'], [('volume2', testHook2)]),
-          ]
+          ],
         ),
         (
           {
@@ -71,7 +67,7 @@ void main() {
               ['service-A', 'service-B', 'service-C'],
               [('volume1', null), ('volume2', null)],
             ),
-          ]
+          ],
         ),
         (
           {
@@ -84,11 +80,8 @@ void main() {
               ['service-A', 'service-B', 'service-E'],
               [('volume1', null), ('volume3', testHook1)],
             ),
-            (
-              ['service-C', 'service-D'],
-              [('volume2', null)],
-            ),
-          ]
+            (['service-C', 'service-D'], [('volume2', null)]),
+          ],
         ),
         (
           {
@@ -104,15 +97,12 @@ void main() {
               ['service-A', 'service-B', 'service-E', 'service-H'],
               [('volume1', null), ('volume3', null), ('volume5', null)],
             ),
-            (
-              ['service-C', 'service-D'],
-              [('volume2', null)],
-            ),
+            (['service-C', 'service-D'], [('volume2', null)]),
             (
               ['service-F', 'service-G', 'service-I'],
               [('volume4', null), ('volume6', null)],
             ),
-          ]
+          ],
         ),
       ],
       (fixture) {

@@ -22,49 +22,48 @@ void main() {
       sut = SystemctlAdapter(mockProcessAdapter);
     });
 
-    testData<bool>(
-      'start invokes systemd start',
-      const [true, false],
-      (fixture) async {
-        const testUnit = 'test.service';
-        sut.runAsUser = fixture;
+    testData<bool>('start invokes systemd start', const [true, false], (
+      fixture,
+    ) async {
+      const testUnit = 'test.service';
+      sut.runAsUser = fixture;
 
-        await sut.start(testUnit);
+      await sut.start(testUnit);
 
-        verify(
-          () => mockProcessAdapter.run(
-            'systemctl',
-            [if (fixture) '--user', 'start', testUnit],
-          ),
-        );
-      },
-    );
+      verify(
+        () => mockProcessAdapter.run('systemctl', [
+          if (fixture) '--user',
+          'start',
+          testUnit,
+        ]),
+      );
+    });
 
-    testData<bool>(
-      'stop invokes systemd stop',
-      const [true, false],
-      (fixture) async {
-        const testUnit = 'test.service';
-        sut.runAsUser = fixture;
+    testData<bool>('stop invokes systemd stop', const [true, false], (
+      fixture,
+    ) async {
+      const testUnit = 'test.service';
+      sut.runAsUser = fixture;
 
-        await sut.stop(testUnit);
+      await sut.stop(testUnit);
 
-        verify(
-          () => mockProcessAdapter.run(
-            'systemctl',
-            [if (fixture) '--user', 'stop', testUnit],
-          ),
-        );
-      },
-    );
+      verify(
+        () => mockProcessAdapter.run('systemctl', [
+          if (fixture) '--user',
+          'stop',
+          testUnit,
+        ]),
+      );
+    });
 
     group('escape', () {
       test('invokes systemd-escape', () async {
         const template = 'test-template';
         const value = 'test-value';
         const escaped = 'test-escaped';
-        when(() => mockProcessAdapter.streamLines(any(), any()))
-            .thenStream(Stream.value(escaped));
+        when(
+          () => mockProcessAdapter.streamLines(any(), any()),
+        ).thenStream(Stream.value(escaped));
 
         final result = await sut.escape(template: template, value: value);
 
@@ -78,11 +77,12 @@ void main() {
         );
       });
 
-      test('throws if result is not a single value stream', () async {
+      test('throws if result is not a single value stream', () {
         const template = 'test-template';
         const value = 'test-value';
-        when(() => mockProcessAdapter.streamLines(any(), any()))
-            .thenStream(Stream.fromIterable(['a', 'b']));
+        when(
+          () => mockProcessAdapter.streamLines(any(), any()),
+        ).thenStream(Stream.fromIterable(['a', 'b']));
 
         expect(
           () => sut.escape(template: template, value: value),

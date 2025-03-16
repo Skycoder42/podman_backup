@@ -12,10 +12,10 @@ class UploadTestCase extends IntegrationTestCase {
   String get name => 'upload';
 
   Future<void> runSut() => runPodmanBackup(
-        backupMode: BackupMode.uploadOnly,
-        backupDir: backupDir,
-        cacheDir: cacheDir,
-      );
+    backupMode: BackupMode.uploadOnly,
+    backupDir: backupDir,
+    cacheDir: cacheDir,
+  );
 
   @override
   void build() {
@@ -37,40 +37,45 @@ class UploadTestCase extends IntegrationTestCase {
       expect(cacheDir.list().length, completion(0));
     });
 
-    test('Can upload a multiple backed up files and replaces target files',
-        () async {
-      // arrange
-      const backupFileNames = [
-        'backup-1.tar.xz',
-        'backup-2.tar.xz',
-        'backup-3.tar.xz',
-        'backup-4.tar.xz',
-      ];
-      final backupFiles = await Future.wait(
-        backupFileNames.map(_createBackupFile),
-      );
-      await _getBackedUpFile(backupFileNames.last).writeAsString('old content');
-      final otherFile =
-          await _getBackedUpFile('other').writeAsString('other content');
+    test(
+      'Can upload a multiple backed up files and replaces target files',
+      () async {
+        // arrange
+        const backupFileNames = [
+          'backup-1.tar.xz',
+          'backup-2.tar.xz',
+          'backup-3.tar.xz',
+          'backup-4.tar.xz',
+        ];
+        final backupFiles = await Future.wait(
+          backupFileNames.map(_createBackupFile),
+        );
+        await _getBackedUpFile(
+          backupFileNames.last,
+        ).writeAsString('old content');
+        final otherFile = await _getBackedUpFile(
+          'other',
+        ).writeAsString('other content');
 
-      // act
-      await runSut();
+        // act
+        await runSut();
 
-      // assert
-      expect(backupDir.list().length, completion(5));
-      for (final backupFileName in backupFileNames) {
-        final backedUpFile = _getBackedUpFile(backupFileName);
-        expect(backedUpFile.existsSync(), isTrue);
-        expect(backedUpFile.readAsStringSync(), backupFileName);
-      }
-      expect(otherFile.existsSync(), isTrue);
-      expect(otherFile.readAsStringSync(), 'other content');
+        // assert
+        expect(backupDir.list().length, completion(5));
+        for (final backupFileName in backupFileNames) {
+          final backedUpFile = _getBackedUpFile(backupFileName);
+          expect(backedUpFile.existsSync(), isTrue);
+          expect(backedUpFile.readAsStringSync(), backupFileName);
+        }
+        expect(otherFile.existsSync(), isTrue);
+        expect(otherFile.readAsStringSync(), 'other content');
 
-      for (final backupFile in backupFiles) {
-        expect(backupFile.existsSync(), isFalse);
-      }
-      expect(cacheDir.list().length, completion(0));
-    });
+        for (final backupFile in backupFiles) {
+          expect(backupFile.existsSync(), isFalse);
+        }
+        expect(cacheDir.list().length, completion(0));
+      },
+    );
   }
 
   Future<File> _createBackupFile(String backupFile) =>

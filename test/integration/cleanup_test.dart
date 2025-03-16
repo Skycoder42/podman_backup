@@ -101,25 +101,21 @@ class CleanupTestCase extends IntegrationTestCase {
     int? maxKeep,
     Duration? maxAge,
     int? maxTotalSizeMegaBytes,
-  }) =>
-      runPodmanBackup(
-        backupMode: BackupMode.cleanupOnly,
-        backupDir: backupDir,
-        cacheDir: cacheDir,
-        minKeep: minKeep,
-        maxKeep: maxKeep,
-        maxAge: maxAge,
-        maxTotalSizeMegaBytes: maxTotalSizeMegaBytes,
-      );
+  }) => runPodmanBackup(
+    backupMode: BackupMode.cleanupOnly,
+    backupDir: backupDir,
+    cacheDir: cacheDir,
+    minKeep: minKeep,
+    maxKeep: maxKeep,
+    maxAge: maxAge,
+    maxTotalSizeMegaBytes: maxTotalSizeMegaBytes,
+  );
 
   Future<File> _createUploadedBackup(
     String volume,
     DateTime dateTime, [
     int megaBytes = 0,
-  ]) =>
-      File.fromUri(
-        backupDir.uri.resolve(
-          '$volume-${createTimestampSuffix(dateTime)}.tar.xz',
-        ),
-      ).writeAsBytes(List.filled(megaBytes * 1024 * 1024, 0));
+  ]) => File.fromUri(
+    backupDir.uri.resolve('$volume-${createTimestampSuffix(dateTime)}.tar.xz'),
+  ).writeAsBytes(List.filled(megaBytes * 1024 * 1024, 0));
 }

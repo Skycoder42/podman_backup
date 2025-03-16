@@ -55,10 +55,7 @@ class BackupController {
     _logger.info('Strategy finished');
   }
 
-  Future<void> _backupStep(
-    BackupStrategy strategy,
-    Directory cacheDir,
-  ) async {
+  Future<void> _backupStep(BackupStrategy strategy, Directory cacheDir) async {
     _logger.info(
       'Backing up volumes: ${strategy.volumes.map((t) => t.$1).toList()}',
     );
@@ -82,7 +79,9 @@ class BackupController {
       _logger.fine('Restarting services: ${strategy.services}');
       await Future.wait(
         strategy.services.map(
-          (service) => _systemctlAdapter.start(service).catchError(
+          (service) => _systemctlAdapter
+              .start(service)
+              .catchError(
                 test: (error) => error is Exception,
                 // ignore: avoid_types_on_closure_parameters
                 (Object e) => _logger.warning(

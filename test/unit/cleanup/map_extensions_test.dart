@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_lambdas
+// ignore_for_file: unnecessary_lambdas, discarded_futures
 
 import 'dart:async';
 
@@ -58,8 +58,11 @@ void main() {
   group('$ListCollectionTransformer', () {
     test('transforms stream using the sink', () {
       expect(
-        Stream.fromIterable([1, 2, 3])
-            .transform(const ListCollectionTransformer()),
+        Stream.fromIterable([
+          1,
+          2,
+          3,
+        ]).transform(const ListCollectionTransformer()),
         emitsInOrder([
           [1, 2, 3],
           emitsDone,
@@ -72,8 +75,10 @@ void main() {
     test('extract extracts count elements to the callback', () {
       final extracted = <int>[];
 
-      final result = List.generate(100, (index) => index)
-          .extract(15, (element) => extracted.add(element));
+      final result = List.generate(
+        100,
+        (index) => index,
+      ).extract(15, (element) => extracted.add(element));
 
       expect(result, List.generate(85, (index) => 15 + index));
       expect(extracted, List.generate(15, (index) => index));
@@ -82,11 +87,7 @@ void main() {
 
   group('MapEntryStreamX', () {
     test('mapValue maps values', () {
-      const data = {
-        'a': 1,
-        'b': 2,
-        'c': 4,
-      };
+      const data = {'a': 1, 'b': 2, 'c': 4};
 
       final result = Stream.fromIterable(data.entries).mapValue((v) => v * 2);
 
@@ -107,25 +108,19 @@ void main() {
       );
     });
 
-    test('toMap converts stream to map', () async {
-      const data = {
-        'a': 1,
-        'b': 2,
-        'c': 4,
-      };
+    test('toMap converts stream to map', () {
+      const data = {'a': 1, 'b': 2, 'c': 4};
 
-      expect(
-        Stream.fromIterable(data.entries).toMap(),
-        completion(data),
-      );
+      expect(Stream.fromIterable(data.entries).toMap(), completion(data));
     });
   });
 
   group('GroupedByStream', () {
     test('collect transforms keyed streams to collected map entries', () {
       // stream with 3 groups
-      final stream = Stream.fromIterable(List.generate(10, (index) => index))
-          .groupBy((value) => value % 3);
+      final stream = Stream.fromIterable(
+        List.generate(10, (index) => index),
+      ).groupBy((value) => value % 3);
 
       expect(
         stream.collect(),

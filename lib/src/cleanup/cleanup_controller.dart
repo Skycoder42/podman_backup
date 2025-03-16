@@ -18,10 +18,7 @@ class CleanupController {
   final CleanupFilter _cleanupFilter;
   final _logger = Logger('$CleanupController');
 
-  CleanupController(
-    this._remoteFileProxy,
-    this._cleanupFilter,
-  );
+  CleanupController(this._remoteFileProxy, this._cleanupFilter);
 
   Future<void> cleanupOldBackups(
     String remoteHost, {

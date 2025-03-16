@@ -6,9 +6,10 @@ import 'package:args/args.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
+// ignore: no_self_package_imports
+import '../../gen/package_metadata.dart' as metadata;
 import '../adapters/environment_adapter.dart';
 import '../adapters/posix_adapter.dart';
-import '../constants/pubspec.yaml.g.dart';
 import 'options.dart';
 
 // coverage:ignore-start
@@ -25,10 +26,7 @@ class CliParser {
   final PosixAdapter _posixAdapter;
   final _logger = Logger('$CliParser');
 
-  CliParser(
-    this._environmentAdapter,
-    this._posixAdapter,
-  );
+  CliParser(this._environmentAdapter, this._posixAdapter);
 
   Options parse(List<String> arguments) {
     final argParser = Options.buildArgParser(
@@ -54,7 +52,7 @@ class CliParser {
         stdout
           ..write(Platform.script.pathSegments.last)
           ..write(' ')
-          ..writeln(Pubspec.version.canonical);
+          ..writeln(metadata.version);
         exit(0);
       }
 

@@ -38,16 +38,19 @@ void main() {
           ),
         ],
         (fixture) async {
-          when(() => mockProcessAdapter.streamJson(any(), any()))
-              .thenReturnAsync(const <dynamic>[]);
+          when(
+            () => mockProcessAdapter.streamJson(any(), any()),
+          ).thenReturnAsync(const <dynamic>[]);
 
           await sut.ps(all: fixture.$1, filters: fixture.$2);
 
           verify(
-            () => mockProcessAdapter.streamJson(
-              'podman',
-              ['ps', '--format', 'json', ...fixture.$3],
-            ),
+            () => mockProcessAdapter.streamJson('podman', [
+              'ps',
+              '--format',
+              'json',
+              ...fixture.$3,
+            ]),
           );
         },
       );
@@ -74,8 +77,9 @@ void main() {
           ),
         ];
 
-        when(() => mockProcessAdapter.streamJson(any(), any()))
-            .thenReturnAsync(json.decode(json.encode(expected)));
+        when(
+          () => mockProcessAdapter.streamJson(any(), any()),
+        ).thenReturnAsync(json.decode(json.encode(expected)));
 
         expect(sut.ps(), completion(expected));
       });
@@ -87,40 +91,39 @@ void main() {
         const [
           ({}, []),
           ({'a': 'b'}, ['--filter', 'a=b']),
-          (
-            {'a': '1', 'x': 'y'},
-            ['--filter', 'a=1', '--filter', 'x=y'],
-          ),
+          ({'a': '1', 'x': 'y'}, ['--filter', 'a=1', '--filter', 'x=y']),
         ],
         (fixture) async {
-          when(() => mockProcessAdapter.streamJson(any(), any()))
-              .thenReturnAsync(const <dynamic>[]);
+          when(
+            () => mockProcessAdapter.streamJson(any(), any()),
+          ).thenReturnAsync(const <dynamic>[]);
 
           await sut.volumeList(filters: fixture.$1);
 
           verify(
-            () => mockProcessAdapter.streamJson(
-              'podman',
-              ['volume', 'list', '--format', 'json', ...fixture.$2],
-            ),
+            () => mockProcessAdapter.streamJson('podman', [
+              'volume',
+              'list',
+              '--format',
+              'json',
+              ...fixture.$2,
+            ]),
           );
         },
       );
 
       test('parses returned json as volume list', () {
         const expected = [
-          Volume(
-            name: 'test-volume-1',
-            labels: {},
-          ),
+          Volume(name: 'test-volume-1', labels: {}),
           Volume(
             name: 'test-volume-2',
             labels: {'label1': '', 'label2': 'value2'},
           ),
         ];
 
-        when(() => mockProcessAdapter.streamJson(any(), any()))
-            .thenReturnAsync(json.decode(json.encode(expected)));
+        when(
+          () => mockProcessAdapter.streamJson(any(), any()),
+        ).thenReturnAsync(json.decode(json.encode(expected)));
 
         expect(sut.volumeList(), completion(expected));
       });
@@ -130,8 +133,9 @@ void main() {
       const testVolume = 'test-volume';
       final outData = List.generate(200, (index) => index ~/ 2);
 
-      when(() => mockProcessAdapter.streamRaw(any(), any()))
-          .thenStream(Stream.value(outData));
+      when(
+        () => mockProcessAdapter.streamRaw(any(), any()),
+      ).thenStream(Stream.value(outData));
 
       await expectLater(
         sut.volumeExport(testVolume),
@@ -139,10 +143,11 @@ void main() {
       );
 
       verify(
-        () => mockProcessAdapter.streamRaw(
-          'podman',
-          ['volume', 'export', testVolume],
-        ),
+        () => mockProcessAdapter.streamRaw('podman', [
+          'volume',
+          'export',
+          testVolume,
+        ]),
       );
     });
   });

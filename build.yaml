@@ -1,0 +1,5 @@
+targets:
+  $default:
+    builders:
+      dart_test_tools:dart_test_tools_builders:
+        enabled: true

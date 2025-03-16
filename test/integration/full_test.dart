@@ -12,11 +12,11 @@ class FullTest extends IntegrationTestCase {
   String get name => 'full';
 
   Future<void> runSut() => runPodmanBackup(
-        backupMode: BackupMode.full,
-        backupDir: backupDir,
-        cacheDir: cacheDir,
-        maxKeep: 1,
-      );
+    backupMode: BackupMode.full,
+    backupDir: backupDir,
+    cacheDir: cacheDir,
+    maxKeep: 1,
+  );
 
   @override
   void build() {

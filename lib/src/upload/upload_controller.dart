@@ -7,9 +7,7 @@ import '../adapters/process_adapter.dart';
 
 // coverage:ignore-start
 final uploadControllerProvider = Provider(
-  (ref) => UploadController(
-    ref.watch(processAdapterProvider),
-  ),
+  (ref) => UploadController(ref.watch(processAdapterProvider)),
 );
 // coverage:ignore-end
 

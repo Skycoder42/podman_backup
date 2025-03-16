@@ -4,9 +4,7 @@ import 'process_adapter.dart';
 
 // coverage:ignore-start
 final sftpAdapterProvider = Provider(
-  (ref) => SftpAdapter(
-    ref.watch(processAdapterProvider),
-  ),
+  (ref) => SftpAdapter(ref.watch(processAdapterProvider)),
 );
 // coverage:ignore-end
 
@@ -24,21 +22,13 @@ class BatchBuilder {
     bool ignoreResult = false,
   }) {
     _command(
-      [
-        'ls',
-        if (withDetails) '-l' else '-1',
-        if (allFiles) '-a',
-      ].join(' '),
+      ['ls', if (withDetails) '-l' else '-1', if (allFiles) '-a'].join(' '),
       noEcho,
       ignoreResult,
     );
   }
 
-  void rm(
-    String path, {
-    bool noEcho = false,
-    bool ignoreResult = false,
-  }) =>
+  void rm(String path, {bool noEcho = false, bool ignoreResult = false}) =>
       _command("rm '$path'", noEcho, ignoreResult);
 
   Stream<String> execute() => _sftpAdapter._executeBatch(this);
@@ -68,14 +58,10 @@ class SftpAdapter {
       throw StateError('Cannot execute an empty batch');
     }
 
-    return _processAdapter.streamLines(
-      'sftp',
-      [
-        '-b',
-        '-',
-        batchBuilder._remoteHost,
-      ],
-      stdinLines: Stream.fromIterable(batchBuilder._commands),
-    );
+    return _processAdapter.streamLines('sftp', [
+      '-b',
+      '-',
+      batchBuilder._remoteHost,
+    ], stdinLines: Stream.fromIterable(batchBuilder._commands));
   }
 }

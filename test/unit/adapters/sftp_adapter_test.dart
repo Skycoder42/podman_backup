@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 import 'package:dart_test_tools/test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:podman_backup/src/adapters/process_adapter.dart';
@@ -67,13 +69,12 @@ void main() {
         (true, true, true, true, '-@ls -l -a'),
       ],
       (fixture) async {
-        final batch = sut.batch(testRemoteHost)
-          ..ls(
-            allFiles: fixture.$1,
-            withDetails: fixture.$2,
-            noEcho: fixture.$3,
-            ignoreResult: fixture.$4,
-          );
+        final batch = sut.batch(testRemoteHost)..ls(
+          allFiles: fixture.$1,
+          withDetails: fixture.$2,
+          noEcho: fixture.$3,
+          ignoreResult: fixture.$4,
+        );
 
         await batch.execute().drain<void>();
 
@@ -83,10 +84,7 @@ void main() {
             const ['-b', '-', testRemoteHost],
             stdinLines: any(
               named: 'stdinLines',
-              that: emitsInOrder(<dynamic>[
-                fixture.$5,
-                emitsDone,
-              ]),
+              that: emitsInOrder(<dynamic>[fixture.$5, emitsDone]),
             ),
           ),
         );
@@ -103,11 +101,7 @@ void main() {
       ],
       (fixture) async {
         final batch = sut.batch(testRemoteHost)
-          ..rm(
-            testPath,
-            noEcho: fixture.$1,
-            ignoreResult: fixture.$2,
-          );
+          ..rm(testPath, noEcho: fixture.$1, ignoreResult: fixture.$2);
 
         await batch.execute().drain<void>();
 
@@ -117,17 +111,14 @@ void main() {
             const ['-b', '-', testRemoteHost],
             stdinLines: any(
               named: 'stdinLines',
-              that: emitsInOrder(<dynamic>[
-                fixture.$3,
-                emitsDone,
-              ]),
+              that: emitsInOrder(<dynamic>[fixture.$3, emitsDone]),
             ),
           ),
         );
       },
     );
 
-    test('throws for empty batch', () async {
+    test('throws for empty batch', () {
       expect(
         () => sut.batch(testRemoteHost).execute().drain<void>(),
         throwsStateError,

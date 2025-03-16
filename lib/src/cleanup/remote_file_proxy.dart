@@ -23,9 +23,10 @@ class RemoteFileProxy {
 
   Stream<RemoteFileInfo> listRemoteFiles(String remoteHost) {
     _logger.fine('Listing existing backups for $remoteHost');
-    return (_sftpAdapter.batch(remoteHost)..ls(withDetails: true, noEcho: true))
-        .execute()
-        .transform(_remoteFileTransformer);
+    return (_sftpAdapter.batch(remoteHost)..ls(
+      withDetails: true,
+      noEcho: true,
+    )).execute().transform(_remoteFileTransformer);
   }
 
   Future<void> deleteFiles(

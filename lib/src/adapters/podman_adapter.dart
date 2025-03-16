@@ -6,9 +6,7 @@ import 'process_adapter.dart';
 
 // coverage:ignore-start
 final podmanAdapterProvider = Provider(
-  (ref) => PodmanAdapter(
-    ref.watch(processAdapterProvider),
-  ),
+  (ref) => PodmanAdapter(ref.watch(processAdapterProvider)),
 );
 // coverage:ignore-end
 
@@ -20,48 +18,36 @@ class PodmanAdapter {
   Future<List<Container>> ps({
     bool all = false,
     Map<String, String> filters = const {},
-  }) =>
-      _streamPodmanList(
-        [
-          'ps',
-          '--format',
-          'json',
-          if (all) '--all',
-          for (final filter in filters.entries) ...[
-            '--filter',
-            '${filter.key}=${filter.value}',
-          ],
-        ],
-        Container.fromJsonList,
-      );
+  }) => _streamPodmanList([
+    'ps',
+    '--format',
+    'json',
+    if (all) '--all',
+    for (final filter in filters.entries) ...[
+      '--filter',
+      '${filter.key}=${filter.value}',
+    ],
+  ], Container.fromJsonList);
 
-  Future<List<Volume>> volumeList({
-    Map<String, String> filters = const {},
-  }) =>
-      _streamPodmanList(
-        [
-          'volume',
-          'list',
-          '--format',
-          'json',
-          for (final filter in filters.entries) ...[
-            '--filter',
-            '${filter.key}=${filter.value}',
-          ],
+  Future<List<Volume>> volumeList({Map<String, String> filters = const {}}) =>
+      _streamPodmanList([
+        'volume',
+        'list',
+        '--format',
+        'json',
+        for (final filter in filters.entries) ...[
+          '--filter',
+          '${filter.key}=${filter.value}',
         ],
-        Volume.fromJsonList,
-      );
+      ], Volume.fromJsonList);
 
-  Stream<List<int>> volumeExport(String volume) => _processAdapter.streamRaw(
-        'podman',
-        ['volume', 'export', volume],
-      );
+  Stream<List<int>> volumeExport(String volume) =>
+      _processAdapter.streamRaw('podman', ['volume', 'export', volume]);
 
   Future<List<T>> _streamPodmanList<T extends Object>(
     List<String> arguments,
     List<T> Function(List<dynamic>) construct,
-  ) =>
-      _processAdapter
-          .streamJson('podman', arguments)
-          .then((object) => construct(object! as List<dynamic>));
+  ) => _processAdapter
+      .streamJson('podman', arguments)
+      .then((object) => construct(object! as List<dynamic>));
 }

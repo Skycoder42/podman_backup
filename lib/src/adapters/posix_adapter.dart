@@ -3,9 +3,7 @@
 import 'package:posix/posix.dart' as posix;
 import 'package:riverpod/riverpod.dart';
 
-final posixAdapterProvider = Provider(
-  (ref) => PosixAdapter(),
-);
+final posixAdapterProvider = Provider((ref) => PosixAdapter());
 
 class PosixAdapter {
   bool get isRoot => _ifSupported(() => posix.geteuid() == 0) ?? false;

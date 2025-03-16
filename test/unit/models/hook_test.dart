@@ -26,7 +26,7 @@ void main() {
           ('test.container', Hook(unit: 'test', type: 'container')),
           (
             'test@.service',
-            Hook(unit: 'test', type: 'service', isTemplate: true)
+            Hook(unit: 'test', type: 'service', isTemplate: true),
           ),
           ('!test.service', Hook(unit: 'test', type: 'service', preHook: true)),
           (
@@ -36,11 +36,11 @@ void main() {
               type: 'container',
               isTemplate: true,
               preHook: true,
-            )
+            ),
           ),
           (
             'test!my@service.service',
-            Hook(unit: 'test!my@service', type: 'service')
+            Hook(unit: 'test!my@service', type: 'service'),
           ),
         ],
         (fixture) {
