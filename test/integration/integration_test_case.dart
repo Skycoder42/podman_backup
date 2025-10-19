@@ -5,8 +5,8 @@ import 'dart:io';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:podman_backup/src/cli/options.dart';
+import 'package:podman_backup/src/di/dependencies.dart';
 import 'package:podman_backup/src/podman_backup.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:test/test.dart';
 
 abstract class IntegrationTestCase {
@@ -73,25 +73,23 @@ abstract class IntegrationTestCase {
     Duration? maxAge,
     int? maxTotalSizeMegaBytes,
   }) async {
-    final di = ProviderContainer();
-    addTearDown(di.dispose);
-    await di
-        .read(podmanBackupProvider)
-        .run(
-          Options(
-            remoteHostRaw: 'integration_test_local:${backupDir.path}',
-            remoteHostRawWasParsed: true,
-            backupLabel: Options.defaultBackupLabel,
-            backupMode: backupMode,
-            backupCache: cacheDir,
-            user: true,
-            minKeep: minKeep,
-            maxKeep: maxKeep,
-            maxAgeRaw: maxAge?.inDays,
-            maxTotalSizeRaw: maxTotalSizeMegaBytes,
-            logLevel: Level.ALL,
-          ),
-        );
+    final di = createDiContainer();
+    addTearDown(di.reset);
+    await di.get<PodmanBackup>().run(
+      Options(
+        remoteHostRaw: 'integration_test_local:${backupDir.path}',
+        remoteHostRawWasParsed: true,
+        backupLabel: Options.defaultBackupLabel,
+        backupMode: backupMode,
+        backupCache: cacheDir,
+        user: true,
+        minKeep: minKeep,
+        maxKeep: maxKeep,
+        maxAgeRaw: maxAge?.inDays,
+        maxTotalSizeRaw: maxTotalSizeMegaBytes,
+        logLevel: Level.ALL,
+      ),
+    );
   }
 
   @protected
@@ -174,7 +172,6 @@ abstract class IntegrationTestCase {
   }
 
   void logUnitOnFailure(String unitName) => addTearDown(
-    // ignore: discarded_futures
     () => _run('journalctl', ['--user', '--no-pager', '-u', unitName]),
   );
 
@@ -227,6 +224,6 @@ abstract class IntegrationTestCase {
       .listen(printOnFailure);
 
   void _printLogRecord(LogRecord logRecord) =>
-  // ignore: avoid_print
-  print('${logRecord.time.toIso8601String()} $logRecord');
+      // ignore: avoid_print
+      print('${logRecord.time.toIso8601String()} $logRecord');
 }

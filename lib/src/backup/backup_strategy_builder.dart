@@ -1,5 +1,5 @@
+import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
-import 'package:riverpod/riverpod.dart';
 
 import '../adapters/podman_adapter.dart';
 import '../models/container.dart';
@@ -7,12 +7,7 @@ import '../models/hook.dart';
 import '../models/volume.dart';
 import 'backup_strategy.dart';
 
-// coverage:ignore-start
-final backupStrategyBuilderProvider = Provider(
-  (ref) => BackupStrategyBuilder(ref.watch(podmanAdapterProvider)),
-);
-// coverage:ignore-end
-
+@injectable
 class BackupStrategyBuilder {
   final PodmanAdapter _podmanAdapter;
   final _logger = Logger('$BackupStrategyBuilder');

@@ -3,8 +3,8 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
-import 'package:riverpod/riverpod.dart';
 
 // ignore: no_self_package_imports
 import '../../gen/package_metadata.dart' as metadata;
@@ -12,15 +12,7 @@ import '../adapters/environment_adapter.dart';
 import '../adapters/posix_adapter.dart';
 import 'options.dart';
 
-// coverage:ignore-start
-final cliParserProvider = Provider(
-  (ref) => CliParser(
-    ref.watch(environmentAdapterProvider),
-    ref.watch(posixAdapterProvider),
-  ),
-);
-// coverage:ignore-end
-
+@injectable
 class CliParser {
   final EnvironmentAdapter _environmentAdapter;
   final PosixAdapter _posixAdapter;

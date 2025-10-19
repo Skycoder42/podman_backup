@@ -2,12 +2,9 @@
 
 import 'dart:io';
 
-import 'package:riverpod/riverpod.dart';
+import 'package:injectable/injectable.dart';
 
-final environmentAdapterProvider = Provider(
-  (ref) => const EnvironmentAdapter(),
-);
-
+@injectable
 class EnvironmentAdapter {
   const EnvironmentAdapter();
 

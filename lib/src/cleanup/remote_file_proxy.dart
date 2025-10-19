@@ -1,19 +1,11 @@
+import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
-import 'package:riverpod/riverpod.dart';
 
 import '../adapters/sftp_adapter.dart';
 import '../models/remote_file_info.dart';
 import 'remote_file_transformer.dart';
 
-// coverage:ignore-start
-final remoteFileProxyProvider = Provider(
-  (ref) => RemoteFileProxy(
-    ref.watch(sftpAdapterProvider),
-    ref.watch(remoteFileTransformerProvider),
-  ),
-);
-// coverage:ignore-end
-
+@injectable
 class RemoteFileProxy {
   final SftpAdapter _sftpAdapter;
   final RemoteFileTransformer _remoteFileTransformer;
@@ -23,10 +15,9 @@ class RemoteFileProxy {
 
   Stream<RemoteFileInfo> listRemoteFiles(String remoteHost) {
     _logger.fine('Listing existing backups for $remoteHost');
-    return (_sftpAdapter.batch(remoteHost)..ls(
-      withDetails: true,
-      noEcho: true,
-    )).execute().transform(_remoteFileTransformer);
+    return (_sftpAdapter.batch(remoteHost)..ls(withDetails: true, noEcho: true))
+        .execute()
+        .transform(_remoteFileTransformer);
   }
 
   Future<void> deleteFiles(

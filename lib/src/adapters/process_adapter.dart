@@ -2,12 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
-import 'package:riverpod/riverpod.dart';
-
-// coverage:ignore-start
-final processAdapterProvider = Provider((ref) => ProcessAdapter(stderr));
-// coverage:ignore-end
+import 'package:meta/meta.dart';
 
 class ProcessFailed implements Exception {
   final String executable;
@@ -24,11 +21,15 @@ class ProcessFailed implements Exception {
   // coverage:ignore-end
 }
 
+@injectable
 class ProcessAdapter {
   final IOSink _stderr;
   final _logger = Logger('$ProcessAdapter');
 
-  ProcessAdapter(this._stderr);
+  ProcessAdapter() : _stderr = stderr;
+
+  @visibleForTesting
+  ProcessAdapter.testable(this._stderr);
 
   Future<int> run(
     String executable,
@@ -107,12 +108,11 @@ class ProcessAdapter {
     String executable,
     List<String> arguments, {
     int? expectedExitCode = 0,
-  }) =>
-      streamRaw(
-        executable,
-        arguments,
-        expectedExitCode: expectedExitCode,
-      ).transform(systemEncoding.decoder).transform(json.decoder).single;
+  }) => streamRaw(
+    executable,
+    arguments,
+    expectedExitCode: expectedExitCode,
+  ).transform(systemEncoding.decoder).transform(json.decoder).single;
 
   String _logLine(String executable, List<String> arguments) =>
       '<<$executable ${arguments.join(' ')}>>';

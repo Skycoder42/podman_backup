@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:dart_test_tools/test.dart';
 import 'package:logging/logging.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:podman_backup/src/adapters/systemctl_adapter.dart';
 import 'package:podman_backup/src/backup/backup_controller.dart';
 import 'package:podman_backup/src/cleanup/cleanup_controller.dart';
 import 'package:podman_backup/src/cli/options.dart';
@@ -17,8 +16,6 @@ class MockUploadController extends Mock implements UploadController {}
 
 class MockCleanupController extends Mock implements CleanupController {}
 
-class MockSystemctlAdapter extends Mock implements SystemctlAdapter {}
-
 void main() {
   setUpAll(() {
     registerFallbackValue(Directory.current);
@@ -28,7 +25,6 @@ void main() {
     final mockBackupController = MockBackupController();
     final mockUploadController = MockUploadController();
     final mockCleanupController = MockCleanupController();
-    final mockSystemctlAdapter = MockSystemctlAdapter();
 
     late Directory testDir;
     late PodmanBackup sut;
@@ -37,7 +33,6 @@ void main() {
       reset(mockBackupController);
       reset(mockUploadController);
       reset(mockCleanupController);
-      reset(mockSystemctlAdapter);
 
       when(
         () => mockBackupController.backup(
@@ -63,7 +58,6 @@ void main() {
 
       testDir = await Directory.systemTemp.createTemp();
       sut = PodmanBackup(
-        mockSystemctlAdapter,
         mockBackupController,
         mockUploadController,
         mockCleanupController,
@@ -73,7 +67,6 @@ void main() {
     tearDown(() async {
       await testDir.delete(recursive: true);
 
-      verifyNoMoreInteractions(mockSystemctlAdapter);
       verifyNoMoreInteractions(mockUploadController);
       verifyNoMoreInteractions(mockUploadController);
       verifyNoMoreInteractions(mockCleanupController);
@@ -100,7 +93,6 @@ void main() {
         );
 
         verifyInOrder([
-          () => mockSystemctlAdapter.runAsUser = true,
           () => mockBackupController.backup(
             backupLabel: Options.defaultBackupLabel,
             cacheDir: cacheDir,
@@ -133,7 +125,6 @@ void main() {
         );
 
         verifyInOrder([
-          () => mockSystemctlAdapter.runAsUser = true,
           () => mockUploadController.upload(
             remoteHost: testRemoteHost,
             cacheDir: cacheDir,
@@ -166,7 +157,6 @@ void main() {
         );
 
         verifyInOrder([
-          () => mockSystemctlAdapter.runAsUser = true,
           () => mockCleanupController.cleanupOldBackups(
             testRemoteHost,
             minKeep: 3,
@@ -200,7 +190,6 @@ void main() {
         );
 
         verifyInOrder([
-          () => mockSystemctlAdapter.runAsUser = false,
           () => mockBackupController.backup(
             backupLabel: testLabel,
             cacheDir: cacheDir,

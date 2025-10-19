@@ -26,6 +26,7 @@ coverage/
 # Generated files
 *.g.dart
 *.freezed.dart
+*.config.dart
 lib/gen/
 
 *.log

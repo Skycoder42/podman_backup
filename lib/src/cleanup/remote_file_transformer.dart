@@ -1,16 +1,11 @@
 import 'dart:async';
 
+import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
-import 'package:riverpod/riverpod.dart';
 
 import '../models/remote_file_info.dart';
 
-// coverage:ignore-start
-final remoteFileTransformerProvider = Provider(
-  (ref) => const RemoteFileTransformer(),
-);
-// coverage:ignore-end
-
+@injectable
 class RemoteFileTransformer
     extends StreamTransformerBase<String, RemoteFileInfo> {
   const RemoteFileTransformer();
@@ -60,7 +55,9 @@ class RemoteFileTransformerSink implements EventSink<String> {
       _, // last modified year
       fileName,
       ...rest,
-    ] = line.split(_splitRegexp);
+    ] = line.split(
+      _splitRegexp,
+    );
 
     if (rest.isNotEmpty) {
       throw FormatException('Not a valid sftp "ls -l" line', line);

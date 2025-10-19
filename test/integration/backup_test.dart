@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'dart:async';
 import 'dart:io';
 
@@ -209,7 +207,6 @@ class BackupTestCase extends IntegrationTestCase {
     }
 
     expect(
-      // ignore: discarded_futures
       journalctl(service).toList(),
       completion(
         allOf(

@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:dart_test_tools/test.dart';
 import 'package:podman_backup/src/backup/backup_strategy.dart';
 import 'package:podman_backup/src/models/hook.dart';

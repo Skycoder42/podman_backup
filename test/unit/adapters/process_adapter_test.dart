@@ -1,5 +1,3 @@
-// ignore_for_file: discarded_futures
-
 import 'dart:convert';
 import 'dart:io';
 
@@ -18,7 +16,7 @@ void main() {
     setUp(() {
       reset(mockStderr);
 
-      sut = ProcessAdapter(mockStderr);
+      sut = ProcessAdapter.testable(mockStderr);
     });
 
     tearDown(() {
@@ -75,12 +73,11 @@ void main() {
           'echo line1; echo line2; echo; echo -n line3; echo line4',
         ]);
 
-        final expected =
-            StringBuffer()
-              ..writeln('line1')
-              ..writeln('line2')
-              ..writeln()
-              ..writeln('line3line4');
+        final expected = StringBuffer()
+          ..writeln('line1')
+          ..writeln('line2')
+          ..writeln()
+          ..writeln('line3line4');
         final expectedBytes = systemEncoding.encode(expected.toString());
 
         expect(
@@ -104,12 +101,11 @@ void main() {
       });
 
       test('forwards stdin to child process if given', () {
-        final expected =
-            StringBuffer()
-              ..writeln('line1')
-              ..writeln('line2')
-              ..writeln()
-              ..writeln('line3line4');
+        final expected = StringBuffer()
+          ..writeln('line1')
+          ..writeln('line2')
+          ..writeln()
+          ..writeln('line3line4');
         final expectedBytes = systemEncoding.encode(expected.toString());
 
         final stream = sut.streamRaw(

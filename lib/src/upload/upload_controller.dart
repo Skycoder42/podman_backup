@@ -1,16 +1,11 @@
 import 'dart:io';
 
+import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
-import 'package:riverpod/riverpod.dart';
 
 import '../adapters/process_adapter.dart';
 
-// coverage:ignore-start
-final uploadControllerProvider = Provider(
-  (ref) => UploadController(ref.watch(processAdapterProvider)),
-);
-// coverage:ignore-end
-
+@injectable
 class UploadController {
   final ProcessAdapter _processAdapter;
   final _logger = Logger('$UploadController');

@@ -1,20 +1,15 @@
 import 'package:collection/collection.dart';
+import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:rxdart/transformers.dart';
 
 import '../adapters/date_time_adapter.dart';
 import '../models/remote_file_info.dart';
 import 'map_extensions.dart';
 
-// coverage:ignore-start
-final cleanupFilterProvider = Provider(
-  (ref) => CleanupFilter(ref.watch(dateTimeAdapterProvider)),
-);
-// coverage:ignore-end
-
 typedef _InfoMap = Map<String, Iterable<RemoteFileInfo>>;
 
+@injectable
 class CleanupFilter {
   final DateTimeAdapter _dateTime;
   final _logger = Logger('$CleanupFilter');
@@ -88,20 +83,18 @@ class CleanupFilter {
   ) async {
     var bytesToKeep = 0;
 
-    final infoMap =
-        await files
-            .groupBy((info) => info.volume)
-            .collect()
-            .mapValue(
-              (infos) =>
-                  infos
-                      .sortedBy((info) => info.backupDate)
-                      .reversed
-                      .extract(minKeep, (i) => bytesToKeep += i.sizeInBytes)
-                      // .toList is required to not iterate this multiple times
-                      .toList(),
-            )
-            .toMap();
+    final infoMap = await files
+        .groupBy((info) => info.volume)
+        .collect()
+        .mapValue(
+          (infos) => infos
+              .sortedBy((info) => info.backupDate)
+              .reversed
+              .extract(minKeep, (i) => bytesToKeep += i.sizeInBytes)
+              // .toList is required to not iterate this multiple times
+              .toList(),
+        )
+        .toMap();
 
     return (infoMap, bytesToKeep);
   }

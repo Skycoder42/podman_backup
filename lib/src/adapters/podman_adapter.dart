@@ -1,19 +1,14 @@
-import 'package:riverpod/riverpod.dart';
+import 'package:injectable/injectable.dart';
 
 import '../models/container.dart';
 import '../models/volume.dart';
 import 'process_adapter.dart';
 
-// coverage:ignore-start
-final podmanAdapterProvider = Provider(
-  (ref) => PodmanAdapter(ref.watch(processAdapterProvider)),
-);
-// coverage:ignore-end
-
+@injectable
 class PodmanAdapter {
   final ProcessAdapter _processAdapter;
 
-  PodmanAdapter(this._processAdapter);
+  const PodmanAdapter(this._processAdapter);
 
   Future<List<Container>> ps({
     bool all = false,

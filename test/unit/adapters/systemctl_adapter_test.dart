@@ -1,32 +1,39 @@
-// ignore_for_file: discarded_futures
-
 import 'package:dart_test_tools/test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:podman_backup/src/adapters/process_adapter.dart';
 import 'package:podman_backup/src/adapters/systemctl_adapter.dart';
+import 'package:podman_backup/src/cli/options.dart';
 import 'package:test/test.dart';
 
 class MockProcessAdapter extends Mock implements ProcessAdapter {}
+
+class FakeOptions extends Fake implements Options {
+  @override
+  final bool user;
+
+  // ignore: avoid_positional_boolean_parameters
+  FakeOptions(this.user);
+}
 
 void main() {
   group('$SystemctlAdapter', () {
     final mockProcessAdapter = MockProcessAdapter();
 
-    late SystemctlAdapter sut;
+    // ignore: avoid_positional_boolean_parameters
+    SystemctlAdapter createSut(bool runAsUser) =>
+        SystemctlAdapter(mockProcessAdapter, FakeOptions(runAsUser));
 
     setUp(() {
       reset(mockProcessAdapter);
 
       when(() => mockProcessAdapter.run(any(), any())).thenReturnAsync(0);
-
-      sut = SystemctlAdapter(mockProcessAdapter);
     });
 
     testData<bool>('start invokes systemd start', const [true, false], (
       fixture,
     ) async {
       const testUnit = 'test.service';
-      sut.runAsUser = fixture;
+      final sut = createSut(fixture);
 
       await sut.start(testUnit);
 
@@ -43,7 +50,7 @@ void main() {
       fixture,
     ) async {
       const testUnit = 'test.service';
-      sut.runAsUser = fixture;
+      final sut = createSut(fixture);
 
       await sut.stop(testUnit);
 
@@ -65,6 +72,7 @@ void main() {
           () => mockProcessAdapter.streamLines(any(), any()),
         ).thenStream(Stream.value(escaped));
 
+        final sut = createSut(false);
         final result = await sut.escape(template: template, value: value);
 
         expect(result, escaped);
@@ -83,6 +91,8 @@ void main() {
         when(
           () => mockProcessAdapter.streamLines(any(), any()),
         ).thenStream(Stream.fromIterable(['a', 'b']));
+
+        final sut = createSut(false);
 
         expect(
           () => sut.escape(template: template, value: value),

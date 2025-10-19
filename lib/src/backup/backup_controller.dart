@@ -1,7 +1,7 @@
 import 'dart:io';
 
+import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
-import 'package:riverpod/riverpod.dart';
 
 import '../adapters/compress_adapter.dart';
 import '../adapters/date_time_adapter.dart';
@@ -11,18 +11,7 @@ import '../models/hook.dart';
 import 'backup_strategy.dart';
 import 'backup_strategy_builder.dart';
 
-// coverage:ignore-start
-final backupControllerProvider = Provider(
-  (ref) => BackupController(
-    ref.watch(backupStrategyBuilderProvider),
-    ref.watch(systemctlAdapterProvider),
-    ref.watch(podmanAdapterProvider),
-    ref.watch(compressAdapterProvider),
-    ref.watch(dateTimeAdapterProvider),
-  ),
-);
-// coverage:ignore-end
-
+@injectable
 class BackupController {
   final BackupStrategyBuilder _backupStrategyBuilder;
   final SystemctlAdapter _systemctlAdapter;
@@ -83,7 +72,6 @@ class BackupController {
               .start(service)
               .catchError(
                 test: (error) => error is Exception,
-                // ignore: avoid_types_on_closure_parameters
                 (Object e) => _logger.warning(
                   'Failed to restart $service with error:',
                   e,

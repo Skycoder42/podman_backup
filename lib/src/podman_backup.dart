@@ -1,32 +1,19 @@
+import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
-import 'package:riverpod/riverpod.dart';
 
-import 'adapters/systemctl_adapter.dart';
 import 'backup/backup_controller.dart';
 import 'cleanup/cleanup_controller.dart';
 import 'cli/options.dart';
 import 'upload/upload_controller.dart';
 
-// coverage:ignore-start
-final podmanBackupProvider = Provider(
-  (ref) => PodmanBackup(
-    ref.watch(systemctlAdapterProvider),
-    ref.watch(backupControllerProvider),
-    ref.watch(uploadControllerProvider),
-    ref.watch(cleanupControllerProvider),
-  ),
-);
-// coverage:ignore-end
-
+@injectable
 class PodmanBackup {
-  final SystemctlAdapter _systemctlAdapter;
   final BackupController _backupController;
   final UploadController _uploadController;
   final CleanupController _cleanupController;
   final _logger = Logger('$PodmanBackup');
 
   PodmanBackup(
-    this._systemctlAdapter,
     this._backupController,
     this._uploadController,
     this._cleanupController,
@@ -34,7 +21,6 @@ class PodmanBackup {
 
   Future<void> run(Options options) async {
     _logger.fine('Running systemctl in user mode: ${options.user}');
-    _systemctlAdapter.runAsUser = options.user;
 
     final backupCacheDir = await options.backupCache.create(recursive: true);
     _logger.fine('Detected backup cache dir as: ${backupCacheDir.path}');

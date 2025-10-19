@@ -1,18 +1,10 @@
+import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
-import 'package:riverpod/riverpod.dart';
 
 import 'cleanup_filter.dart';
 import 'remote_file_proxy.dart';
 
-// coverage:ignore-start
-final cleanupControllerProvider = Provider(
-  (ref) => CleanupController(
-    ref.watch(remoteFileProxyProvider),
-    ref.watch(cleanupFilterProvider),
-  ),
-);
-// coverage:ignore-end
-
+@injectable
 class CleanupController {
   final RemoteFileProxy _remoteFileProxy;
   final CleanupFilter _cleanupFilter;

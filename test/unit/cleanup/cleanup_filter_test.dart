@@ -1,5 +1,3 @@
-// ignore_for_file: discarded_futures
-
 import 'dart:math';
 
 import 'package:dart_test_tools/test.dart';
@@ -70,10 +68,9 @@ void main() {
       (List<RemoteFileInfo>, int, int?, Duration?, int?, Set<RemoteFileInfo>)
     >(
       'correctly determines files to be deleted',
-      dataToString:
-          (fixture) =>
-              'minKeep: ${fixture.$2}, maxKeep: ${fixture.$3}, '
-              'maxAge: ${fixture.$4?.inDays}, maxBytesTotal: ${fixture.$5}',
+      dataToString: (fixture) =>
+          'minKeep: ${fixture.$2}, maxKeep: ${fixture.$3}, '
+          'maxAge: ${fixture.$4?.inDays}, maxBytesTotal: ${fixture.$5}',
       [
         ([], 1, null, null, null, {}),
         (

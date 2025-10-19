@@ -1,12 +1,6 @@
-import 'package:riverpod/riverpod.dart';
+import 'package:injectable/injectable.dart';
 
 import 'process_adapter.dart';
-
-// coverage:ignore-start
-final sftpAdapterProvider = Provider(
-  (ref) => SftpAdapter(ref.watch(processAdapterProvider)),
-);
-// coverage:ignore-end
 
 class BatchBuilder {
   final SftpAdapter _sftpAdapter;
@@ -46,10 +40,11 @@ class BatchBuilder {
   }
 }
 
+@injectable
 class SftpAdapter {
   final ProcessAdapter _processAdapter;
 
-  SftpAdapter(this._processAdapter);
+  const SftpAdapter(this._processAdapter);
 
   BatchBuilder batch(String remoteHost) => BatchBuilder._(this, remoteHost);
 

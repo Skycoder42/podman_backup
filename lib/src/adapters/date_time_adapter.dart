@@ -1,9 +1,6 @@
-import 'package:riverpod/riverpod.dart';
+import 'package:injectable/injectable.dart';
 
-// coverage:ignore-start
-final dateTimeAdapterProvider = Provider((ref) => const DateTimeAdapter());
-// coverage:ignore-end
-
+@injectable
 class DateTimeAdapter {
   const DateTimeAdapter();
 

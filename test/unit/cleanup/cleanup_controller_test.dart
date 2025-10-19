@@ -1,5 +1,3 @@
-// ignore_for_file: discarded_futures
-
 import 'package:dart_test_tools/test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:podman_backup/src/cleanup/cleanup_controller.dart';

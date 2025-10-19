@@ -1,19 +1,15 @@
-import 'package:riverpod/riverpod.dart';
+import 'package:injectable/injectable.dart';
 
+import '../cli/options.dart';
 import 'process_adapter.dart';
 
-// coverage:ignore-start
-final systemctlAdapterProvider = Provider(
-  (ref) => SystemctlAdapter(ref.watch(processAdapterProvider)),
-);
-// coverage:ignore-end
-
+@injectable
 class SystemctlAdapter {
   final ProcessAdapter _processAdapter;
+  final bool _runAsUser;
 
-  bool runAsUser = true;
-
-  SystemctlAdapter(this._processAdapter);
+  SystemctlAdapter(this._processAdapter, Options options)
+    : _runAsUser = options.user;
 
   Future<void> start(String unit) => _runSystemd(['start', unit]);
 
@@ -27,5 +23,5 @@ class SystemctlAdapter {
       ]).single;
 
   Future<void> _runSystemd(List<String> args) =>
-      _processAdapter.run('systemctl', [if (runAsUser) '--user', ...args]);
+      _processAdapter.run('systemctl', [if (_runAsUser) '--user', ...args]);
 }
