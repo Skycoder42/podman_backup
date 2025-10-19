@@ -73,23 +73,24 @@ abstract class IntegrationTestCase {
     Duration? maxAge,
     int? maxTotalSizeMegaBytes,
   }) async {
-    final di = createDiContainer();
+    final di = createDiContainer()
+      ..registerSingleton(
+        Options(
+          remoteHostRaw: 'integration_test_local:${backupDir.path}',
+          remoteHostRawWasParsed: true,
+          backupLabel: Options.defaultBackupLabel,
+          backupMode: backupMode,
+          backupCache: cacheDir,
+          user: true,
+          minKeep: minKeep,
+          maxKeep: maxKeep,
+          maxAgeRaw: maxAge?.inDays,
+          maxTotalSizeRaw: maxTotalSizeMegaBytes,
+          logLevel: Level.ALL,
+        ),
+      );
     addTearDown(di.reset);
-    await di.get<PodmanBackup>().run(
-      Options(
-        remoteHostRaw: 'integration_test_local:${backupDir.path}',
-        remoteHostRawWasParsed: true,
-        backupLabel: Options.defaultBackupLabel,
-        backupMode: backupMode,
-        backupCache: cacheDir,
-        user: true,
-        minKeep: minKeep,
-        maxKeep: maxKeep,
-        maxAgeRaw: maxAge?.inDays,
-        maxTotalSizeRaw: maxTotalSizeMegaBytes,
-        logLevel: Level.ALL,
-      ),
-    );
+    await di.get<PodmanBackup>().run();
   }
 
   @protected

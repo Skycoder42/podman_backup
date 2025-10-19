@@ -27,7 +27,13 @@ void main() {
     final mockCleanupController = MockCleanupController();
 
     late Directory testDir;
-    late PodmanBackup sut;
+
+    PodmanBackup createSut(Options options) => PodmanBackup(
+      mockBackupController,
+      mockUploadController,
+      mockCleanupController,
+      options,
+    );
 
     setUp(() async {
       reset(mockBackupController);
@@ -57,11 +63,6 @@ void main() {
       ).thenReturnAsync(null);
 
       testDir = await Directory.systemTemp.createTemp();
-      sut = PodmanBackup(
-        mockBackupController,
-        mockUploadController,
-        mockCleanupController,
-      );
     });
 
     tearDown(() async {
@@ -76,7 +77,7 @@ void main() {
       test('runs backup only', () async {
         final cacheDir = Directory.fromUri(testDir.uri.resolve('test/backup'));
 
-        await sut.run(
+        final sut = createSut(
           Options(
             remoteHostRaw: '',
             remoteHostRawWasParsed: true,
@@ -91,6 +92,7 @@ void main() {
             logLevel: Level.ALL,
           ),
         );
+        await sut.run();
 
         verifyInOrder([
           () => mockBackupController.backup(
@@ -108,7 +110,7 @@ void main() {
           testDir.uri.resolve('test/upload'),
         ).create(recursive: true);
 
-        await sut.run(
+        final sut = createSut(
           Options(
             remoteHostRaw: testRemoteHost,
             remoteHostRawWasParsed: true,
@@ -123,6 +125,7 @@ void main() {
             logLevel: Level.ALL,
           ),
         );
+        await sut.run();
 
         verifyInOrder([
           () => mockUploadController.upload(
@@ -140,7 +143,7 @@ void main() {
           testDir.uri.resolve('test/upload'),
         ).create(recursive: true);
 
-        await sut.run(
+        final sut = createSut(
           Options(
             remoteHostRaw: testRemoteHost,
             remoteHostRawWasParsed: true,
@@ -155,6 +158,7 @@ void main() {
             logLevel: Level.ALL,
           ),
         );
+        await sut.run();
 
         verifyInOrder([
           () => mockCleanupController.cleanupOldBackups(
@@ -173,7 +177,7 @@ void main() {
 
         final cacheDir = Directory.fromUri(testDir.uri.resolve('test/backup'));
 
-        await sut.run(
+        final sut = createSut(
           Options(
             remoteHostRaw: testRemoteHost,
             remoteHostRawWasParsed: true,
@@ -188,6 +192,7 @@ void main() {
             logLevel: Level.ALL,
           ),
         );
+        await sut.run();
 
         verifyInOrder([
           () => mockBackupController.backup(

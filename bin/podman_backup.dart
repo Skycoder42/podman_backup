@@ -17,7 +17,7 @@ Future<void> main(List<String> arguments) async {
     di.pushNewScope(init: (di) => di.registerSingleton(options), isFinal: true);
 
     final backupJob = di.get<PodmanBackup>();
-    await backupJob.run(options);
+    await backupJob.run();
   } finally {
     await di.reset();
   }
