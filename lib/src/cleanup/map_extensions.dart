@@ -56,10 +56,9 @@ class ListCollectionTransformerSink<T> implements EventSink<T> {
       _sink.addError(error, stackTrace);
 
   @override
-  void close() =>
-      _sink
-        ..add(_collection)
-        ..close();
+  void close() => _sink
+    ..add(_collection)
+    ..close();
 }
 
 class ListCollectionTransformer<T> extends StreamTransformerBase<T, List<T>> {

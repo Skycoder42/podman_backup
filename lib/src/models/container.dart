@@ -21,8 +21,7 @@ sealed class Container with _$Container {
   factory Container.fromJson(Map<String, dynamic> json) =>
       _$ContainerFromJson(json);
 
-  static List<Container> fromJsonList(List<dynamic> json) =>
-      json
-          .map((dynamic e) => Container.fromJson(e as Map<String, dynamic>))
-          .toList();
+  static List<Container> fromJsonList(List<dynamic> json) => json
+      .map((dynamic e) => Container.fromJson(e as Map<String, dynamic>))
+      .toList();
 }
