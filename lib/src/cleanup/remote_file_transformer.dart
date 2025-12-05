@@ -30,7 +30,7 @@ class RemoteFileTransformerSink implements EventSink<String> {
   void add(String event) {
     try {
       _sink.add(_mapLine(event));
-      // ignore: avoid_catches_without_on_clauses
+      // ignore: avoid_catches_without_on_clauses to forward errors
     } catch (e, s) {
       _sink.addError(e, s);
     }

@@ -225,6 +225,6 @@ abstract class IntegrationTestCase {
       .listen(printOnFailure);
 
   void _printLogRecord(LogRecord logRecord) =>
-      // ignore: avoid_print
+      // ignore: avoid_print for tests
       print('${logRecord.time.toIso8601String()} $logRecord');
 }

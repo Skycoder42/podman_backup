@@ -31,7 +31,10 @@ class BackupStrategy {
   List<String> get services => _activeServices.toList();
 
   void _processVolume(String nextVolume) {
-    assert(_pendingVolumes.containsKey(nextVolume));
+    assert(
+      _pendingVolumes.containsKey(nextVolume),
+      'can only process pending volume',
+    );
 
     final (hook, services) = _pendingVolumes.remove(nextVolume)!;
     for (final service in services) {

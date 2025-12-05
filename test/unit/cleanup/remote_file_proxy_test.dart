@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_lambdas
+// ignore_for_file: unnecessary_lambdas for tests
 
 import 'package:dart_test_tools/test.dart';
 import 'package:mocktail/mocktail.dart';

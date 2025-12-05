@@ -3,3 +3,7 @@ targets:
     builders:
       dart_test_tools:dart_test_tools_builders:
         enabled: true
+      source_gen:combining_builder:
+        options:
+          ignore_for_file:
+            - type=lint

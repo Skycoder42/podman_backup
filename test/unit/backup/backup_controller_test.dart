@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_lambdas
+// ignore_for_file: unnecessary_lambdas for tests
 
 import 'dart:io';
 import 'dart:typed_data';

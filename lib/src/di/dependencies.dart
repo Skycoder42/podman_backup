@@ -5,11 +5,8 @@ import '../cli/options.dart';
 import 'dependencies.config.dart';
 
 @InjectableInit(
-  initializerName: 'init',
-  asExtension: true,
   preferRelativeImports: true,
   throwOnMissingDependencies: true,
-  usesNullSafety: true,
   ignoreUnregisteredTypes: [GetIt, Options],
 )
 GetIt createDiContainer() {

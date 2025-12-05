@@ -11,7 +11,7 @@ class FakeOptions extends Fake implements Options {
   @override
   final bool user;
 
-  // ignore: avoid_positional_boolean_parameters
+  // ignore: avoid_positional_boolean_parameters for tests
   FakeOptions(this.user);
 }
 
@@ -19,7 +19,7 @@ void main() {
   group('$SystemctlAdapter', () {
     final mockProcessAdapter = MockProcessAdapter();
 
-    // ignore: avoid_positional_boolean_parameters
+    // ignore: avoid_positional_boolean_parameters for tests
     SystemctlAdapter createSut(bool runAsUser) =>
         SystemctlAdapter(mockProcessAdapter, FakeOptions(runAsUser));
 

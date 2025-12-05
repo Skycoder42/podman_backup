@@ -6,7 +6,7 @@ import 'package:args/args.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
 
-// ignore: no_self_package_imports
+// ignore: no_self_package_imports for generated code
 import '../../gen/package_metadata.dart' as metadata;
 import '../adapters/environment_adapter.dart';
 import '../adapters/posix_adapter.dart';

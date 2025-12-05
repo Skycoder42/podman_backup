@@ -1,5 +1,3 @@
 include: package:dart_test_tools/strict.yaml
-
-analyzer:
-  exclude:
-    - "**.g.dart"
+plugins:
+  dart_test_tools: ^7.0.1
