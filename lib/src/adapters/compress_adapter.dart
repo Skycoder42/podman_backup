@@ -7,11 +7,8 @@ import 'package:injectable/injectable.dart';
 import 'process_adapter.dart';
 
 @injectable
-class CompressAdapter extends StreamTransformerBase<List<int>, List<int>> {
-  final ProcessAdapter _processAdapter;
-
-  const CompressAdapter(this._processAdapter);
-
+class const CompressAdapter(final ProcessAdapter _processAdapter)
+    extends StreamTransformerBase<List<int>, List<int>> {
   Stream<List<int>> compress(Stream<List<int>> stream) => bind(stream);
 
   @override

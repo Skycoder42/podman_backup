@@ -7,7 +7,7 @@ import 'integration_test_case.dart';
 
 void main() => FullTest().run();
 
-class FullTest extends IntegrationTestCase {
+class FullTest() extends IntegrationTestCase {
   @override
   String get name => 'full';
 
@@ -28,9 +28,8 @@ class FullTest extends IntegrationTestCase {
       final timestamp = createTimestampSuffix(
         DateTime.now().add(const Duration(days: -10)),
       );
-      await File.fromUri(
-        backupDir.uri.resolve('$volume1-$timestamp.tar.xz'),
-      ).create();
+      await File.fromUri(backupDir.uri.resolve('$volume1-$timestamp.tar.xz'))
+          .create();
 
       // act
       await runSut();

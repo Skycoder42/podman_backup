@@ -6,12 +6,11 @@ import '../models/remote_file_info.dart';
 import 'remote_file_transformer.dart';
 
 @injectable
-class RemoteFileProxy {
-  final SftpAdapter _sftpAdapter;
-  final RemoteFileTransformer _remoteFileTransformer;
+class RemoteFileProxy(
+  final SftpAdapter _sftpAdapter,
+  final RemoteFileTransformer _remoteFileTransformer,
+) {
   final _logger = Logger('$RemoteFileProxy');
-
-  RemoteFileProxy(this._sftpAdapter, this._remoteFileTransformer);
 
   Stream<RemoteFileInfo> listRemoteFiles(String remoteHost) {
     _logger.fine('Listing existing backups for $remoteHost');

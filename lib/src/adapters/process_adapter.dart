@@ -6,13 +6,11 @@ import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 
-class ProcessFailed implements Exception {
-  final String executable;
-  final List<String> arguments;
-  final int exitCode;
-
-  ProcessFailed(this.executable, this.arguments, this.exitCode);
-
+class ProcessFailed(
+  final String executable,
+  final List<String> arguments,
+  final int exitCode,
+) implements Exception {
   // coverage:ignore-start
   @override
   String toString() =>
@@ -26,10 +24,10 @@ class ProcessAdapter {
   final IOSink _stderr;
   final _logger = Logger('$ProcessAdapter');
 
-  ProcessAdapter() : _stderr = stderr;
+  new() : _stderr = stderr;
 
   @visibleForTesting
-  ProcessAdapter.testable(this._stderr);
+  new testable(this._stderr);
 
   Future<int> run(
     String executable,

@@ -8,7 +8,7 @@ import 'integration_test_case.dart';
 
 void main() => BackupTestCase().run();
 
-class BackupTestCase extends IntegrationTestCase {
+class BackupTestCase() extends IntegrationTestCase {
   @override
   String get name => 'backup';
 
@@ -252,11 +252,7 @@ class BackupTestCase extends IntegrationTestCase {
       '${state.value} $service - Podman $service.';
 }
 
-enum _State {
+enum _State(final String value) {
   started('Started'),
-  stopped('Stopped');
-
-  final String value;
-
-  const _State(this.value);
+  stopped('Stopped'),
 }

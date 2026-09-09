@@ -13,12 +13,11 @@ import '../adapters/posix_adapter.dart';
 import 'options.dart';
 
 @injectable
-class CliParser {
-  final EnvironmentAdapter _environmentAdapter;
-  final PosixAdapter _posixAdapter;
+class CliParser(
+  final EnvironmentAdapter _environmentAdapter,
+  final PosixAdapter _posixAdapter,
+) {
   final _logger = Logger('$CliParser');
-
-  CliParser(this._environmentAdapter, this._posixAdapter);
 
   Options parse(List<String> arguments) {
     final argParser = Options.buildArgParser(
