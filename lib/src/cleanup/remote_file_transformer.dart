@@ -6,25 +6,20 @@ import 'package:meta/meta.dart';
 import '../models/remote_file_info.dart';
 
 @injectable
-class RemoteFileTransformer
+class const RemoteFileTransformer()
     extends StreamTransformerBase<String, RemoteFileInfo> {
-  const RemoteFileTransformer();
-
   @override
   Stream<RemoteFileInfo> bind(Stream<String> files) =>
       Stream.eventTransformed(files, RemoteFileTransformerSink.new);
 }
 
 @visibleForTesting
-class RemoteFileTransformerSink implements EventSink<String> {
+class const RemoteFileTransformerSink(final EventSink<RemoteFileInfo> _sink)
+    implements EventSink<String> {
   static final _splitRegexp = RegExp(r'\s+');
   static final _backupRegexp = RegExp(
     r'^(.+)-(\d{4})_(\d{2})_(\d{2})_(\d{2})_(\d{2})_(\d{2})\.tar\.xz$',
   );
-
-  final EventSink<RemoteFileInfo> _sink;
-
-  const RemoteFileTransformerSink(this._sink);
 
   @override
   void add(String event) {

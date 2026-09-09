@@ -8,7 +8,7 @@ import 'package:podman_backup/src/cleanup/remote_file_transformer.dart';
 import 'package:podman_backup/src/models/remote_file_info.dart';
 import 'package:test/test.dart';
 
-class MockEventSink<T> extends Mock implements EventSink<T> {}
+class MockEventSink<T>() extends Mock implements EventSink<T>;
 
 void main() {
   const testLine =

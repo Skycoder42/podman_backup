@@ -10,11 +10,8 @@ import 'map_extensions.dart';
 typedef _InfoMap = Map<String, Iterable<RemoteFileInfo>>;
 
 @injectable
-class CleanupFilter {
-  final DateTimeAdapter _dateTime;
+class CleanupFilter(final DateTimeAdapter _dateTime) {
   final _logger = Logger('$CleanupFilter');
-
-  CleanupFilter(this._dateTime);
 
   Future<Set<RemoteFileInfo>> collectDeletableFiles(
     Stream<RemoteFileInfo> remoteFiles, {

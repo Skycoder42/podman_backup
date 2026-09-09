@@ -16,17 +16,17 @@ import 'package:podman_backup/src/backup/backup_strategy_builder.dart';
 import 'package:podman_backup/src/models/hook.dart';
 import 'package:test/test.dart';
 
-class MockBackupStrategyBuilder extends Mock implements BackupStrategyBuilder {}
+class MockBackupStrategyBuilder() extends Mock implements BackupStrategyBuilder;
 
-class MockBackupStrategy extends Mock implements BackupStrategy {}
+class MockBackupStrategy() extends Mock implements BackupStrategy;
 
-class MockSystemctlAdapter extends Mock implements SystemctlAdapter {}
+class MockSystemctlAdapter() extends Mock implements SystemctlAdapter;
 
-class MockPodmanAdapter extends Mock implements PodmanAdapter {}
+class MockPodmanAdapter() extends Mock implements PodmanAdapter;
 
-class MockCompressAdapter extends Mock implements CompressAdapter {}
+class MockCompressAdapter() extends Mock implements CompressAdapter;
 
-class MockDateTimeAdapter extends Mock implements DateTimeAdapter {}
+class MockDateTimeAdapter() extends Mock implements DateTimeAdapter;
 
 // TODO update tests
 
@@ -67,9 +67,8 @@ void main() {
         ),
       ).thenReturnAsync(mockBackupStrategy);
       when(() => mockDateTimeAdapter.utcNow).thenReturn(utcNow);
-      when(
-        () => mockCompressAdapter.bind(any()),
-      ).thenAnswer((i) => i.positionalArguments.first as Stream<List<int>>);
+      when(() => mockCompressAdapter.bind(any()))
+          .thenAnswer((i) => i.positionalArguments.first as Stream<List<int>>);
       when(() => mockSystemctlAdapter.start(any())).thenReturnAsync(null);
       when(() => mockSystemctlAdapter.stop(any())).thenReturnAsync(null);
 
@@ -95,15 +94,12 @@ void main() {
 
     void setupStrategy(List<(List<(String, Hook?)>, List<String>)> entries) {
       var index = -1;
-      when(
-        () => mockBackupStrategy.next(),
-      ).thenAnswer((i) => ++index < entries.length);
-      when(
-        () => mockBackupStrategy.volumes,
-      ).thenAnswer((i) => entries[index].$1);
-      when(
-        () => mockBackupStrategy.services,
-      ).thenAnswer((i) => entries[index].$2);
+      when(() => mockBackupStrategy.next())
+          .thenAnswer((i) => ++index < entries.length);
+      when(() => mockBackupStrategy.volumes)
+          .thenAnswer((i) => entries[index].$1);
+      when(() => mockBackupStrategy.services)
+          .thenAnswer((i) => entries[index].$2);
     }
 
     File backupFile(String volume) {
@@ -140,9 +136,8 @@ void main() {
         const testVolume = 'test-volume';
         final testExportBytes = List.filled(10, 10);
         final testExportStream = Stream.value(testExportBytes);
-        when(
-          () => mockPodmanAdapter.volumeExport(any()),
-        ).thenStream(testExportStream);
+        when(() => mockPodmanAdapter.volumeExport(any()))
+            .thenStream(testExportStream);
         setupStrategy(const [
           ([(testVolume, null)], []),
         ]);
@@ -179,9 +174,8 @@ void main() {
         const testVolume = 'test-volume';
         final testExportBytes = List.filled(10, 10);
         final testExportStream = Stream.value(testExportBytes);
-        when(
-          () => mockPodmanAdapter.volumeExport(any()),
-        ).thenStream(testExportStream);
+        when(() => mockPodmanAdapter.volumeExport(any()))
+            .thenStream(testExportStream);
         setupStrategy(const [
           ([(testVolume, Hook(unit: 'replace', type: 'service'))], []),
         ]);
@@ -213,9 +207,8 @@ void main() {
         const testUnit = 'pre@escaped-$testVolume.service';
         final testExportBytes = List.filled(10, 10);
         final testExportStream = Stream.value(testExportBytes);
-        when(
-          () => mockPodmanAdapter.volumeExport(any()),
-        ).thenStream(testExportStream);
+        when(() => mockPodmanAdapter.volumeExport(any()))
+            .thenStream(testExportStream);
         when(
           () => mockSystemctlAdapter.escape(
             template: any(named: 'template'),
@@ -277,9 +270,8 @@ void main() {
         const testService = 'test-service';
         final testExportBytes = List.filled(10, 10);
         final testExportStream = Stream.value(testExportBytes);
-        when(
-          () => mockPodmanAdapter.volumeExport(any()),
-        ).thenStream(testExportStream);
+        when(() => mockPodmanAdapter.volumeExport(any()))
+            .thenStream(testExportStream);
         setupStrategy(const [
           ([(testVolume, null)], [testService]),
         ]);
@@ -325,15 +317,12 @@ void main() {
         final testExportStream2 = Stream.value(testExportBytes2);
         final testExportStream3 = Stream.value(testExportBytes3);
 
-        when(
-          () => mockPodmanAdapter.volumeExport(testVolume1),
-        ).thenStream(testExportStream1);
-        when(
-          () => mockPodmanAdapter.volumeExport(testVolume2),
-        ).thenStream(testExportStream2);
-        when(
-          () => mockPodmanAdapter.volumeExport(testVolume3),
-        ).thenStream(testExportStream3);
+        when(() => mockPodmanAdapter.volumeExport(testVolume1))
+            .thenStream(testExportStream1);
+        when(() => mockPodmanAdapter.volumeExport(testVolume2))
+            .thenStream(testExportStream2);
+        when(() => mockPodmanAdapter.volumeExport(testVolume3))
+            .thenStream(testExportStream3);
         setupStrategy(const [
           ([(testVolume1, null), (testVolume2, null)], []),
           ([(testVolume3, null)], []),
@@ -401,9 +390,8 @@ void main() {
           const testService3 = 'test-service3';
           final testExportBytes = List.filled(10, 10);
           final testExportStream = Stream.value(testExportBytes);
-          when(
-            () => mockPodmanAdapter.volumeExport(any()),
-          ).thenStream(testExportStream);
+          when(() => mockPodmanAdapter.volumeExport(any()))
+              .thenStream(testExportStream);
           setupStrategy(const [
             ([(testVolume, null)], [testService1, testService2, testService3]),
           ]);
@@ -463,15 +451,12 @@ void main() {
           final testExportStream2 = Stream.value(testExportBytes2);
           final testExportStream3 = Stream.value(testExportBytes3);
 
-          when(
-            () => mockPodmanAdapter.volumeExport(testVolume1),
-          ).thenStream(testExportStream1);
-          when(
-            () => mockPodmanAdapter.volumeExport(testVolume2),
-          ).thenStream(testExportStream2);
-          when(
-            () => mockPodmanAdapter.volumeExport(testVolume3),
-          ).thenStream(testExportStream3);
+          when(() => mockPodmanAdapter.volumeExport(testVolume1))
+              .thenStream(testExportStream1);
+          when(() => mockPodmanAdapter.volumeExport(testVolume2))
+              .thenStream(testExportStream2);
+          when(() => mockPodmanAdapter.volumeExport(testVolume3))
+              .thenStream(testExportStream3);
           when(
             () => mockSystemctlAdapter.escape(
               template: any(named: 'template'),
@@ -562,9 +547,8 @@ void main() {
       test('restarts stopped services if stopping fails', () async {
         const testVolume = 'test-volume';
         const testService = 'test-service';
-        when(
-          () => mockSystemctlAdapter.stop(any()),
-        ).thenThrow(Exception('test error'));
+        when(() => mockSystemctlAdapter.stop(any()))
+            .thenThrow(Exception('test error'));
         setupStrategy(const [
           ([(testVolume, null)], [testService]),
         ]);
@@ -598,12 +582,10 @@ void main() {
         final testExportBytes = List.filled(10, 10);
         final testExportStream = Stream.value(testExportBytes);
         final testException = Exception('test error');
-        when(
-          () => mockPodmanAdapter.volumeExport(any()),
-        ).thenStream(testExportStream);
-        when(
-          () => mockSystemctlAdapter.start(any()),
-        ).thenAnswer((i) async => throw testException);
+        when(() => mockPodmanAdapter.volumeExport(any()))
+            .thenStream(testExportStream);
+        when(() => mockSystemctlAdapter.start(any()))
+            .thenAnswer((i) async => throw testException);
         setupStrategy(const [
           ([(testVolume, null)], [testService]),
         ]);

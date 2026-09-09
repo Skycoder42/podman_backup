@@ -10,11 +10,11 @@ import 'package:podman_backup/src/podman_backup.dart';
 import 'package:podman_backup/src/upload/upload_controller.dart';
 import 'package:test/test.dart';
 
-class MockBackupController extends Mock implements BackupController {}
+class MockBackupController() extends Mock implements BackupController;
 
-class MockUploadController extends Mock implements UploadController {}
+class MockUploadController() extends Mock implements UploadController;
 
-class MockCleanupController extends Mock implements CleanupController {}
+class MockCleanupController() extends Mock implements CleanupController;
 
 void main() {
   setUpAll(() {

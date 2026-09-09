@@ -41,12 +41,9 @@ extension MapValuesX<TKey, TValue> on Map<TKey, Iterable<TValue>> {
 }
 
 @visibleForTesting
-class ListCollectionTransformerSink<T> implements EventSink<T> {
-  final EventSink<List<T>> _sink;
-
+class ListCollectionTransformerSink<T>(final EventSink<List<T>> _sink)
+    implements EventSink<T> {
   final _collection = <T>[];
-
-  ListCollectionTransformerSink(this._sink);
 
   @override
   void add(T event) => _collection.add(event);
@@ -61,9 +58,8 @@ class ListCollectionTransformerSink<T> implements EventSink<T> {
     ..close();
 }
 
-class ListCollectionTransformer<T> extends StreamTransformerBase<T, List<T>> {
-  const ListCollectionTransformer();
-
+class const ListCollectionTransformer<T>()
+    extends StreamTransformerBase<T, List<T>> {
   @override
   Stream<List<T>> bind(Stream<T> stream) =>
       Stream.eventTransformed(stream, ListCollectionTransformerSink.new);

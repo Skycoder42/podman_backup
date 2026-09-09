@@ -7,7 +7,7 @@ part 'container.g.dart';
 
 @freezed
 sealed class Container with _$Container {
-  const factory Container({
+  const factory({
     @JsonKey(name: 'Id') required String id,
     @JsonKey(name: 'Exited') required bool exited,
     @JsonKey(name: 'IsInfra') required bool isInfra,
@@ -17,8 +17,7 @@ sealed class Container with _$Container {
     @JsonKey(name: 'PodName') required String podName,
   }) = _Container;
 
-  factory Container.fromJson(Map<String, dynamic> json) =>
-      _$ContainerFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$ContainerFromJson(json);
 
   static List<Container> fromJsonList(List<dynamic> json) => json
       .map((dynamic e) => Container.fromJson(e as Map<String, dynamic>))

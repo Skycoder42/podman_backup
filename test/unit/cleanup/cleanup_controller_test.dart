@@ -6,9 +6,9 @@ import 'package:podman_backup/src/cleanup/remote_file_proxy.dart';
 import 'package:podman_backup/src/models/remote_file_info.dart';
 import 'package:test/test.dart';
 
-class MockRemoteFileProxy extends Mock implements RemoteFileProxy {}
+class MockRemoteFileProxy() extends Mock implements RemoteFileProxy;
 
-class MockCleanupFilter extends Mock implements CleanupFilter {}
+class MockCleanupFilter() extends Mock implements CleanupFilter;
 
 void main() {
   setUpAll(() {
@@ -25,9 +25,8 @@ void main() {
       reset(mockRemoteFileProxy);
       reset(mockCleanupFilter);
 
-      when(
-        () => mockRemoteFileProxy.deleteFiles(any(), any()),
-      ).thenReturnAsync(null);
+      when(() => mockRemoteFileProxy.deleteFiles(any(), any()))
+          .thenReturnAsync(null);
 
       sut = CleanupController(mockRemoteFileProxy, mockCleanupFilter);
     });
@@ -54,9 +53,8 @@ void main() {
         const maxAge = Duration(days: 7);
         const maxBytesTotal = 3411223;
 
-        when(
-          () => mockRemoteFileProxy.listRemoteFiles(any()),
-        ).thenStream(remoteFilesStream);
+        when(() => mockRemoteFileProxy.listRemoteFiles(any()))
+            .thenStream(remoteFilesStream);
         when(
           () => mockCleanupFilter.collectDeletableFiles(
             any(),
@@ -92,9 +90,8 @@ void main() {
         const remoteFilesStream = Stream<RemoteFileInfo>.empty();
         const filesToDelete = <RemoteFileInfo>{};
 
-        when(
-          () => mockRemoteFileProxy.listRemoteFiles(any()),
-        ).thenStream(remoteFilesStream);
+        when(() => mockRemoteFileProxy.listRemoteFiles(any()))
+            .thenStream(remoteFilesStream);
         when(
           () => mockCleanupFilter.collectDeletableFiles(
             any(),

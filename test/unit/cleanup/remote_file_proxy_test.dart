@@ -8,9 +8,9 @@ import 'package:podman_backup/src/cleanup/remote_file_transformer.dart';
 import 'package:podman_backup/src/models/remote_file_info.dart';
 import 'package:test/test.dart';
 
-class MockSftpAdapter extends Mock implements SftpAdapter {}
+class MockSftpAdapter() extends Mock implements SftpAdapter;
 
-class MockBatchBuilder extends Mock implements BatchBuilder {}
+class MockBatchBuilder() extends Mock implements BatchBuilder;
 
 void main() {
   group('$RemoteFileProxy', () {

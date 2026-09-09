@@ -4,12 +4,8 @@ import '../cli/options.dart';
 import 'process_adapter.dart';
 
 @injectable
-class SystemctlAdapter {
-  final ProcessAdapter _processAdapter;
-  final bool _runAsUser;
-
-  SystemctlAdapter(this._processAdapter, Options options)
-    : _runAsUser = options.user;
+class SystemctlAdapter(final ProcessAdapter _processAdapter, Options options) {
+  final bool _runAsUser = options.user;
 
   Future<void> start(String unit) => _runSystemd(['start', unit]);
 

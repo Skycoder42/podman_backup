@@ -8,7 +8,7 @@ import 'package:podman_backup/src/models/container.dart';
 import 'package:podman_backup/src/models/volume.dart';
 import 'package:test/test.dart';
 
-class MockProcessAdapter extends Mock implements ProcessAdapter {}
+class MockProcessAdapter() extends Mock implements ProcessAdapter;
 
 void main() {
   group('$PodmanAdapter', () {
@@ -36,9 +36,8 @@ void main() {
           ),
         ],
         (fixture) async {
-          when(
-            () => mockProcessAdapter.streamJson(any(), any()),
-          ).thenReturnAsync(const <dynamic>[]);
+          when(() => mockProcessAdapter.streamJson(any(), any()))
+              .thenReturnAsync(const <dynamic>[]);
 
           await sut.ps(all: fixture.$1, filters: fixture.$2);
 
@@ -75,9 +74,8 @@ void main() {
           ),
         ];
 
-        when(
-          () => mockProcessAdapter.streamJson(any(), any()),
-        ).thenReturnAsync(json.decode(json.encode(expected)));
+        when(() => mockProcessAdapter.streamJson(any(), any()))
+            .thenReturnAsync(json.decode(json.encode(expected)));
 
         expect(sut.ps(), completion(expected));
       });
@@ -92,9 +90,8 @@ void main() {
           ({'a': '1', 'x': 'y'}, ['--filter', 'a=1', '--filter', 'x=y']),
         ],
         (fixture) async {
-          when(
-            () => mockProcessAdapter.streamJson(any(), any()),
-          ).thenReturnAsync(const <dynamic>[]);
+          when(() => mockProcessAdapter.streamJson(any(), any()))
+              .thenReturnAsync(const <dynamic>[]);
 
           await sut.volumeList(filters: fixture.$1);
 
@@ -119,9 +116,8 @@ void main() {
           ),
         ];
 
-        when(
-          () => mockProcessAdapter.streamJson(any(), any()),
-        ).thenReturnAsync(json.decode(json.encode(expected)));
+        when(() => mockProcessAdapter.streamJson(any(), any()))
+            .thenReturnAsync(json.decode(json.encode(expected)));
 
         expect(sut.volumeList(), completion(expected));
       });
@@ -131,9 +127,8 @@ void main() {
       const testVolume = 'test-volume';
       final outData = List.generate(200, (index) => index ~/ 2);
 
-      when(
-        () => mockProcessAdapter.streamRaw(any(), any()),
-      ).thenStream(Stream.value(outData));
+      when(() => mockProcessAdapter.streamRaw(any(), any()))
+          .thenStream(Stream.value(outData));
 
       await expectLater(
         sut.volumeExport(testVolume),

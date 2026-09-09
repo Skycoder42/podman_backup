@@ -7,19 +7,13 @@ import 'cli/options.dart';
 import 'upload/upload_controller.dart';
 
 @injectable
-class PodmanBackup {
-  final BackupController _backupController;
-  final UploadController _uploadController;
-  final CleanupController _cleanupController;
-  final Options _options;
+class PodmanBackup(
+  final BackupController _backupController,
+  final UploadController _uploadController,
+  final CleanupController _cleanupController,
+  final Options _options,
+) {
   final _logger = Logger('$PodmanBackup');
-
-  PodmanBackup(
-    this._backupController,
-    this._uploadController,
-    this._cleanupController,
-    this._options,
-  );
 
   Future<void> run() async {
     _logger.fine('Running systemctl in user mode: ${_options.user}');

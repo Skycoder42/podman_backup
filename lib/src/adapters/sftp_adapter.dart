@@ -2,12 +2,8 @@ import 'package:injectable/injectable.dart';
 
 import 'process_adapter.dart';
 
-class BatchBuilder {
-  final SftpAdapter _sftpAdapter;
-  final String _remoteHost;
+class BatchBuilder._(final SftpAdapter _sftpAdapter, final String _remoteHost) {
   final _commands = <String>[];
-
-  BatchBuilder._(this._sftpAdapter, this._remoteHost);
 
   void ls({
     bool allFiles = false,
@@ -41,11 +37,7 @@ class BatchBuilder {
 }
 
 @injectable
-class SftpAdapter {
-  final ProcessAdapter _processAdapter;
-
-  const SftpAdapter(this._processAdapter);
-
+class const SftpAdapter(final ProcessAdapter _processAdapter) {
   BatchBuilder batch(String remoteHost) => BatchBuilder._(this, remoteHost);
 
   Stream<String> _executeBatch(BatchBuilder batchBuilder) {

@@ -3,17 +3,17 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'hook.freezed.dart';
 
 @freezed
-sealed class Hook with _$Hook {
+sealed class const Hook._() with _$Hook {
   static final _parseRegexp = RegExp(r'^(\!)?(.*[^@])(@)?\.(\w+)?$');
 
-  const factory Hook({
+  const factory({
     required String unit,
     required String type,
     @Default(false) bool isTemplate,
     @Default(false) bool preHook,
   }) = _Hook;
 
-  factory Hook.parse(String value) {
+  factory parse(String value) {
     final match = _parseRegexp.matchAsPrefix(value);
     if (match == null) {
       throw FormatException(
@@ -30,8 +30,6 @@ sealed class Hook with _$Hook {
       type: match[4]!,
     );
   }
-
-  const Hook._();
 
   String get systemdUnit => isTemplate ? '$unit@.$type' : '$unit.$type';
 

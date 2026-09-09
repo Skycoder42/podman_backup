@@ -11,7 +11,7 @@ import '../adapters/posix_adapter.dart';
 
 part 'options.g.dart';
 
-enum BackupMode {
+enum BackupMode() {
   full,
   backupUpload,
   uploadCleanup,
@@ -40,9 +40,7 @@ extension BackupModeX on BackupMode {
 
 @CliOptions()
 @immutable
-class Options {
-  static const defaultBackupLabel = 'de.skycoder42.podman_backup';
-
+class const Options({
   @CliOption(
     name: 'remote',
     abbr: 'r',
@@ -52,10 +50,8 @@ class Options {
         'in the format: [USER@]HOST:DEST. (required)',
   )
   @internal
-  final String? remoteHostRaw;
-  @internal
-  final bool remoteHostRawWasParsed;
-
+  required final String? remoteHostRaw,
+  @internal required final bool remoteHostRawWasParsed,
   @CliOption(
     abbr: 'b',
     defaultsTo: BackupMode.full,
@@ -72,8 +68,7 @@ class Options {
       BackupMode.cleanupOnly: 'Only cleanup old backups on the remote.',
     },
   )
-  final BackupMode backupMode;
-
+  required final BackupMode backupMode,
   @CliOption(
     abbr: 'l',
     defaultsTo: Options.defaultBackupLabel,
@@ -82,8 +77,7 @@ class Options {
         'The label that volumes should be filtered by '
         'to detect which volumes to backup.',
   )
-  final String backupLabel;
-
+  required final String backupLabel,
   @CliOption(
     convert: _directoryFromString,
     abbr: 'c',
@@ -93,8 +87,7 @@ class Options {
         'The directory to cache backups in before uploading them to '
         'the backup host.',
   )
-  final Directory backupCache;
-
+  required final Directory backupCache,
   @CliOption(
     negatable: true,
     provideDefaultToOverride: true,
@@ -103,8 +96,7 @@ class Options {
         '(by adding "--user" to every command) or as system. The default is '
         'set automatically depending on whether it is running as root or not.',
   )
-  final bool user;
-
+  required final bool user,
   @CliOption(
     abbr: 'M',
     defaultsTo: 1,
@@ -113,8 +105,7 @@ class Options {
         'The minimum number of backups to keep per volume, '
         'regardless of all the other cleanup filters. Must be at least 1.',
   )
-  final int minKeep;
-
+  required final int minKeep,
   @CliOption(
     abbr: 'K',
     valueHelp: 'count',
@@ -122,8 +113,7 @@ class Options {
         'The maximum number of backups to keep per volume. Must be at least '
         'as much as --min-keep. If not specified, no limit is applied.',
   )
-  final int? maxKeep;
-
+  required final int? maxKeep,
   @CliOption(
     name: 'max-age',
     abbr: 'A',
@@ -133,8 +123,7 @@ class Options {
         'Older backups will be deleted. If not specified, no limit is applied.',
   )
   @internal
-  final int? maxAgeRaw;
-
+  required final int? maxAgeRaw,
   @CliOption(
     name: 'max-total-size',
     abbr: 'S',
@@ -146,8 +135,7 @@ class Options {
         'no limit is applied.',
   )
   @internal
-  final int? maxTotalSizeRaw;
-
+  required final int? maxTotalSizeRaw,
   @CliOption(
     convert: _logLevelFromString,
     abbr: 'L',
@@ -169,39 +157,23 @@ class Options {
         'Customize the logging level. '
         'Listed from most verbose (all) to least verbose (off).',
   )
-  final Level logLevel;
-
+  required final Level logLevel,
   @CliOption(
     abbr: 'v',
     negatable: false,
     defaultsTo: false,
     help: 'Prints the current version of the tool.',
   )
-  final bool version;
-
+  final bool version = false,
   @CliOption(
     abbr: 'h',
     negatable: false,
     defaultsTo: false,
     help: 'Prints usage information.',
   )
-  final bool help;
-
-  const Options({
-    required this.remoteHostRaw,
-    required this.remoteHostRawWasParsed,
-    required this.backupMode,
-    required this.backupLabel,
-    required this.backupCache,
-    required this.user,
-    required this.minKeep,
-    required this.maxKeep,
-    required this.maxAgeRaw,
-    required this.maxTotalSizeRaw,
-    required this.logLevel,
-    this.version = false,
-    this.help = false,
-  });
+  final bool help = false,
+}) {
+  static const defaultBackupLabel = 'de.skycoder42.podman_backup';
 
   String getRemoteHost() => remoteHostRaw!;
 

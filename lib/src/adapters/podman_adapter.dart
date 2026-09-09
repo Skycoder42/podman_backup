@@ -5,11 +5,7 @@ import '../models/volume.dart';
 import 'process_adapter.dart';
 
 @injectable
-class PodmanAdapter {
-  final ProcessAdapter _processAdapter;
-
-  const PodmanAdapter(this._processAdapter);
-
+class const PodmanAdapter(final ProcessAdapter _processAdapter) {
   Future<List<Container>> ps({
     bool all = false,
     Map<String, String> filters = const {},
