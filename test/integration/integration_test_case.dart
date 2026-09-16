@@ -9,7 +9,7 @@ import 'package:podman_backup/src/di/dependencies.dart';
 import 'package:podman_backup/src/podman_backup.dart';
 import 'package:test/test.dart';
 
-abstract class IntegrationTestCase {
+abstract class IntegrationTestCase() {
   late String _timestampSuffix;
 
   @protected

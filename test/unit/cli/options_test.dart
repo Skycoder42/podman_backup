@@ -8,9 +8,9 @@ import 'package:podman_backup/src/adapters/posix_adapter.dart';
 import 'package:podman_backup/src/cli/options.dart';
 import 'package:test/test.dart';
 
-class MockEnvironmentAdapter extends Mock implements EnvironmentAdapter {}
+class MockEnvironmentAdapter() extends Mock implements EnvironmentAdapter;
 
-class MockPosixAdapter extends Mock implements PosixAdapter {}
+class MockPosixAdapter() extends Mock implements PosixAdapter;
 
 void main() {
   group('$BackupMode', () {
@@ -73,9 +73,8 @@ void main() {
 
     group('sets correct backupCache defaults', () {
       test('sets correct path with HOME', () {
-        when(
-          () => mockEnvironmentAdapter['HOME'],
-        ).thenReturn('/home/test-user');
+        when(() => mockEnvironmentAdapter['HOME'])
+            .thenReturn('/home/test-user');
 
         final parser = Options.buildArgParser(
           mockEnvironmentAdapter,

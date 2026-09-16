@@ -6,11 +6,8 @@ import 'package:logging/logging.dart';
 import '../adapters/process_adapter.dart';
 
 @injectable
-class UploadController {
-  final ProcessAdapter _processAdapter;
+class UploadController(final ProcessAdapter _processAdapter) {
   final _logger = Logger('$UploadController');
-
-  UploadController(this._processAdapter);
 
   Future<void> upload({
     required String remoteHost,

@@ -7,7 +7,7 @@ import 'integration_test_case.dart';
 
 void main() => CleanupTestCase().run();
 
-class CleanupTestCase extends IntegrationTestCase {
+class CleanupTestCase() extends IntegrationTestCase {
   @override
   String get name => 'cleanup';
 

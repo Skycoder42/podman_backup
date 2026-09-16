@@ -8,7 +8,7 @@ import 'package:podman_backup/src/cleanup/cleanup_filter.dart';
 import 'package:podman_backup/src/models/remote_file_info.dart';
 import 'package:test/test.dart';
 
-class MockDateTimeAdapter extends Mock implements DateTimeAdapter {}
+class MockDateTimeAdapter() extends Mock implements DateTimeAdapter;
 
 void main() {
   group('$CleanupFilter', () {
@@ -27,9 +27,8 @@ void main() {
     setUp(() {
       reset(mockDateTimeAdapter);
 
-      when(
-        () => mockDateTimeAdapter.utcNow,
-      ).thenReturn(DateTime.utc(2023, 1, 15));
+      when(() => mockDateTimeAdapter.utcNow)
+          .thenReturn(DateTime.utc(2023, 1, 15));
 
       sut = CleanupFilter(mockDateTimeAdapter);
     });

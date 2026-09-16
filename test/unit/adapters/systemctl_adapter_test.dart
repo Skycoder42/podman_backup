@@ -5,15 +5,9 @@ import 'package:podman_backup/src/adapters/systemctl_adapter.dart';
 import 'package:podman_backup/src/cli/options.dart';
 import 'package:test/test.dart';
 
-class MockProcessAdapter extends Mock implements ProcessAdapter {}
+class MockProcessAdapter() extends Mock implements ProcessAdapter;
 
-class FakeOptions extends Fake implements Options {
-  @override
-  final bool user;
-
-  // ignore: avoid_positional_boolean_parameters for tests
-  FakeOptions(this.user);
-}
+class FakeOptions(@override final bool user) extends Fake implements Options;
 
 void main() {
   group('$SystemctlAdapter', () {
@@ -68,9 +62,8 @@ void main() {
         const template = 'test-template';
         const value = 'test-value';
         const escaped = 'test-escaped';
-        when(
-          () => mockProcessAdapter.streamLines(any(), any()),
-        ).thenStream(Stream.value(escaped));
+        when(() => mockProcessAdapter.streamLines(any(), any()))
+            .thenStream(Stream.value(escaped));
 
         final sut = createSut(false);
         final result = await sut.escape(template: template, value: value);
@@ -88,9 +81,8 @@ void main() {
       test('throws if result is not a single value stream', () {
         const template = 'test-template';
         const value = 'test-value';
-        when(
-          () => mockProcessAdapter.streamLines(any(), any()),
-        ).thenStream(Stream.fromIterable(['a', 'b']));
+        when(() => mockProcessAdapter.streamLines(any(), any()))
+            .thenStream(Stream.fromIterable(['a', 'b']));
 
         final sut = createSut(false);
 

@@ -8,11 +8,8 @@ import '../models/volume.dart';
 import 'backup_strategy.dart';
 
 @injectable
-class BackupStrategyBuilder {
-  final PodmanAdapter _podmanAdapter;
+class BackupStrategyBuilder(final PodmanAdapter _podmanAdapter) {
   final _logger = Logger('$BackupStrategyBuilder');
-
-  BackupStrategyBuilder(this._podmanAdapter);
 
   Future<BackupStrategy> buildStrategy({required String backupLabel}) async {
     _logger.fine('Loading volumes with label $backupLabel');

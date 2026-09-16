@@ -5,12 +5,11 @@ import 'cleanup_filter.dart';
 import 'remote_file_proxy.dart';
 
 @injectable
-class CleanupController {
-  final RemoteFileProxy _remoteFileProxy;
-  final CleanupFilter _cleanupFilter;
+class CleanupController(
+  final RemoteFileProxy _remoteFileProxy,
+  final CleanupFilter _cleanupFilter,
+) {
   final _logger = Logger('$CleanupController');
-
-  CleanupController(this._remoteFileProxy, this._cleanupFilter);
 
   Future<void> cleanupOldBackups(
     String remoteHost, {
