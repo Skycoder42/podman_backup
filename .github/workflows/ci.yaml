@@ -26,35 +26,45 @@ jobs:
           "linux": "./tool/integration-test-setup.sh"
         }
 
-  cd:
-    name: CD
+  build:
+    name: CD - Build
     needs:
       - ci
     uses: Skycoder42/dart_test_tools/.github/workflows/compile.yml@main
-    permissions:
-      contents: write
     with:
       enabledPlatforms: ${{ needs.ci.outputs.enabledPlatforms }}
       buildRunner: true
 
-  aur:
-    name: AUR
+  package:
+    name: CD - Build
     needs:
-      - cd
-    if: needs.cd.outputs.releaseCreated == 'true'
+      - build
+    uses: Skycoder42/dart_test_tools/.github/workflows/nfpm.yml@main
+
+  release:
+    name: CD - Deploy
+    needs:
+      - package
+    uses: Skycoder42/dart_test_tools/.github/workflows/create-release.yml@main
+    permissions:
+      contents: write
+
+  aur_deploy:
+    name: CD - Deploy
+    needs:
+      - release
+    if: needs.release.outputs.releaseCreated == 'true'
     uses: Skycoder42/dart_test_tools/.github/workflows/aur.yml@main
     secrets:
       AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
 
-  deb:
-    name: Deb
+  deb_deploy:
+    name: CD - Deploy
     needs:
-      - cd
-    if: needs.cd.outputs.releaseCreated == 'true'
-    uses: Skycoder42/dart_test_tools/.github/workflows/deb.yml@main
-    permissions:
-      contents: write
+      - release
+    if: needs.release.outputs.releaseCreated == 'true'
+    uses: Skycoder42/dart_test_tools/.github/workflows/deploy-packagecloud.yml@main
     with:
-      packagecloudRepository: podman_backup/ubuntu/jammy
+      packagecloudRepository: podman_backup/ubuntu
     secrets:
       packagecloudToken: ${{ secrets.PACKAGECLOUD_TOKEN }}

@@ -44,11 +44,6 @@ aur:
     - podman
     - xz
     - systemd
-  makedeb:
-    depends:
-      - podman
-      - xz-utils
-      - systemd
 
 dart_pre_commit:
   flutter-compat: false

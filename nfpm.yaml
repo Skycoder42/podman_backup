@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://nfpm.goreleaser.com/schema.json
+---
+section: admin
+maintainer: Skycoder42 <Skycoder42@users.noreply.github.com>
+license: BSD
+depends:
+  - podman
+  - xz-utils
+  - systemd
+umask: 0o022
+contents:
+  - src: tool/package-config.yaml
+    dst: /etc/systemd-status-server.yaml
+    type: config|noreplace
+  - src: build/client_build_web/web
+    dst: /opt/%{name}/share/web-app
+    type: tree
