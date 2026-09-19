@@ -8,10 +8,3 @@ depends:
   - xz-utils
   - systemd
 umask: 0o022
-contents:
-  - src: tool/package-config.yaml
-    dst: /etc/systemd-status-server.yaml
-    type: config|noreplace
-  - src: build/client_build_web/web
-    dst: /opt/%{name}/share/web-app
-    type: tree
