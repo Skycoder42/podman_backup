@@ -7,6 +7,7 @@ import 'package:test/test.dart';
 
 class MockProcessAdapter() extends Mock implements ProcessAdapter;
 
+// ignore: avoid_positional_boolean_parameters for tests
 class FakeOptions(@override final bool user) extends Fake implements Options;
 
 void main() {

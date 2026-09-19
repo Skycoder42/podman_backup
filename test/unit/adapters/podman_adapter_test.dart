@@ -74,8 +74,9 @@ void main() {
           ),
         ];
 
-        when(() => mockProcessAdapter.streamJson(any(), any()))
-            .thenReturnAsync(json.decode(json.encode(expected)));
+        when(
+          () => mockProcessAdapter.streamJson(any(), any()),
+        ).thenReturnAsync(json.decode(json.encode(expected)) as List<dynamic>);
 
         expect(sut.ps(), completion(expected));
       });
@@ -116,8 +117,9 @@ void main() {
           ),
         ];
 
-        when(() => mockProcessAdapter.streamJson(any(), any()))
-            .thenReturnAsync(json.decode(json.encode(expected)));
+        when(
+          () => mockProcessAdapter.streamJson(any(), any()),
+        ).thenReturnAsync(json.decode(json.encode(expected)) as List<dynamic>);
 
         expect(sut.volumeList(), completion(expected));
       });
