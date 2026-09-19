@@ -6,13 +6,9 @@ typedef VolumeDetails = (Hook? hook, Set<String> services);
 
 typedef VolumeWithLabel = (String volume, Hook? hook);
 
-class BackupStrategy {
-  final Map<String, VolumeDetails> _pendingVolumes;
-
+class BackupStrategy(final Map<String, VolumeDetails> _pendingVolumes) {
   final _activeVolumes = <VolumeWithLabel>[];
   final _activeServices = <String>{};
-
-  BackupStrategy(this._pendingVolumes);
 
   bool next() {
     _activeVolumes.clear();

@@ -7,7 +7,7 @@ import 'package:podman_backup/src/models/hook.dart';
 import 'package:podman_backup/src/models/volume.dart';
 import 'package:test/test.dart';
 
-class MockPodmanAdapter extends Mock implements PodmanAdapter {}
+class MockPodmanAdapter() extends Mock implements PodmanAdapter;
 
 void main() {
   group('$BackupStrategyBuilder', () {
@@ -25,9 +25,8 @@ void main() {
 
     group('buildStrategy', () {
       test('collects all volumes by label', () async {
-        when(
-          () => mockPodmanAdapter.volumeList(filters: any(named: 'filters')),
-        ).thenReturnAsync(const []);
+        when(() => mockPodmanAdapter.volumeList(filters: any(named: 'filters')))
+            .thenReturnAsync(const []);
 
         final strategy = await sut.buildStrategy(backupLabel: testLabel);
 
@@ -42,15 +41,13 @@ void main() {
         const testVolume1 = 'test-volume-1';
         const testVolume2 = 'test-volume-2';
 
-        when(
-          () => mockPodmanAdapter.volumeList(filters: any(named: 'filters')),
-        ).thenReturnAsync(const [
-          Volume(name: testVolume1, labels: {}),
-          Volume(name: testVolume2, labels: {}),
-        ]);
-        when(
-          () => mockPodmanAdapter.ps(filters: any(named: 'filters')),
-        ).thenReturnAsync(const []);
+        when(() => mockPodmanAdapter.volumeList(filters: any(named: 'filters')))
+            .thenReturnAsync(const [
+              Volume(name: testVolume1, labels: {}),
+              Volume(name: testVolume2, labels: {}),
+            ]);
+        when(() => mockPodmanAdapter.ps(filters: any(named: 'filters')))
+            .thenReturnAsync(const []);
 
         final strategy = await sut.buildStrategy(backupLabel: testLabel);
 
@@ -76,15 +73,13 @@ void main() {
         const testVolume1 = 'test-volume-1';
         const testVolume2 = 'test-volume-2';
 
-        when(
-          () => mockPodmanAdapter.volumeList(filters: any(named: 'filters')),
-        ).thenReturnAsync(const [
-          Volume(name: testVolume1, labels: {testLabel: ''}),
-          Volume(name: testVolume2, labels: {testLabel: 'test-1.service'}),
-        ]);
-        when(
-          () => mockPodmanAdapter.ps(filters: any(named: 'filters')),
-        ).thenReturnAsync(const []);
+        when(() => mockPodmanAdapter.volumeList(filters: any(named: 'filters')))
+            .thenReturnAsync(const [
+              Volume(name: testVolume1, labels: {testLabel: ''}),
+              Volume(name: testVolume2, labels: {testLabel: 'test-1.service'}),
+            ]);
+        when(() => mockPodmanAdapter.ps(filters: any(named: 'filters')))
+            .thenReturnAsync(const []);
 
         final strategy = await sut.buildStrategy(backupLabel: testLabel);
 
@@ -124,64 +119,62 @@ void main() {
         const testContainer6i = 'test-container-6i';
         const testContainer7i = 'test-container-7i';
 
-        when(
-          () => mockPodmanAdapter.volumeList(filters: any(named: 'filters')),
-        ).thenReturnAsync(const [
-          Volume(name: testVolume1, labels: {}),
-          Volume(name: testVolume2, labels: {}),
-          Volume(
-            name: testVolume3,
-            labels: {testLabel: '!test-service3@.service'},
-          ),
-          Volume(name: testVolume4, labels: {}),
-        ]);
-        when(
-          () => mockPodmanAdapter.ps(filters: any(named: 'filters')),
-        ).thenAnswer((i) async {
-          final filters = i.namedArguments[#filters] as Map<String, String>;
-          final volumeFilter = filters['volume'];
-          final podFilter = filters['pod'];
-          switch (volumeFilter ?? podFilter) {
-            case testVolume1:
-              return [
-                _createContainer(testContainer1),
-                _createContainer(testContainer2, withLabel: false),
-              ];
-            case testVolume2:
-              return [
-                _createContainer(testContainer2),
-                _createContainer(testContainer3, withLabel: false),
-                _createContainer(testContainer4),
-              ];
-            case testVolume3:
-              return [
-                _createContainer(testContainer1),
-                _createContainer(testContainer3),
-                _createContainer(testContainer5),
-              ];
-            case testVolume4:
-              return [
-                _createContainer(testContainer6b, pod: testContainer6i),
-                _createContainer(
-                  testContainer7i,
-                  pod: testContainer7i,
-                  isInfra: true,
-                ),
-              ];
-            case testContainer6i:
-              return [
-                _createContainer(testContainer6a, pod: testContainer6i),
-                _createContainer(testContainer6b, pod: testContainer6i),
-                _createContainer(
-                  testContainer6i,
-                  pod: testContainer6i,
-                  isInfra: true,
-                ),
-              ];
-            default:
-              throw ArgumentError('Invalid filters: $filters');
-          }
-        });
+        when(() => mockPodmanAdapter.volumeList(filters: any(named: 'filters')))
+            .thenReturnAsync(const [
+              Volume(name: testVolume1, labels: {}),
+              Volume(name: testVolume2, labels: {}),
+              Volume(
+                name: testVolume3,
+                labels: {testLabel: '!test-service3@.service'},
+              ),
+              Volume(name: testVolume4, labels: {}),
+            ]);
+        when(() => mockPodmanAdapter.ps(filters: any(named: 'filters')))
+            .thenAnswer((i) async {
+              final filters = i.namedArguments[#filters] as Map<String, String>;
+              final volumeFilter = filters['volume'];
+              final podFilter = filters['pod'];
+              switch (volumeFilter ?? podFilter) {
+                case testVolume1:
+                  return [
+                    _createContainer(testContainer1),
+                    _createContainer(testContainer2, withLabel: false),
+                  ];
+                case testVolume2:
+                  return [
+                    _createContainer(testContainer2),
+                    _createContainer(testContainer3, withLabel: false),
+                    _createContainer(testContainer4),
+                  ];
+                case testVolume3:
+                  return [
+                    _createContainer(testContainer1),
+                    _createContainer(testContainer3),
+                    _createContainer(testContainer5),
+                  ];
+                case testVolume4:
+                  return [
+                    _createContainer(testContainer6b, pod: testContainer6i),
+                    _createContainer(
+                      testContainer7i,
+                      pod: testContainer7i,
+                      isInfra: true,
+                    ),
+                  ];
+                case testContainer6i:
+                  return [
+                    _createContainer(testContainer6a, pod: testContainer6i),
+                    _createContainer(testContainer6b, pod: testContainer6i),
+                    _createContainer(
+                      testContainer6i,
+                      pod: testContainer6i,
+                      isInfra: true,
+                    ),
+                  ];
+                default:
+                  throw ArgumentError('Invalid filters: $filters');
+              }
+            });
 
         final strategy = await sut.buildStrategy(backupLabel: testLabel);
 

@@ -12,21 +12,14 @@ import 'backup_strategy.dart';
 import 'backup_strategy_builder.dart';
 
 @injectable
-class BackupController {
-  final BackupStrategyBuilder _backupStrategyBuilder;
-  final SystemctlAdapter _systemctlAdapter;
-  final PodmanAdapter _podmanAdapter;
-  final CompressAdapter _compressAdapter;
-  final DateTimeAdapter _dateTimeAdapter;
+class BackupController(
+  final BackupStrategyBuilder _backupStrategyBuilder,
+  final SystemctlAdapter _systemctlAdapter,
+  final PodmanAdapter _podmanAdapter,
+  final CompressAdapter _compressAdapter,
+  final DateTimeAdapter _dateTimeAdapter,
+) {
   final _logger = Logger('$BackupController');
-
-  BackupController(
-    this._backupStrategyBuilder,
-    this._systemctlAdapter,
-    this._podmanAdapter,
-    this._compressAdapter,
-    this._dateTimeAdapter,
-  );
 
   Future<void> backup({
     required String backupLabel,

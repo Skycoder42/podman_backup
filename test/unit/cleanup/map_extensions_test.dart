@@ -7,7 +7,7 @@ import 'package:podman_backup/src/cleanup/map_extensions.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:test/test.dart';
 
-class MockEventSink<T> extends Mock implements EventSink<T> {}
+class MockEventSink<T>() extends Mock implements EventSink<T>;
 
 void main() {
   group('$ListCollectionTransformerSink', () {
@@ -57,11 +57,8 @@ void main() {
   group('$ListCollectionTransformer', () {
     test('transforms stream using the sink', () {
       expect(
-        Stream.fromIterable([
-          1,
-          2,
-          3,
-        ]).transform(const ListCollectionTransformer()),
+        Stream.fromIterable([1, 2, 3])
+            .transform(const ListCollectionTransformer()),
         emitsInOrder([
           [1, 2, 3],
           emitsDone,
@@ -117,9 +114,8 @@ void main() {
   group('GroupedByStream', () {
     test('collect transforms keyed streams to collected map entries', () {
       // stream with 3 groups
-      final stream = Stream.fromIterable(
-        List.generate(10, (index) => index),
-      ).groupBy((value) => value % 3);
+      final stream = Stream.fromIterable(List.generate(10, (index) => index))
+          .groupBy((value) => value % 3);
 
       expect(
         stream.collect(),

@@ -7,7 +7,7 @@ import 'integration_test_case.dart';
 
 void main() => UploadTestCase().run();
 
-class UploadTestCase extends IntegrationTestCase {
+class UploadTestCase() extends IntegrationTestCase {
   @override
   String get name => 'upload';
 
@@ -50,12 +50,10 @@ class UploadTestCase extends IntegrationTestCase {
         final backupFiles = await Future.wait(
           backupFileNames.map(_createBackupFile),
         );
-        await _getBackedUpFile(
-          backupFileNames.last,
-        ).writeAsString('old content');
-        final otherFile = await _getBackedUpFile(
-          'other',
-        ).writeAsString('other content');
+        await _getBackedUpFile(backupFileNames.last)
+            .writeAsString('old content');
+        final otherFile = await _getBackedUpFile('other')
+            .writeAsString('other content');
 
         // act
         await runSut();

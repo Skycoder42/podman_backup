@@ -7,7 +7,7 @@ import 'package:podman_backup/src/adapters/process_adapter.dart';
 import 'package:podman_backup/src/upload/upload_controller.dart';
 import 'package:test/test.dart';
 
-class MockProcessAdapter extends Mock implements ProcessAdapter {}
+class MockProcessAdapter() extends Mock implements ProcessAdapter;
 
 void main() {
   group('$UploadController', () {
